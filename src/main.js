@@ -29,9 +29,9 @@
         .series([gridlines, area, line]);
 
     chart.plotArea(multi);
-    
+
     svg.datum(data)
         .call(chart);
-    
+
 })(d3, fc);
 
