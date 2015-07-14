@@ -1,10 +1,10 @@
-/* Global module */
+/* global module */
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     'use strict';
-    grunt.initConfig({ 
+    grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
-        
+
         meta: {
             componentsJsFiles: [
                 'src/**/*.js'
@@ -13,11 +13,12 @@ module.exports = function (grunt) {
                 'test/**/*Spec.js'
             ],
             ourJsFiles: [
+                'Gruntfile.js',
                 '<%= meta.componentsJsFiles %>',
-                '<%= meta.testJsFiles %>',
+                '<%= meta.testJsFiles %>'
             ]
         },
-    
+
         jscs: {
             options: {
                 config: '.jscsrc'
@@ -55,17 +56,17 @@ module.exports = function (grunt) {
                 }
             }
         },
-        
+
         watch: {
             files: ['<%= meta.ourJsFiles %>'],
             tasks: ['jshint', 'jscs']
         }
     });
-    
+
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-contrib-watch');
-    
+
     grunt.registerTask('default', ['jshint', 'jscs']);
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
