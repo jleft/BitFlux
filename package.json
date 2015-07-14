@@ -4,7 +4,7 @@
   "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt ci"
   },
   "repository": {
     "type": "git",
