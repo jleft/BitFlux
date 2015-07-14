@@ -1,17 +1,17 @@
-# project name [![Build Status] travis link]
+# d3fc-showcase [![Build Status] travis link]
 
 A cross-platform financial charting application to showcase the functionality of d3fc components
 
 ## Installations 
 
-project name and its dependencies (d3fc, D3, [css-layout]) (github address)
+d3fc-showcase and its dependencies (d3fc, D3, [css-layout]) (https://github.com/ScottLogic/d3fc-showcase)
 
 '''
 Don't know actual installation instructions
 
 '''
 
-To find out more about the application and the components used, visit the [project webpage](scottlogic/github address)
+To find out more about the application and the components used, visit the [project webpage](https://github.com/ScottLogic/d3fc-showcase)
 
 ## Developing
 
@@ -39,8 +39,6 @@ npm install
 grunt
 ```
 
-(Probably need this?)
-
 ### Grunt Tasks
 
 The following Grunt tasks, found in `Gruntfile.js`, can be run from the command line. The most commonly used tasks to build and develop the project are:
@@ -56,8 +54,6 @@ Other tasks include:
 - `grunt watch` - watch the source files and rebuild when a change is saved
 - `grunt serve` - start a web server for viewing the visual tests
 - `grunt` - check, test and build the project
-
-(Probably need this?)
 
 ### Visual Tests
 
