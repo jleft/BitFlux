@@ -24,5 +24,9 @@
   "homepage": "https://github.com/scottlogic/d3fc-showcase#readme",
   "dependencies": {
     "d3fc": "^0.2.5"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jasmine": "^0.9.0"
   }
 }
