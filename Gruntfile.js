@@ -1,4 +1,4 @@
-/* Global module */
+/* global module */
 
 module.exports = function (grunt) {
     'use strict';
@@ -13,6 +13,7 @@ module.exports = function (grunt) {
                 'test/**/*Spec.js'
             ],
             ourJsFiles: [
+                'Gruntfile.js'
                 '<%= meta.componentsJsFiles %>',
                 '<%= meta.testJsFiles %>',
             ]
