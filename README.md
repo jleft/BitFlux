@@ -6,10 +6,9 @@ A cross-platform financial charting application to showcase the functionality of
 
 d3fc-showcase and its dependencies (d3fc, D3, [css-layout]) (https://github.com/ScottLogic/d3fc-showcase)
 
-'''
+```
 Don't know actual installation instructions
-
-'''
+```
 
 To find out more about the application and the components used, visit the [project webpage](https://github.com/ScottLogic/d3fc-showcase)
 
