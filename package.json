@@ -1,0 +1,28 @@
+{
+  "name": "d3fc-showcase",
+  "version": "0.1.0",
+  "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottlogic/d3fc-showcase.git"
+  },
+  "author": "Scott Logic",
+  "keywords": [
+    "d3",
+    "financial",
+    "components",
+    "charts"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/scottlogic/d3fc-showcase/issues"
+  },
+  "homepage": "https://github.com/scottlogic/d3fc-showcase#readme",
+  "dependencies": {
+    "d3fc": "^0.2.5"
+  }
+}
