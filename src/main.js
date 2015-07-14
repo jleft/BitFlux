@@ -1,7 +1,4 @@
-/* A test function */
-
-// Main function
-(function() {
+(function(d3, fc) {
     'use strict';
 
     var width = 500;
@@ -18,9 +15,6 @@
         .xDomain(fc.util.extent(data, 'date'))
         .yDomain(fc.util.extent(data, ['open', 'close']));
 
-    svg.datum(data)
-        .call(chart);
-
     var area = fc.series.area()
         .yValue(function(d) { return d.open; });
 
@@ -35,5 +29,9 @@
         .series([gridlines, area, line]);
 
     chart.plotArea(multi);
-})();
+    
+    svg.datum(data)
+        .call(chart);
+    
+})(d3, fc);
 

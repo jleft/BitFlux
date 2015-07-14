@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         meta: {
-            componentsJsFiles: [
+            srcJsFiles: [
                 'src/**/*.js'
             ],
             testJsFiles: [
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
             ],
             ourJsFiles: [
                 'Gruntfile.js',
-                '<%= meta.componentsJsFiles %>',
+                '<%= meta.srcJsFiles %>',
                 '<%= meta.testJsFiles %>'
             ]
         },
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 
         watch: {
             files: ['<%= meta.ourJsFiles %>'],
-            tasks: ['jshint', 'jscs']
+            tasks: ['check']
         }
     });
 
@@ -71,6 +71,4 @@ module.exports = function(grunt) {
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
-    grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
-    grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
 };

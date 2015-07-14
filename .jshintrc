@@ -18,7 +18,6 @@
 
     "globals": {
         "d3": false,
-        "fc": false,
-        "require": false
+        "fc": false
     }
 }
