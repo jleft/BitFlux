@@ -1,4 +1,4 @@
-/* global module */
+/* global module, require */
 
 module.exports = function(grunt) {
     'use strict';
@@ -113,15 +113,19 @@ module.exports = function(grunt) {
                     expand: true
                 }]
             }
+        },
+
+        'gh-pages': {
+            options: {
+                base: 'dist',
+                message: 'Deploy to GitHub Pages'
+            },
+            src: ['**/*']
         }
 
     });
 
-    grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-jscs');
-    grunt.loadNpmTasks('grunt-contrib-watch');
+    require('load-grunt-tasks')(grunt);
 
     grunt.registerTask('default', ['build']);
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
@@ -129,4 +133,5 @@ module.exports = function(grunt) {
     grunt.registerTask('check', ['check:failOnError']);
     grunt.registerTask('ci', ['default']);
     grunt.registerTask('build', ['check', 'clean', 'copy']);
+    grunt.registerTask('deploy', ['build', 'gh-pages']);
 };
