@@ -103,6 +103,16 @@ module.exports = function(grunt) {
             }
         },
 
+        connect: {
+            dist: {
+                options: {
+                    useAvailablePort: true,
+                    base: 'dist',
+                    keepalive: true
+                }
+            }
+        },
+
         'gh-pages': {
             options: {
                 base: 'dist',
@@ -115,6 +125,7 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
+    grunt.registerTask('serve', ['build', 'connect:dist']);
     grunt.registerTask('default', ['build']);
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
