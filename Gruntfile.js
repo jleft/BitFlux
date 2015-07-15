@@ -72,20 +72,8 @@ module.exports = function(grunt) {
             build: {
                 files: [{
                     cwd: 'src',
-                    src: ['*.html'],
+                    src: ['**'],
                     dest: 'dist',
-                    expand: true
-                },
-                {
-                    cwd: 'src',
-                    src: ['*.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'src',
-                    src: ['*.css'],
-                    dest: 'dist/assets/css',
                     expand: true
                 },
                 {
