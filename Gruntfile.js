@@ -59,17 +59,74 @@ module.exports = function(grunt) {
 
         watch: {
             files: ['<%= meta.ourJsFiles %>'],
-            tasks: ['check']
+            tasks: ['build']
+        },
+
+        clean: {
+            build: {
+                src: ['dist']
+            }
+        },
+
+        copy: {
+            build: {
+                files: [{
+                    cwd: 'src',
+                    src: ['*.html'],
+                    dest: 'dist',
+                    expand: true
+                },
+                {
+                    cwd: 'src',
+                    src: ['*.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'src',
+                    src: ['*.css'],
+                    dest: 'dist/assets/css',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/node_modules/d3/',
+                    src: ['d3.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/node_modules/css-layout/src/',
+                    src: ['Layout.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/dist/',
+                    src: ['d3fc.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/dist/',
+                    src: ['d3fc.css'],
+                    dest: 'dist/assets/css',
+                    expand: true
+                }]
+            }
         }
+
     });
 
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-jscs');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['check']);
+    grunt.registerTask('default', ['build']);
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
     grunt.registerTask('ci', ['default']);
+    grunt.registerTask('build', ['check', 'clean', 'copy']);
 };
