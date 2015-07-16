@@ -16,7 +16,8 @@
         .yDomain(fc.util.extent(data, ['open', 'close']));
 
     var area = fc.series.area()
-        .yValue(function(d) { return d.open; });
+        .yValue(function(d) { return d.open; })
+        .y0Value(chart.yDomain()[0]);
 
     var line = fc.series.line()
         .yValue(function(d) { return d.open; });
