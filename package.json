@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/scottlogic/d3fc-showcase#readme",
   "dependencies": {
+    "bootstrap": "^3.3.5",
     "d3fc": "^0.2.5"
   },
   "devDependencies": {
