@@ -59,7 +59,7 @@ module.exports = function(grunt) {
 
         watch: {
             files: ['<%= meta.ourJsFiles %>'],
-            tasks: ['build']
+            tasks: ['build:dev']
         },
 
         clean: {
@@ -99,6 +99,18 @@ module.exports = function(grunt) {
                     src: ['d3fc.css'],
                     dest: 'dist/assets/css',
                     expand: true
+                },
+                {
+                    cwd: 'node_modules/bootstrap/dist/js/',
+                    src: ['bootstrap.min.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/bootstrap/dist/css/',
+                    src: ['bootstrap.min.css'],
+                    dest: 'dist/assets/css',
+                    expand: true
                 }]
             }
         },
@@ -132,5 +144,6 @@ module.exports = function(grunt) {
     grunt.registerTask('check', ['check:failOnError']);
     grunt.registerTask('ci', ['default']);
     grunt.registerTask('build', ['check', 'clean', 'copy']);
+    grunt.registerTask('build:dev', ['check:warnOnly', 'clean', 'copy']);
     grunt.registerTask('deploy', ['build', 'gh-pages']);
 };

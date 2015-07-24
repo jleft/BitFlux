@@ -2,20 +2,42 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">   
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="description">
 
     <!-- D3FC scripts -->
     <script src="assets/js/d3.js"></script> 
     <script src="assets/js/Layout.js"></script>
     <script src="assets/js/d3fc.js"></script>
-
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap -->
     <link rel="stylesheet" href="assets/css/d3fc.css"> <!-- D3FC -->
     <link rel="stylesheet" type="text/css" href="assets/css/style.css"> <!-- Custom style-sheet -->
 			
-    <title> Initial Test Application </title>
+    <title> D3FC-Showcase </title>
   </head>
   <body>
-    <div id="chart-example">
+    <div class="container-fluid" id="chart-example"> <!-- or just container? fixed width? set width? -->
+      <div class="row"> 
+        <div class="col">
+          <svg class="main"></svg>
+        </div>
+      </div>
+      <div class="row"> 
+        <div class="col">
+          <svg class="rsi"></svg>
+        </div>
+      </div>
+        <div class="row"> 
+          <div class="col">
+            <svg class="nav"></svg>
+          </div>
+        </div>
+      </div>
       <script src="assets/js/main.js"></script>
     </div>
   </body>
