@@ -69,7 +69,6 @@
                     scale.domain(xExtent);
                     zoom.x(scale);
                     tx = scale(xExtent[0]);
-                    console.log(tx);
                 }
             }
 
