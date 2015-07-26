@@ -63,13 +63,16 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            build: {
+            web: {
                 src: ['dist']
+            },
+            mobile: {
+                src: ['mobile/www']
             }
         },
 
         copy: {
-            build: {
+            web: {
                 files: [{
                     cwd: 'src',
                     src: ['**'],
@@ -112,6 +115,15 @@ module.exports = function(grunt) {
                     dest: 'dist/assets/css',
                     expand: true
                 }]
+            },
+            mobile: {
+                files: [
+                {
+                    expand: true,
+                    cwd: 'dist/',
+                    src: ['**'],
+                    dest: 'mobile/www/'}
+                ]
             }
         },
 
@@ -131,6 +143,50 @@ module.exports = function(grunt) {
                 message: 'Deploy to GitHub Pages'
             },
             src: ['**/*']
+        },
+
+        cordovacli: {
+            options: {
+                path: 'mobile',
+                cli: 'cordova'
+            },
+            addPlatforms: {
+                options: {
+                    command: 'platform',
+                    action: 'add',
+                    platforms: ['ios', 'android']
+                }
+            },
+            prepareIos: {
+                options: {
+                    command: 'prepare',
+                    platforms: ['ios']
+                }
+            },
+            prepareAndroid: {
+                options: {
+                    command: 'prepare',
+                    platforms: ['android']
+                }
+            },
+            buildIos: {
+                options: {
+                    command: 'build',
+                    platforms: ['ios']
+                }
+            },
+            buildAndroid: {
+                options: {
+                    command: 'build',
+                    platforms: ['android']
+                }
+            },
+            emulateAndroid: {
+                options: {
+                    command: 'emulate',
+                    platforms: ['android']
+                }
+            }
         }
 
     });
@@ -144,6 +200,15 @@ module.exports = function(grunt) {
     grunt.registerTask('check', ['check:failOnError']);
     grunt.registerTask('ci', ['default']);
     grunt.registerTask('build', ['check', 'clean', 'copy']);
-    grunt.registerTask('build:dev', ['check:warnOnly', 'clean', 'copy']);
+    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'copy']);
+    grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
+    grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
+    grunt.registerTask('mobile:init',
+        [
+            'build',
+            'cordovacli:addPlatforms',
+            'cordovacli:prepareIos',
+            'cordovacli:prepareAndroid'
+        ]);
     grunt.registerTask('deploy', ['build', 'gh-pages']);
 };
