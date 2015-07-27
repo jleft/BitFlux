@@ -40,19 +40,19 @@ To run on local server, run the grunt task:
 grunt serve
 ```
 
-The project is then accessible at http://http://localhost:8000/index.html
+The project is then accessible at http://localhost:PORTNUMBER/index.html
 
-### Github pages
+### GitHub Pages
 
-For this option to be available, you should have forked the ScottLogic/d3fc-showcase repository to your github account.
+For this option to be available, you should have forked the ScottLogic/d3fc-showcase repository to your GitHub account.
 
-To run on github pages, run the grunt command:
+To run on GitHub Pages, run the grunt command:
 
 ```
 grunt deploy
 ```
 
-The project is then accessible at the obvious address (USERNAME.github.io/d3fc-showcase).
+The project is then accessible at the obvious address (USERNAME.github.io/REPO-NAME).
 
 ## License
 
