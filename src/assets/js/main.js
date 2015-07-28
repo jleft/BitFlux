@@ -27,9 +27,12 @@
 
     var data = fc.data.random.financial()(250);
 
+    // Using golden ratio to make initial display area rectangle into the golden rectangle
+    var goldenRatio = 1.618;
+
     // Create main chart and set how much data is initially viewed
     var timeSeries = fc.chart.linearTimeSeries()
-        .xDomain([data[Math.floor(data.length / 2)].date, data[Math.floor(data.length * 3 / 4)].date])
+        .xDomain([data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date, data[data.length - 1].date])
         .xTicks(6);
 
     var gridlines = fc.annotation.gridline()
