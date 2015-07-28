@@ -24,4 +24,5 @@
         <allow-intent href="itms-apps:*" />
     </platform>
     <icon src="res/icon.png" />
+    <preference name="DisallowOverscroll" value="true"/>
 </widget>
