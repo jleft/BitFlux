@@ -138,11 +138,21 @@ module.exports = function(grunt) {
         },
 
         'gh-pages': {
-            options: {
-                base: 'dist',
-                message: 'Deploy to GitHub Pages'
+            origin: {
+                options: {
+                    base: 'dist',
+                    message: 'Deploy to GitHub Pages'
+                },
+                src: ['**/*']
             },
-            src: ['**/*']
+            upstream: {
+                options: {
+                    base: 'dist',
+                    message: 'Deploy to GitHub Pages',
+                    repo: 'https://github.com/ScottLogic/d3fc-showcase.git'
+                },
+                src: ['**/*']
+            }
         },
 
         cordovacli: {
@@ -210,5 +220,6 @@ module.exports = function(grunt) {
             'cordovacli:prepareIos',
             'cordovacli:prepareAndroid'
         ]);
-    grunt.registerTask('deploy', ['build', 'gh-pages']);
+    grunt.registerTask('deploy', ['build', 'gh-pages:origin']);
+    grunt.registerTask('deploy:upstream', ['build', 'gh-pages:upstream']);
 };
