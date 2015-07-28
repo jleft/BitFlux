@@ -1,0 +1,15 @@
+path.line {
+  stroke: rgb(26, 154, 249);
+}
+
+#chart-example {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+} 
+
+.extent {
+  stroke: #D1D1E0;
+  fill-opacity: 0.125;
+  shape-rendering: crispEdges;
+}
