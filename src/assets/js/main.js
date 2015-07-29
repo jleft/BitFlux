@@ -36,6 +36,16 @@
         .yTicks(5)
         .xTicks(0);
 
+    var startPriceLine = fc.annotation.line()
+        .orient('horizontal')
+        .value(function(d) { return d.open; })
+        .label(function(d) { return 'OPEN'; });
+
+    var endPriceLine = fc.annotation.line()
+        .orient('horizontal')
+        .value(function(d) { return d.close; })
+        .label(function(d) { return 'CLOSE'; });
+
     var candlestick = fc.series.candlestick();
 
     // Create and apply the Moving Average
@@ -45,7 +55,18 @@
     var ma = fc.series.line()
         .yValue(function(d) { return d.movingAverage; });
 
-    var multi = fc.series.multi().series([gridlines, candlestick, ma]);
+    var multi = fc.series.multi()
+        .series([gridlines, candlestick, ma, startPriceLine, endPriceLine])
+        .mapping(function(series) {
+            switch (series) {
+                case startPriceLine:
+                    return [data[0]];
+                case endPriceLine:
+                    return [data[data.length - 1]];
+                default:
+                    return data;
+            }
+        });
 
     function zoomCall(zoom, data, scale) {
         return function() {
