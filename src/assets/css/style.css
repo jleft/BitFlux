@@ -2,7 +2,7 @@ path.line {
   stroke: rgb(26, 154, 249);
 }
 
-.main, .rsi, .nav {
+#reset-button, .main, .rsi, .nav {
   display: block;
   margin-left: auto;
   margin-right: auto;

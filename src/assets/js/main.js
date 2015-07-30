@@ -31,9 +31,20 @@
     // Using golden ratio to make initial display area rectangle into the golden rectangle
     var goldenRatio = 1.618;
 
+    var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+
+    // Set Reset button event
+    function resetToLive() {
+        timeSeries.xDomain(standardDateDisplay);
+        render();
+    }
+
+    container.select('#reset-button').on('click', resetToLive);
+
     // Create main chart and set how much data is initially viewed
     var timeSeries = fc.chart.linearTimeSeries()
-        .xDomain([data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date, data[data.length - 1].date])
+        .xDomain(standardDateDisplay)
         .xTicks(6);
 
     var gridlines = fc.annotation.gridline()
@@ -214,8 +225,10 @@
     }
 
     function resize() {
+        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
+
         var useableScreenWidth = window.innerWidth - (leftPadding + rightPadding);
-        var useableScreenHeight = window.innerHeight;
+        var useableScreenHeight = window.innerHeight - resetRowHeight;
 
         var targetWidth;
         if (useableScreenHeight < heightWidthAspect * useableScreenWidth) {
