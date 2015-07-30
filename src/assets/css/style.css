@@ -2,11 +2,11 @@ path.line {
   stroke: rgb(26, 154, 249);
 }
 
-#chart-example {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-} 
+.main, .rsi, .nav {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 
 .extent {
   stroke: #D1D1E0;
