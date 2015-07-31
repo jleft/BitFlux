@@ -160,11 +160,18 @@ module.exports = function(grunt) {
                 path: 'mobile',
                 cli: 'cordova'
             },
-            addPlatforms: {
+            addIos: {
                 options: {
                     command: 'platform',
                     action: 'add',
-                    platforms: ['ios', 'android']
+                    platforms: ['ios']
+                }
+            },
+            addAndroid: {
+                options: {
+                    command: 'platform',
+                    action: 'add',
+                    platforms: ['android']
                 }
             },
             prepareIos: {
@@ -203,23 +210,38 @@ module.exports = function(grunt) {
 
     require('load-grunt-tasks')(grunt);
 
-    grunt.registerTask('serve', ['build', 'connect:dist']);
     grunt.registerTask('default', ['build']);
+    grunt.registerTask('ci', [
+            'build',
+            'mobile:platforms',
+            'mobile:prepare'
+        ]);
+
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
-    grunt.registerTask('ci', ['default']);
+
     grunt.registerTask('build', ['check', 'clean', 'copy']);
     grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'copy']);
+
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
-    grunt.registerTask('mobile:init',
-        [
-            'build',
-            'cordovacli:addPlatforms',
+    grunt.registerTask('mobile:platforms', [
+            'cordovacli:addIos',
+            'cordovacli:addAndroid'
+        ]);
+    grunt.registerTask('mobile:prepare', [
             'cordovacli:prepareIos',
             'cordovacli:prepareAndroid'
         ]);
+    grunt.registerTask('mobile:init', [
+            'build',
+            'mobile:platforms',
+            'mobile:prepare'
+        ]);
+
     grunt.registerTask('deploy', ['build', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['build', 'gh-pages:upstream']);
+
+    grunt.registerTask('serve', ['build', 'connect:dist']);
 };
