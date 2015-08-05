@@ -214,7 +214,8 @@ module.exports = function(grunt) {
     grunt.registerTask('ci', [
             'build',
             'mobile:platforms',
-            'mobile:prepare'
+            'mobile:prepare',
+            'cordovacli:buildIos'
         ]);
 
     grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
