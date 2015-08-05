@@ -1,9 +1,9 @@
 language: objective-c
-# node_js:
-#   - "0.10" # stable
-#   - "0.11" # development release, may be unstable
-#   - "0.12" # stable
-#   - "iojs"
+node_js:
+  - "0.10" # stable
+  - "0.11" # development release, may be unstable
+  - "0.12" # stable
+  - "iojs"
 before_install: npm install -g grunt-cli
 install: npm install
 script: npm test
