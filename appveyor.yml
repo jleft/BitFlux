@@ -1,0 +1,40 @@
+# http://www.appveyor.com/docs/appveyor-yml
+
+init:
+  - git config --global core.autocrlf input
+
+environment:
+  matrix:
+    - nodejs_version: "0.10"
+    - nodejs_version: "0.11"
+    - nodejs_version: "0.12"
+    - nodejs_version: "1.0"  # io.js
+
+matrix:
+  allow_failures:
+    - nodejs_version: "0.11"
+    - nodejs_version: "1.0"  # io.js
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - npm -g install npm@2
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm install -g grunt-cli
+  - npm install
+
+test_script:
+  - node --version
+  - npm --version
+  - grunt --version
+  - ps: grunt ci --no-color  # PowerShell
+  - cmd: grunt ci --no-color
+
+# after_test:
+#   - ps: $root = Resolve-Path .\visual-tests\dist; [IO.Directory]::GetFiles($root.Path, '*.*', 'AllDirectories') | % { Push-AppveyorArtifact $_ -FileName $_.Substring($root.Path.Length + 1) -DeploymentName visual-tests }
+
+#artifacts:
+#  - path: visual-tests\dist
+#    name: "Visual Tests"
+
+build: off
+deploy: off
