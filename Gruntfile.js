@@ -6,6 +6,9 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
 
         meta: {
+            srcFiles: [
+                'src/**/*'
+            ],
             srcJsFiles: [
                 'src/**/*.js'
             ],
@@ -58,8 +61,12 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            files: ['<%= meta.ourJsFiles %>'],
-            tasks: ['build:dev']
+            files: ['<%= meta.srcFiles %>'],
+            tasks: ['build:development'],
+            options: {
+                atBegin: true,
+                livereload: true
+            }
         },
 
         clean: {
@@ -75,7 +82,7 @@ module.exports = function(grunt) {
             web: {
                 files: [{
                     cwd: 'src',
-                    src: ['**'],
+                    src: ['index.html', '**/*.js'],
                     dest: 'dist',
                     expand: true
                 },
@@ -98,21 +105,15 @@ module.exports = function(grunt) {
                     expand: true
                 },
                 {
-                    cwd: 'node_modules/d3fc/dist/',
-                    src: ['d3fc.css'],
-                    dest: 'dist/assets/css',
-                    expand: true
-                },
-                {
                     cwd: 'node_modules/bootstrap/dist/js/',
                     src: ['bootstrap.min.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 },
                 {
-                    cwd: 'node_modules/bootstrap/dist/css/',
-                    src: ['bootstrap.min.css'],
-                    dest: 'dist/assets/css',
+                    cwd: 'node_modules/bootstrap/dist/fonts/',
+                    src: ['**'],
+                    dest: 'dist/assets/fonts',
                     expand: true
                 },
                 {
@@ -139,6 +140,13 @@ module.exports = function(grunt) {
                     useAvailablePort: true,
                     base: 'dist',
                     keepalive: true
+                }
+            },
+            watch: {
+                options: {
+                    useAvailablePort: true,
+                    base: 'dist',
+                    keepalive: false
                 }
             }
         },
@@ -210,6 +218,29 @@ module.exports = function(grunt) {
                     platforms: ['android']
                 }
             }
+        },
+
+        less: {
+            development: {
+                options: {
+                    strictMath: true,
+                    sourceMap: true,
+                    outputSourceFiles: true,
+                    sourceMapURL: 'style.css.map',
+                    sourceMapFilename: 'dist/assets/css/style.css.map'
+                },
+                files: {
+                    'dist/assets/css/style.css': 'src/assets/styles/style.less'
+                }
+            },
+            production: {
+                options: {
+                    strictMath: true
+                },
+                files: {
+                    'dist/assets/css/style.css': 'src/assets/styles/style.less'
+                }
+            }
         }
 
     });
@@ -227,8 +258,9 @@ module.exports = function(grunt) {
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
 
-    grunt.registerTask('build', ['check', 'clean', 'copy']);
-    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'copy']);
+    grunt.registerTask('build', ['check', 'clean', 'copy', 'less:production']);
+    grunt.registerTask('build:development', ['check', 'clean', 'copy', 'less:development']);
+    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'copy', 'less:development']);
 
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
@@ -249,5 +281,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['build', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['build', 'gh-pages:upstream']);
 
-    grunt.registerTask('serve', ['build', 'connect:dist']);
+    grunt.registerTask('dev', ['connect:watch', 'watch']);
+
+    grunt.registerTask('serve', ['connect:dist']);
 };
