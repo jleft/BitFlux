@@ -14,25 +14,62 @@
     // Set SVGs & column padding
     var container = d3.select('#chart-example');
 
-    var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
-    var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
-
     var svgMain = container.select('svg.main');
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 
-    var mainAspect = 0.6;
-    var rsiAspect = 0.3;
-    var navAspect = 0.2;
-    var heightWidthAspect = mainAspect + rsiAspect + navAspect;
+    function calculateDimensions() {
+        var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
+        var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
+
+        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
+
+        var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
+        var useableScreenHeight = window.innerHeight - resetRowHeight - 2 * fc.chart.linearTimeSeries().xAxisHeight();
+
+        var targetWidth;
+        var targetHeight;
+
+        var maxWidthToHeightRatio = 1.5;
+        var maxHeightToWidthRatio = 1.5;
+
+        if (useableScreenWidth > maxWidthToHeightRatio * useableScreenHeight) {
+            targetWidth = maxWidthToHeightRatio * useableScreenHeight;
+            targetHeight = useableScreenHeight;
+        } else if (useableScreenHeight > maxHeightToWidthRatio * useableScreenWidth) {
+            targetWidth = useableScreenWidth;
+            targetHeight = maxHeightToWidthRatio * useableScreenWidth;
+        } else {
+            targetWidth = useableScreenWidth;
+            targetHeight = useableScreenHeight;
+        }
+
+        var mainHeightRatio = 0.6;
+        var rsiHeightRatio = 0.3;
+        var navHeightRatio = 0.2;
+        var totalHeightRatio = mainHeightRatio + rsiHeightRatio + navHeightRatio;
+
+        svgMain.attr('width', targetWidth)
+            .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
+        svgRSI.attr('width', targetWidth)
+            .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
+        svgNav.attr('width', targetWidth)
+            .attr('height', navHeightRatio * targetHeight / totalHeightRatio);
+
+        var navAspect = (navHeightRatio * targetHeight) / (totalHeightRatio * targetWidth);
+
+        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+    }
 
     var data = fc.data.random.financial()(250);
 
     // Using golden ratio to make initial display area rectangle into the golden rectangle
     var goldenRatio = 1.618;
 
-    var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
-            data[data.length - 1].date];
+    var standardDateDisplay;
+
+    calculateDimensions();
 
     // Set Reset button event
     function resetToLive() {
@@ -149,6 +186,7 @@
     var rsiChart = function(selection) {
         data = selection.datum();
         rsi.xScale(timeSeries.xScale());
+        rsi.yScale().range([parseInt(svgRSI.style('height'), 10), 0]);
         rsiAlgorithm(data);
         // Important for initialization that this happens after timeSeries is called [or can call render() twice]
         var zoom = d3.behavior.zoom();
@@ -225,25 +263,7 @@
     }
 
     function resize() {
-        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
-
-        var useableScreenWidth = window.innerWidth - (leftPadding + rightPadding);
-        var useableScreenHeight = window.innerHeight - resetRowHeight;
-
-        var targetWidth;
-        if (useableScreenHeight < heightWidthAspect * useableScreenWidth) {
-            targetWidth = useableScreenHeight / heightWidthAspect;
-        } else {
-            targetWidth = useableScreenWidth;
-        }
-
-        svgMain.attr('width', targetWidth)
-            .attr('height', mainAspect * targetWidth);
-        svgRSI.attr('width', targetWidth)
-            .attr('height', rsiAspect * targetWidth);
-        svgNav.attr('width', targetWidth)
-            .attr('height', navAspect * targetWidth);
-        rsi.yScale().range([rsiAspect * targetWidth, 0]);
+        calculateDimensions();
         render();
     }
 
