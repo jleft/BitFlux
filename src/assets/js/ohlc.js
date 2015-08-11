@@ -5,7 +5,7 @@
         // Re-call OHLC whenever you want to start collecting for a new period/product
         // In seconds
         var period = 60 * 60 * 24;
-        var liveFeed = sc.data.feed.coinbase.fakeWebSocket();
+        var liveFeed = sc.data.feed.coinbase.webSocket();
 
         function ohlc(cb) {
             var basket = null;
