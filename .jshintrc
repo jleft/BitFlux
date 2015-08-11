@@ -18,6 +18,7 @@
 
     "globals": {
         "d3": false,
-        "fc": false
+        "fc": false,
+        "sc": false
     }
 }

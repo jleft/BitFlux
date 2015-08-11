@@ -114,6 +114,12 @@ module.exports = function(grunt) {
                     src: ['bootstrap.min.css'],
                     dest: 'dist/assets/css',
                     expand: true
+                },
+                {
+                    cwd: 'node_modules/jquery/dist',
+                    src: ['jquery.min.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
                 }]
             },
             mobile: {
