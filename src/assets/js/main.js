@@ -88,15 +88,41 @@
         .yTicks(5)
         .xTicks(0);
 
-    var startPriceLine = fc.annotation.line()
-        .orient('horizontal')
-        .value(function(d) { return d.open; })
-        .label(function(d) { return 'OPEN'; });
+    function calculateCloseAxisTagPath(width, height) {
+        var h2 = height / 2;
+        return [
+            [0, 0],
+            [h2, -h2],
+            [width, -h2],
+            [width, h2],
+            [h2, h2],
+            [0, 0]
+        ];
+    }
 
-    var endPriceLine = fc.annotation.line()
+    function positionCloseAxis(sel) {
+        sel.enter()
+            .select('.right-handle')
+            .insert('path', ':first-child')
+            .attr('transform', 'translate(' + -40 + ', 0)')
+            .attr('d', d3.svg.area()(calculateCloseAxisTagPath(40, 14)));
+
+        sel.select('text')
+            .attr('transform', 'translate(' + (-2) + ', ' + 2 + ')')
+            .attr('x', 0)
+            .attr('y', 0);
+    }
+
+    var priceFormat = d3.format('.2f');
+
+    var closeAxisAnnotation = fc.annotation.line()
         .orient('horizontal')
         .value(function(d) { return d.close; })
-        .label(function(d) { return 'CLOSE'; });
+        .label(function(d) { return priceFormat(d.close); })
+        .decorate(function(sel) {
+            positionCloseAxis(sel);
+            sel.enter().classed('close', true);
+        });
 
     var candlestick = fc.series.candlestick();
 
@@ -108,12 +134,10 @@
         .yValue(function(d) { return d.movingAverage; });
 
     var multi = fc.series.multi()
-        .series([gridlines, candlestick, ma, startPriceLine, endPriceLine])
+        .series([gridlines, candlestick, ma, closeAxisAnnotation])
         .mapping(function(series) {
             switch (series) {
-                case startPriceLine:
-                    return [data[0]];
-                case endPriceLine:
+                case closeAxisAnnotation:
                     return [data[data.length - 1]];
                 default:
                     return data;
