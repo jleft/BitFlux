@@ -62,6 +62,14 @@
             data[data.length - 1].date];
     }
 
+    var candlestick = fc.series.candlestick();
+    var ohlc = fc.series.ohlc();
+    var point = fc.series.point();
+    var line = fc.series.line();
+    var area = fc.series.area();
+
+    var currentSeries = candlestick;
+
     var data = fc.data.random.financial()(250);
 
     // Using golden ratio to make initial display area rectangle into the golden rectangle
@@ -70,6 +78,41 @@
     var standardDateDisplay;
 
     calculateDimensions();
+
+    function changeSeries(seriesTypeString) {
+        switch (seriesTypeString) {
+            case 'ohlc':
+                currentSeries = ohlc;
+                break;
+            case 'candlestick':
+                currentSeries = candlestick;
+                break;
+            case 'line':
+                currentSeries = line;
+                break;
+            case 'point':
+                currentSeries = point;
+                break;
+            case 'area':
+                currentSeries = area;
+                break;
+            default:
+                currentSeries = candlestick;
+                break;
+        }
+        multi.series([gridlines, ma, currentSeries, closeAxisAnnotation]);
+        render();
+    }
+
+    d3.select('#series-buttons')
+        .selectAll('.btn')
+        .on('click', function() {
+            var seriesTypeString = d3.select(this)
+                .select('input')
+                .node()
+                .value;
+            changeSeries(seriesTypeString);
+        });
 
     // Set Reset button event
     function resetToLive() {
@@ -124,23 +167,44 @@
             sel.enter().classed('close', true);
         });
 
-    var candlestick = fc.series.candlestick();
-
     // Create and apply the Moving Average
     var movingAverage = fc.indicator.algorithm.movingAverage();
 
     // Create a line that renders the result
     var ma = fc.series.line()
+        .decorate(function(selection) {
+            selection.enter()
+                .classed('ma', true);
+        })
         .yValue(function(d) { return d.movingAverage; });
 
+    function render() {
+        svgMain.datum(data)
+            .call(mainChart);
+
+        svgRSI.datum(data)
+            .call(rsiChart);
+
+        svgNav.datum(data)
+            .call(navChart);
+    }
+
     var multi = fc.series.multi()
-        .series([gridlines, candlestick, ma, closeAxisAnnotation])
+        .series([gridlines, ma, currentSeries, closeAxisAnnotation])
         .mapping(function(series) {
             switch (series) {
                 case closeAxisAnnotation:
                     return [data[data.length - 1]];
                 default:
                     return data;
+            }
+        })
+        .key(function(series, index) {
+            switch (series) {
+                case line:
+                    return index;
+                default:
+                    return series;
             }
         });
 
@@ -227,12 +291,10 @@
         .yDomain(yExtent)
         .yTicks(5);
 
-    var area = fc.series.area()
-        .yValue(function(d) { return d.open; })
+    area.yValue(function(d) { return d.open; })
         .y0Value(yExtent[0]);
 
-    var line = fc.series.line()
-        .yValue(function(d) { return d.open; });
+    line.yValue(function(d) { return d.open; });
 
     var brush = d3.svg.brush();
     var navMulti = fc.series.multi().series([area, line, brush]);
@@ -275,17 +337,6 @@
         selection.call(navTimeSeries);
     };
 
-    function render() {
-        svgMain.datum(data)
-            .call(mainChart);
-
-        svgRSI.datum(data)
-            .call(rsiChart);
-
-        svgNav.datum(data)
-            .call(navChart);
-    }
-
     function resize() {
         calculateDimensions();
         render();
@@ -294,5 +345,6 @@
     d3.select(window).on('resize', resize);
 
     resize();
+
 
 })(d3, fc);

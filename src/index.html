@@ -19,27 +19,55 @@
     <script src="assets/js/bootstrap.min.js"></script>
   </head>
   <body>
+  
     <div class="container" id="chart-example">
-      <div class="row" id="reset-row">
+
+      <div class="row">
         <div class="col-md-12">
-          <button type="button" id="reset-button">Reset</button>
+          <div id="series-buttons" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default active" id="candlestick-button">
+              <input type="radio" name="options" value="candlestick" checked> Candlestick
+            </label>
+            <label class="btn btn-default" id="ohlc-button">
+              <input type="radio" name="options" value="ohlc"> OHLC
+            </label>
+            <label class="btn btn-default" id="line-button">
+              <input type="radio" name="options" value="line"> Line
+            </label>
+            <label class="btn btn-default" id="point-button">
+              <input type="radio" name="options"value="point"> Point
+            </label>
+            <label class="btn btn-default" id="area-button">
+              <input type="radio" name="options" value="area"> Area
+            </label>
+          </div>
+
+          <div id="reset-row" class="pull-right">
+            <div id="reset-button">
+              <button class="btn btn-default" type="button" >Reset</button>
+            </div>
+          </div>
         </div>
       </div>
+
       <div class="row">
         <div class="col-md-12">
           <svg class="main"></svg>
         </div>
       </div>
+        
       <div class="row"> 
         <div class="col-md-12">
           <svg class="rsi"></svg>
         </div>
       </div>
+        
       <div class="row"> 
         <div class="col-md-12">
-            <svg class="nav"></svg>
+          <svg class="nav"></svg>
         </div>
       </div>
+
     </div>
     <script src="assets/js/sc.js"></script>
     <script src="assets/js/webSocket.js"></script>
