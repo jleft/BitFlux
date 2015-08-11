@@ -100,7 +100,7 @@
                 currentSeries = candlestick;
                 break;
         }
-        multi.series([gridlines, ma, currentSeries, startPriceLine, endPriceLine]);
+        multi.series([gridlines, ma, currentSeries, closeAxisAnnotation]);
         render();
     }
 
@@ -172,8 +172,9 @@
 
     // Create a line that renders the result
     var ma = fc.series.line()
-        .decorate(function(select) {
-            select.enter().classed('ma', true);
+        .decorate(function(selection) {
+            selection.enter()
+                .classed('ma', true);
         })
         .yValue(function(d) { return d.movingAverage; });
 
@@ -198,10 +199,10 @@
                     return data;
             }
         })
-        .key(function(series, ma) {
+        .key(function(series, index) {
             switch (series) {
                 case line:
-                    return series, ma;
+                    return index;
                 default:
                     return series;
             }
