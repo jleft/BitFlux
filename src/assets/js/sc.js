@@ -12,6 +12,7 @@
             feed: {
                 coinbase: {}
             }
-        }
+        },
+        util: {}
     };
 })();

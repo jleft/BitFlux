@@ -1,15 +1,5 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
-    function getVisibleData(data, dateExtent) {
-        // Calculate visible data, given [startDate, endDate]
-        var bisector = d3.bisector(function(d) { return d.date; });
-        var visibleData = data.slice(
-        // Pad and clamp the bisector values to ensure extents can be calculated
-            Math.max(0, bisector.left(data, dateExtent[0]) - 1),
-            Math.min(bisector.right(data, dateExtent[1]) + 1, data.length)
-        );
-        return visibleData;
-    }
 
     // Set SVGs & column padding
     var container = d3.select('#chart-example');
@@ -243,7 +233,7 @@
         movingAverage(data);
 
         // Scale y axis
-        var yExtent = fc.util.extent(getVisibleData(data, timeSeries.xDomain()), ['low', 'high']);
+        var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, timeSeries.xDomain()), ['low', 'high']);
         // Add 10% either side of extreme high/lows
         var variance = yExtent[1] - yExtent[0];
         yExtent[0] -= variance * 0.1;
@@ -285,7 +275,7 @@
     };
 
     // Create navigation chart
-    var yExtent = fc.util.extent(getVisibleData(data, fc.util.extent(data, 'date')), ['low', 'high']);
+    var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, fc.util.extent(data, 'date')), ['low', 'high']);
     var navTimeSeries = fc.chart.linearTimeSeries()
         .xDomain(fc.util.extent(data, 'date'))
         .yDomain(yExtent)
@@ -346,5 +336,4 @@
 
     resize();
 
-
-})(d3, fc);
+})(d3, fc, sc);
