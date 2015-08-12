@@ -20,6 +20,20 @@
         viewDomain: []
     };
 
+    var movingAverage = fc.indicator.algorithm.movingAverage();
+
+    var ma = fc.series.line()
+        .decorate(function(select) {
+            select.enter().classed('ma', true);
+        })
+        .yValue(function(d) { return d.movingAverage; });
+
+    var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
+    bollingerAlgorithm(data);
+    var bollinger = fc.indicator.renderer.bollingerBands();
+
+    var currentIndicator;
+
     sc.util.calculateDimensions(container);
 
     var primaryChart = sc.chart.primaryChart();
@@ -71,6 +85,39 @@
                 .value;
             changeSeries(seriesTypeString);
             render();
+        });
+
+    function changeIndicator(indicatorType) {
+        switch (indicatorType) {
+            case 'ma':
+                currentIndicator = ma;
+                break;
+            case 'bollinger':
+                currentIndicator = bollinger;
+                break;
+            case 'no-indicator':
+                currentIndicator = null;
+                break;
+            default:
+                currentIndicator = null;
+                break;
+        }
+        if (currentIndicator == null) {
+            multi.series([gridlines, currentSeries, closeAxisAnnotation]);
+        } else {
+            multi.series([gridlines, currentIndicator, currentSeries, closeAxisAnnotation]);
+        }
+        render();
+    }
+
+    d3.select('#indicator-buttons')
+        .selectAll('.btn')
+        .on('click', function() {
+            var indicatorType = d3.select(this)
+                .select('input')
+                .node()
+                .value;
+            changeIndicator(indicatorType);
         });
 
     // Set Reset button event
