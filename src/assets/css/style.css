@@ -16,6 +16,10 @@ path.ma.line {
   margin-right: auto;
 }
 
+.nav {
+  height: 100px;
+}
+
 #reset-button {
   display: block;
   border: 8px;
