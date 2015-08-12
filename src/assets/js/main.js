@@ -289,7 +289,7 @@
     var navTimeSeries = fc.chart.linearTimeSeries()
         .xDomain(fc.util.extent(data, 'date'))
         .yDomain(yExtent)
-        .yTicks(5);
+        .yTicks(0);
 
     area.yValue(function(d) { return d.open; })
         .y0Value(yExtent[0]);
