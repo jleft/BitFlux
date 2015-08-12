@@ -22,7 +22,7 @@
         var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
         var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
 
-        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
+        var resetRowHeight = parseInt(container.select('#head-row').style('height'), 10);
 
         var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
         var useableScreenHeight = window.innerHeight - resetRowHeight - 2 * fc.chart.linearTimeSeries().xAxisHeight();
