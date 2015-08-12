@@ -11,41 +11,202 @@
         return visibleData;
     }
 
-    var width = 500;
-    var height = 300;
-    var mainAspect = height / width;
-    var rsiHeight = height / 2;
-    var rsiAspect = rsiHeight / width;
-    var navHeight = height / 3;
-    var navAspect = navHeight / width;
-
-    // Set SVGs
+    // Set SVGs & column padding
     var container = d3.select('#chart-example');
+
     var svgMain = container.select('svg.main');
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 
+    function calculateDimensions() {
+        var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
+        var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
+
+        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
+
+        var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
+        var useableScreenHeight = window.innerHeight - resetRowHeight - 2 * fc.chart.linearTimeSeries().xAxisHeight();
+
+        var targetWidth;
+        var targetHeight;
+
+        var maxWidthToHeightRatio = 1.5;
+        var maxHeightToWidthRatio = 1.5;
+
+        if (useableScreenWidth > maxWidthToHeightRatio * useableScreenHeight) {
+            targetWidth = maxWidthToHeightRatio * useableScreenHeight;
+            targetHeight = useableScreenHeight;
+        } else if (useableScreenHeight > maxHeightToWidthRatio * useableScreenWidth) {
+            targetWidth = useableScreenWidth;
+            targetHeight = maxHeightToWidthRatio * useableScreenWidth;
+        } else {
+            targetWidth = useableScreenWidth;
+            targetHeight = useableScreenHeight;
+        }
+
+        var mainHeightRatio = 0.6;
+        var rsiHeightRatio = 0.3;
+        var navHeightRatio = 0.2;
+        var totalHeightRatio = mainHeightRatio + rsiHeightRatio + navHeightRatio;
+
+        svgMain.attr('width', targetWidth)
+            .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
+        svgRSI.attr('width', targetWidth)
+            .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
+        svgNav.attr('width', targetWidth)
+            .attr('height', navHeightRatio * targetHeight / totalHeightRatio);
+
+        var navAspect = (navHeightRatio * targetHeight) / (totalHeightRatio * targetWidth);
+
+        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+    }
+
+    var candlestick = fc.series.candlestick();
+    var ohlc = fc.series.ohlc();
+    var point = fc.series.point();
+    var line = fc.series.line();
+    var area = fc.series.area();
+
+    var currentSeries = candlestick;
+
     var data = fc.data.random.financial()(250);
+
+    // Using golden ratio to make initial display area rectangle into the golden rectangle
+    var goldenRatio = 1.618;
+
+    var standardDateDisplay;
+
+    calculateDimensions();
+
+    function changeSeries(seriesTypeString) {
+        switch (seriesTypeString) {
+            case 'ohlc':
+                currentSeries = ohlc;
+                break;
+            case 'candlestick':
+                currentSeries = candlestick;
+                break;
+            case 'line':
+                currentSeries = line;
+                break;
+            case 'point':
+                currentSeries = point;
+                break;
+            case 'area':
+                currentSeries = area;
+                break;
+            default:
+                currentSeries = candlestick;
+                break;
+        }
+        multi.series([gridlines, ma, currentSeries, closeAxisAnnotation]);
+        render();
+    }
+
+    d3.select('#series-buttons')
+        .selectAll('.btn')
+        .on('click', function() {
+            var seriesTypeString = d3.select(this)
+                .select('input')
+                .node()
+                .value;
+            changeSeries(seriesTypeString);
+        });
+
+    // Set Reset button event
+    function resetToLive() {
+        timeSeries.xDomain(standardDateDisplay);
+        render();
+    }
+
+    container.select('#reset-button').on('click', resetToLive);
 
     // Create main chart and set how much data is initially viewed
     var timeSeries = fc.chart.linearTimeSeries()
-        .xDomain([data[Math.floor(data.length / 2)].date, data[Math.floor(data.length * 3 / 4)].date])
+        .xDomain(standardDateDisplay)
         .xTicks(6);
 
     var gridlines = fc.annotation.gridline()
         .yTicks(5)
         .xTicks(0);
 
-    var candlestick = fc.series.candlestick();
+    function calculateCloseAxisTagPath(width, height) {
+        var h2 = height / 2;
+        return [
+            [0, 0],
+            [h2, -h2],
+            [width, -h2],
+            [width, h2],
+            [h2, h2],
+            [0, 0]
+        ];
+    }
+
+    function positionCloseAxis(sel) {
+        sel.enter()
+            .select('.right-handle')
+            .insert('path', ':first-child')
+            .attr('transform', 'translate(' + -40 + ', 0)')
+            .attr('d', d3.svg.area()(calculateCloseAxisTagPath(40, 14)));
+
+        sel.select('text')
+            .attr('transform', 'translate(' + (-2) + ', ' + 2 + ')')
+            .attr('x', 0)
+            .attr('y', 0);
+    }
+
+    var priceFormat = d3.format('.2f');
+
+    var closeAxisAnnotation = fc.annotation.line()
+        .orient('horizontal')
+        .value(function(d) { return d.close; })
+        .label(function(d) { return priceFormat(d.close); })
+        .decorate(function(sel) {
+            positionCloseAxis(sel);
+            sel.enter().classed('close', true);
+        });
 
     // Create and apply the Moving Average
     var movingAverage = fc.indicator.algorithm.movingAverage();
 
     // Create a line that renders the result
     var ma = fc.series.line()
+        .decorate(function(selection) {
+            selection.enter()
+                .classed('ma', true);
+        })
         .yValue(function(d) { return d.movingAverage; });
 
-    var multi = fc.series.multi().series([gridlines, candlestick, ma]);
+    function render() {
+        svgMain.datum(data)
+            .call(mainChart);
+
+        svgRSI.datum(data)
+            .call(rsiChart);
+
+        svgNav.datum(data)
+            .call(navChart);
+    }
+
+    var multi = fc.series.multi()
+        .series([gridlines, ma, currentSeries, closeAxisAnnotation])
+        .mapping(function(series) {
+            switch (series) {
+                case closeAxisAnnotation:
+                    return [data[data.length - 1]];
+                default:
+                    return data;
+            }
+        })
+        .key(function(series, index) {
+            switch (series) {
+                case line:
+                    return index;
+                default:
+                    return series;
+            }
+        });
 
     function zoomCall(zoom, data, scale) {
         return function() {
@@ -103,8 +264,8 @@
 
     // Create RSI chart
     var rsiScale = d3.scale.linear()
-        .domain([0, 100])
-        .range([rsiHeight, 0]);
+        .domain([0, 100]);
+
     var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
     var rsi = fc.indicator.renderer.relativeStrengthIndex()
@@ -113,6 +274,7 @@
     var rsiChart = function(selection) {
         data = selection.datum();
         rsi.xScale(timeSeries.xScale());
+        rsi.yScale().range([parseInt(svgRSI.style('height'), 10), 0]);
         rsiAlgorithm(data);
         // Important for initialization that this happens after timeSeries is called [or can call render() twice]
         var zoom = d3.behavior.zoom();
@@ -129,12 +291,10 @@
         .yDomain(yExtent)
         .yTicks(5);
 
-    var area = fc.series.area()
-        .yValue(function(d) { return d.open; })
+    area.yValue(function(d) { return d.open; })
         .y0Value(yExtent[0]);
 
-    var line = fc.series.line()
-        .yValue(function(d) { return d.open; });
+    line.yValue(function(d) { return d.open; });
 
     var brush = d3.svg.brush();
     var navMulti = fc.series.multi().series([area, line, brush]);
@@ -177,41 +337,14 @@
         selection.call(navTimeSeries);
     };
 
-    function render() {
-        svgMain.datum(data)
-            .call(mainChart);
-
-        svgRSI.datum(data)
-            .call(rsiChart);
-
-        svgNav.datum(data)
-            .call(navChart);
-    }
-
     function resize() {
-        var marginX = 10; // value should be taken from css/html really
-        var screenWidth = window.innerWidth - (marginX * 2);
-        var maxWidth = width;
-
-        var targetWidth;
-        if (screenWidth < maxWidth) {
-            targetWidth = screenWidth;
-        } else {
-            targetWidth = maxWidth;
-        }
-        svgMain.attr('width', targetWidth)
-            .attr('height', mainAspect * targetWidth);
-        svgRSI.attr('width', targetWidth)
-            .attr('height', rsiAspect * targetWidth);
-        svgNav.attr('width', targetWidth)
-            .attr('height', navAspect * targetWidth);
-        rsi.yScale().range([rsiAspect * targetWidth, 0]);
+        calculateDimensions();
         render();
     }
 
     d3.select(window).on('resize', resize);
 
     resize();
-    render();
+
 
 })(d3, fc);

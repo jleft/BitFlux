@@ -1,15 +1,37 @@
+body {
+  padding-top: 10px;
+}
+
 path.line {
   stroke: rgb(26, 154, 249);
 }
 
-#chart-example {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-} 
+path.ma.line {
+  stroke: Fuchsia;
+}
+
+.main, .rsi, .nav {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#reset-button {
+  display: block;
+  border: 8px;
+  padding-bottom:5px;
+}
 
 .extent {
   stroke: #D1D1E0;
   fill-opacity: 0.125;
   shape-rendering: crispEdges;
+}
+
+.annotation.close text {
+  fill: white;
+}
+
+.annotation.close path {
+  fill: rgb(26, 154, 249);
 }
