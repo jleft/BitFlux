@@ -28,6 +28,11 @@
     var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
         data[data.length - 1].date];
 
+    var viewScale = fc.scale.dateTime().range([0, svgMain.attr('width')]);
+    var primaryChart = sc.primaryChart()
+        .shareViewScale(viewScale)
+        .changeSeries('candlestick');
+
     function changeSeries(seriesTypeString) {
         switch (seriesTypeString) {
             case 'ohlc':
@@ -49,8 +54,7 @@
                 currentSeries = candlestick;
                 break;
         }
-        multi.series([gridlines, ma, currentSeries, closeAxisAnnotation]);
-        render();
+        primaryChart.changeSeries(currentSeries);
     }
 
     d3.select('#series-buttons')
@@ -61,75 +65,20 @@
                 .node()
                 .value;
             changeSeries(seriesTypeString);
+            render();
         });
 
     // Set Reset button event
     function resetToLive() {
-        timeSeries.xDomain(standardDateDisplay);
+        viewScale.domain(standardDateDisplay);
         render();
     }
 
     container.select('#reset-button').on('click', resetToLive);
 
-    // Create main chart and set how much data is initially viewed
-    var timeSeries = fc.chart.linearTimeSeries()
-        .xDomain(standardDateDisplay)
-        .xTicks(6);
-
-    var gridlines = fc.annotation.gridline()
-        .yTicks(5)
-        .xTicks(0);
-
-    function calculateCloseAxisTagPath(width, height) {
-        var h2 = height / 2;
-        return [
-            [0, 0],
-            [h2, -h2],
-            [width, -h2],
-            [width, h2],
-            [h2, h2],
-            [0, 0]
-        ];
-    }
-
-    function positionCloseAxis(sel) {
-        sel.enter()
-            .select('.right-handle')
-            .insert('path', ':first-child')
-            .attr('transform', 'translate(' + -40 + ', 0)')
-            .attr('d', d3.svg.area()(calculateCloseAxisTagPath(40, 14)));
-
-        sel.select('text')
-            .attr('transform', 'translate(' + (-2) + ', ' + 2 + ')')
-            .attr('x', 0)
-            .attr('y', 0);
-    }
-
-    var priceFormat = d3.format('.2f');
-
-    var closeAxisAnnotation = fc.annotation.line()
-        .orient('horizontal')
-        .value(function(d) { return d.close; })
-        .label(function(d) { return priceFormat(d.close); })
-        .decorate(function(sel) {
-            positionCloseAxis(sel);
-            sel.enter().classed('close', true);
-        });
-
-    // Create and apply the Moving Average
-    var movingAverage = fc.indicator.algorithm.movingAverage();
-
-    // Create a line that renders the result
-    var ma = fc.series.line()
-        .decorate(function(selection) {
-            selection.enter()
-                .classed('ma', true);
-        })
-        .yValue(function(d) { return d.movingAverage; });
-
     function render() {
         svgMain.datum(data)
-            .call(mainChart);
+            .call(primaryChart);
 
         svgRSI.datum(data)
             .call(rsiChart);
@@ -157,7 +106,7 @@
             }
         });
 
-    function zoomCall(zoom, selection, data, scale) {
+    sc.zoomCall = function(zoom, data, scale) {
         return function() {
             sc.util.zoomControl(zoom, selection, data, scale);
             render();
@@ -195,13 +144,14 @@
 
     var rsiChart = function(selection) {
         data = selection.datum();
-        rsi.xScale(timeSeries.xScale());
+        rsi.xScale(viewScale);
         rsi.yScale().range([parseInt(svgRSI.style('height'), 10), 0]);
         rsiAlgorithm(data);
         // Important for initialization that this happens after timeSeries is called [or can call render() twice]
         var zoom = d3.behavior.zoom();
-        zoom.x(timeSeries.xScale())
-            .on('zoom', zoomCall(zoom, selection, data, timeSeries.xScale()));
+        zoom.x(viewScale)
+            .on('zoom', sc.zoomCall(zoom, selection, data, viewScale));
+
         selection.call(zoom);
         selection.call(rsi);
     };
@@ -227,20 +177,20 @@
         brush.on('brush', function() {
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
                     // Control the main chart's time series domain
-                    timeSeries.xDomain([brush.extent()[0][0], brush.extent()[1][0]]);
+                    viewScale.domain([brush.extent()[0][0], brush.extent()[1][0]]);
                     render();
                 }
             });
 
         // Allow to zoom using mouse, but disable panning
         var zoom = d3.behavior.zoom();
-        zoom.x(timeSeries.xScale())
+        zoom.x(viewScale)
             .on('zoom', function() {
                 if (zoom.scale() === 1) {
                     zoom.translate([0, 0]);
                 } else {
                     // Usual behavior
-                    zoomCall(zoom, selection, data, timeSeries.xScale())();
+                    sc.zoomCall(zoom, selection, data, viewScale)();
                 }
             });
         selection.call(zoom);
@@ -248,8 +198,8 @@
         navMulti.mapping(function(series) {
                 if (series === brush) {
                     brush.extent([
-                        [timeSeries.xDomain()[0], navTimeSeries.yDomain()[0]],
-                        [timeSeries.xDomain()[1], navTimeSeries.yDomain()[1]]
+                        [viewScale.domain()[0], navTimeSeries.yDomain()[0]],
+                        [viewScale.domain()[1], navTimeSeries.yDomain()[1]]
                     ]);
                 }
                 return data;
@@ -272,6 +222,8 @@
 
     d3.select(window).on('resize', resize);
 
+    calculateDimensions();
+    resetToLive();
     resize();
 
 })(d3, fc, sc);
