@@ -22,10 +22,12 @@
         var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
         var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
 
-        var resetRowHeight = parseInt(container.select('#head-row').style('height'), 10);
+        var resetRowHeight = parseInt(container.select('#reset-row').style('height'), 10);
+        var navHeight = parseInt(svgNav.style('height'), 10);
 
         var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
-        var useableScreenHeight = window.innerHeight - resetRowHeight - 2 * fc.chart.linearTimeSeries().xAxisHeight();
+        var useableScreenHeight = window.innerHeight - resetRowHeight - navHeight -
+            2 * fc.chart.linearTimeSeries().xAxisHeight();
 
         var targetWidth;
         var targetHeight;
@@ -46,17 +48,15 @@
 
         var mainHeightRatio = 0.6;
         var rsiHeightRatio = 0.3;
-        var navHeightRatio = 0.2;
-        var totalHeightRatio = mainHeightRatio + rsiHeightRatio + navHeightRatio;
+        var totalHeightRatio = mainHeightRatio + rsiHeightRatio;
 
         svgMain.attr('width', targetWidth)
             .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
         svgRSI.attr('width', targetWidth)
             .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
-        svgNav.attr('width', targetWidth)
-            .attr('height', navHeightRatio * targetHeight / totalHeightRatio);
+        svgNav.attr('width', targetWidth);
 
-        var navAspect = (navHeightRatio * targetHeight) / (totalHeightRatio * targetWidth);
+        var navAspect = navHeight / targetWidth;
 
         standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
             data[data.length - 1].date];
