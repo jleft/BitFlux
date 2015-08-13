@@ -29,22 +29,8 @@
         var useableScreenHeight = window.innerHeight - headRowHeight - navHeight -
             2 * fc.chart.linearTimeSeries().xAxisHeight();
 
-        var targetWidth;
-        var targetHeight;
-
-        var maxWidthToHeightRatio = 1.5;
-        var maxHeightToWidthRatio = 1.5;
-
-        if (useableScreenWidth > maxWidthToHeightRatio * useableScreenHeight) {
-            targetWidth = maxWidthToHeightRatio * useableScreenHeight;
-            targetHeight = useableScreenHeight;
-        } else if (useableScreenHeight > maxHeightToWidthRatio * useableScreenWidth) {
-            targetWidth = useableScreenWidth;
-            targetHeight = maxHeightToWidthRatio * useableScreenWidth;
-        } else {
-            targetWidth = useableScreenWidth;
-            targetHeight = useableScreenHeight;
-        }
+        var targetWidth = useableScreenWidth;
+        var targetHeight = useableScreenHeight;
 
         var mainHeightRatio = 0.6;
         var rsiHeightRatio = 0.3;
