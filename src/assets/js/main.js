@@ -184,32 +184,9 @@
             }
         });
 
-    function zoomCall(zoom, data, scale) {
+    function zoomCall(zoom, selection, data, scale) {
         return function() {
-            var tx = zoom.translate()[0];
-            var ty = zoom.translate()[1];
-
-            var xExtent = fc.util.extent(data, ['date']);
-            var min = scale(xExtent[0]);
-            var max = scale(xExtent[1]);
-
-            // Don't pan off sides
-            var width = svgMain.attr('width');
-            if (min > 0) {
-                tx -= min;
-            } else if (max - width < 0) {
-                tx -= (max - width);
-            }
-            // If zooming, and about to pan off screen, do nothing
-            if (zoom.scale() !== 1) {
-                if ((min >= 0) && (max - width) <= 0) {
-                    scale.domain(xExtent);
-                    zoom.x(scale);
-                    tx = scale(xExtent[0]);
-                }
-            }
-
-            zoom.translate([tx, ty]);
+            sc.util.zoomControl(zoom, selection, data, scale);
             render();
         };
     }
@@ -233,7 +210,7 @@
         // Behaves oddly if not reinitialized every render
         var zoom = d3.behavior.zoom();
         zoom.x(timeSeries.xScale())
-            .on('zoom', zoomCall(zoom, data, timeSeries.xScale()));
+            .on('zoom', zoomCall(zoom, selection, data, timeSeries.xScale()));
 
         selection.call(zoom);
     };
@@ -255,7 +232,7 @@
         // Important for initialization that this happens after timeSeries is called [or can call render() twice]
         var zoom = d3.behavior.zoom();
         zoom.x(timeSeries.xScale())
-            .on('zoom', zoomCall(zoom, data, timeSeries.xScale()));
+            .on('zoom', zoomCall(zoom, selection, data, timeSeries.xScale()));
         selection.call(zoom);
         selection.call(rsi);
     };
@@ -294,7 +271,7 @@
                     zoom.translate([0, 0]);
                 } else {
                     // Usual behavior
-                    zoomCall(zoom, data, timeSeries.xScale())();
+                    zoomCall(zoom, selection, data, timeSeries.xScale())();
                 }
             });
         selection.call(zoom);
