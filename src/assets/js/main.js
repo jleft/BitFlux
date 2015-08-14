@@ -8,36 +8,6 @@
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 
-    function calculateDimensions() {
-        var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
-        var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
-
-        var headRowHeight = parseInt(container.select('#head-row').style('height'), 10);
-        var navHeight = parseInt(svgNav.style('height'), 10);
-
-        var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
-        var useableScreenHeight = window.innerHeight - headRowHeight - navHeight -
-            2 * fc.chart.linearTimeSeries().xAxisHeight();
-
-        var targetWidth = useableScreenWidth;
-        var targetHeight = useableScreenHeight;
-
-        var mainHeightRatio = 0.6;
-        var rsiHeightRatio = 0.3;
-        var totalHeightRatio = mainHeightRatio + rsiHeightRatio;
-
-        svgMain.attr('width', targetWidth)
-            .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
-        svgRSI.attr('width', targetWidth)
-            .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
-        svgNav.attr('width', targetWidth);
-
-        var navAspect = navHeight / targetWidth;
-
-        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
-            data[data.length - 1].date];
-    }
-
     var candlestick = fc.series.candlestick();
     var ohlc = fc.series.ohlc();
     var point = fc.series.point();
@@ -51,9 +21,12 @@
     // Using golden ratio to make initial display area rectangle into the golden rectangle
     var goldenRatio = 1.618;
 
-    var standardDateDisplay;
+    sc.util.calculateDimensions(container);
 
-    calculateDimensions();
+    var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+
+    var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+        data[data.length - 1].date];
 
     function changeSeries(seriesTypeString) {
         switch (seriesTypeString) {
@@ -287,7 +260,13 @@
     };
 
     function resize() {
-        calculateDimensions();
+        sc.util.calculateDimensions(container);
+
+        var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+
+        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+
         render();
     }
 
