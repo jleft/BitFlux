@@ -8,27 +8,10 @@
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 
-    var candlestick = fc.series.candlestick();
-    var ohlc = fc.series.ohlc();
-    var point = fc.series.point();
-    var line = fc.series.line();
-    line.isLine = true;
-    var area = fc.series.area();
-    var currentIndicator;
-    var currentSeries;
-
     var dataModel = {
         data: fc.data.random.financial()(250),
         viewDomain: []
     };
-
-    var movingAverage = fc.series.line()
-        .decorate(function(select) {
-            select.enter().classed('movingAverage', true);
-        })
-        .yValue(function(d) { return d.movingAverage; });
-
-    var bollinger = fc.indicator.renderer.bollingerBands();
 
     sc.util.calculateDimensions(container);
 
@@ -45,70 +28,27 @@
     rsiChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
-    function changeSeries(seriesTypeString) {
-        switch (seriesTypeString) {
-            case 'ohlc':
-                currentSeries = ohlc;
-                break;
-            case 'candlestick':
-                currentSeries = candlestick;
-                break;
-            case 'line':
-                currentSeries = line;
-                break;
-            case 'point':
-                currentSeries = point;
-                break;
-            case 'area':
-                currentSeries = area;
-                break;
-            default:
-                currentSeries = candlestick;
-                break;
-        }
-        primaryChart.changeSeries(currentSeries, currentIndicator);
-    }
-
-    changeSeries('candlestick');
-
-    d3.select('#series-buttons')
+    container.select('#series-buttons')
         .selectAll('.btn')
         .on('click', function() {
             var seriesTypeString = d3.select(this)
                 .select('input')
                 .node()
                 .value;
-            changeSeries(seriesTypeString);
+            var selectedSeries = sc.menu.selectSeries(seriesTypeString);
+            primaryChart.changeSeries(selectedSeries);
             render();
         });
 
-
-    function changeIndicator(indicatorType) {
-        switch (indicatorType) {
-            case 'movingAverage':
-                currentIndicator = movingAverage;
-                break;
-            case 'bollinger':
-                currentIndicator = bollinger;
-                break;
-            case 'no-indicator':
-                currentIndicator = null;
-                break;
-            default:
-                currentIndicator = null;
-                break;
-        }
-        primaryChart.changeIndicator(currentIndicator, currentSeries);
-    }
-
-    d3.select('#indicator-buttons')
+    container.select('#indicator-buttons')
         .selectAll('.btn')
         .on('click', function() {
-            var indicatorType = d3.select(this)
+            var indicatorTypeString = d3.select(this)
                 .select('input')
                 .node()
                 .value;
-            changeIndicator(indicatorType);
+            var selectedIndicator = sc.menu.selectIndicator(indicatorTypeString);
+            primaryChart.changeIndicator(selectedIndicator);
             render();
         });
 

@@ -36,6 +36,9 @@
             .yTicks(5)
             .xTicks(0);
 
+        var currentSeries = sc.menu.selectSeries('');
+        var currentIndicator = null;
+
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
 
@@ -53,12 +56,14 @@
             });
 
         var multi = fc.series.multi()
-            .series([gridlines, closeAxisAnnotation])
+            .series([gridlines, currentSeries, closeAxisAnnotation])
             .key(function(series, index) {
-                if (series.isLine) {
-                    return index;
+                switch (series) {
+                    case sc.menu.selectSeries('line'):
+                        return index;
+                    default:
+                        return series;
                 }
-                return series;
             });
 
         function primaryChart(selection) {
@@ -99,23 +104,24 @@
 
         d3.rebind(primaryChart, dispatch, 'on');
 
-        primaryChart.changeSeries = function(series, indicator) {
-            if (indicator == null) {
-                multi.series([gridlines, series, closeAxisAnnotation]);
+        function updateMultiSeries() {
+            if (currentIndicator === null) {
+                multi.series([gridlines, currentSeries, closeAxisAnnotation]);
             } else {
-                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
+                multi.series([gridlines, currentIndicator, currentSeries, closeAxisAnnotation]);
             }
+        }
+
+        primaryChart.changeSeries = function(series) {
+            currentSeries = series;
+            updateMultiSeries();
             return primaryChart;
         };
 
-        primaryChart.changeIndicator = function(indicator, series) {
-            if (indicator == null) {
-                multi.series([gridlines, series, closeAxisAnnotation]);
-            } else {
-                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
-            }
+        primaryChart.changeIndicator = function(indicator) {
+            currentIndicator = indicator;
+            updateMultiSeries();
             return primaryChart;
-
         };
 
         return primaryChart;
