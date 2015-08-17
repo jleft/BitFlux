@@ -4,7 +4,7 @@
     // Set SVGs & column padding
     var container = d3.select('#chart-example');
 
-    var svgMain = container.select('svg.main');
+    var svgMain = container.select('svg.primary');
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 

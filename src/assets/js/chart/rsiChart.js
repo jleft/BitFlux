@@ -18,7 +18,7 @@
             rsi.xScale()
                 .domain(data.viewDomain)
                 .range([0, selection.attr('width')]);
-            rsi.yScale().range([parseInt(d3.select('svg.rsi').style('height'), 10), 0]);
+            rsi.yScale().range([parseInt(selection.style('height'), 10), 0]);
 
             rsiAlgorithm(data);
 
