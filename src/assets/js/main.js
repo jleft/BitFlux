@@ -95,7 +95,7 @@
     var currDate = new Date();
     var startDate = d3.time.minute.offset(currDate, -199);
 
-    var coinbase = fc.data.feed.coinbase()
+    var historicFeed = sc.data.feed.coinbase.historicFeed()
         .granularity(60)
         .start(startDate)
         .end(currDate);
@@ -126,7 +126,7 @@
 
     function historicCallback(err, newData) {
         if (!err) {
-            data = newData.reverse();
+            data = newData;
             resetToLive();
             ohlcConverter(liveCallback);
             render();
@@ -145,12 +145,13 @@
             if (type === 'live') {
                 data = [];
                 toggleLiveFeedUI(true);
-                coinbase(historicCallback);
+                historicFeed(historicCallback);
                 render();
 
             } else if (type === 'fake') {
                 toggleLiveFeedUI(false);
                 ohlcConverter.close();
+                historicFeed.invalidateCallback();
                 data = fc.data.random.financial()(250);
                 resetToLive();
                 render();
@@ -225,32 +226,6 @@
             .call(navChart);
     }
 
-    var multi = fc.series.multi()
-        .series([gridlines, ma, currentSeries, closeAxisAnnotation])
-        .mapping(function(series) {
-            switch (series) {
-                case closeAxisAnnotation:
-                    return [data[data.length - 1]];
-                default:
-                    return data;
-            }
-        })
-        .key(function(series, index) {
-            switch (series) {
-                case line:
-                    return index;
-                default:
-                    return series;
-            }
-        });
-
-    function zoomCall(zoom, selection, data, scale) {
-        return function() {
-            sc.util.zoomControl(zoom, selection, data, scale);
-            render();
-        };
-    }
-    
     function resize() {
         sc.util.calculateDimensions(container);
         render();
