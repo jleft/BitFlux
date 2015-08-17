@@ -26,7 +26,7 @@
             .attr('y', 0);
     }
 
-    sc.primaryChart = function() {
+    sc.chart.primaryChart = function() {
         var timeSeries = fc.chart.linearTimeSeries()
             .xTicks(6);
 
@@ -59,8 +59,7 @@
         var multi = fc.series.multi()
             .series([gridlines, movingAverageLine, closeAxisAnnotation])
             .key(function(series, index) {
-                if (series instanceof fc.series.line) {
-                    console.log('line');
+                if (series.isLine) {
                     return index;
                 }
                 return series;
@@ -68,6 +67,8 @@
 
         function primaryChart(selection) {
             var data = selection.datum();
+            timeSeries.xDomain(data.viewDomain);
+
             movingAverage(data);
 
             multi.mapping(function(series) {
@@ -89,28 +90,21 @@
 
             // Redraw
             timeSeries.plotArea(multi);
-
-            console.log(multi);
-            console.log(multi.xScale());
-            console.log(selection);
             selection.call(timeSeries);
 
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(timeSeries.xScale())
-                .on('zoom', sc.zoomCall(zoom, data, timeSeries.xScale()));
-
+                .on('zoom', sc.zoomCall(zoom, data, timeSeries.xScale()))
+                .on('zoomend', function() {
+                    sc.dispatch.viewChange(timeSeries.xDomain());
+                });
 
             selection.call(zoom);
         }
 
         primaryChart.changeSeries = function(series) {
             multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
-            return primaryChart;
-        };
-
-        primaryChart.shareViewScale = function(scale) {
-            timeSeries.xScale(scale);
             return primaryChart;
         };
 

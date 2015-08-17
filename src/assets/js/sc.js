@@ -13,6 +13,10 @@
                 coinbase: {}
             }
         },
-        util: {}
+        util: {},
+        chart: {}
     };
+
+    sc.dispatch = d3.dispatch('viewChange', 'render');
+
 })();
