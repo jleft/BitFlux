@@ -19,29 +19,20 @@
 
     data.viewDomain = [];
 
-    // Using golden ratio to make initial display area rectangle into the golden rectangle
-    var goldenRatio = 1.618;
-
     sc.util.calculateDimensions(container);
 
-    var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
-
-    var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
-        data[data.length - 1].date];
-
     var primaryChart = sc.chart.primaryChart();
-    data.viewDomain = primaryChart.xDomain();
     var rsiChart = sc.chart.rsiChart();
     var navChart = sc.chart.navChart();
 
-    sc.dispatch.on('viewChange.main', function(domain) {
+    function onViewChange(domain) {
         data.viewDomain = [domain[0], domain[1]];
         render();
-    });
+    }
 
-    sc.dispatch.on('render.main', function() {
-        render();
-    });
+    primaryChart.onViewChange(onViewChange);
+    rsiChart.onViewChange(onViewChange);
+    navChart.onViewChange(onViewChange);
 
     function changeSeries(seriesTypeString) {
         var currentSeries;
@@ -83,7 +74,12 @@
 
     // Set Reset button event
     function resetToLive() {
-        sc.dispatch.viewChange(standardDateDisplay);
+        // Using golden ratio to make initial display area rectangle into the golden rectangle
+        var goldenRatio = 1.618;
+        var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+        var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+        onViewChange(standardDateDisplay);
         render();
     }
 
@@ -102,12 +98,6 @@
 
     function resize() {
         sc.util.calculateDimensions(container);
-
-        var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
-
-        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
-            data[data.length - 1].date];
-
         render();
     }
 

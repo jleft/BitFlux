@@ -2,6 +2,7 @@
     'use strict';
     // Helper functions
     sc.chart.navChart = function() {
+        var dispatch = d3.dispatch('viewChange');
 
         var navTimeSeries = fc.chart.linearTimeSeries()
             .yTicks(0);
@@ -34,7 +35,7 @@
             brush.on('brush', function() {
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
                     // Control the shared view scale's domain
-                    sc.dispatch.viewChange([brush.extent()[0][0], brush.extent()[1][0]]);
+                    dispatch.viewChange([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             });
 
@@ -46,7 +47,8 @@
                         zoom.translate([0, 0]);
                     } else {
                         // Usual behavior
-                        sc.util.zoomControl(zoom, selection, data, viewScale)();
+                        sc.util.zoomControl(zoom, selection, data, viewScale);
+                        dispatch.viewChange(viewScale.domain());
                     }
                 });
             selection.call(zoom);
@@ -65,6 +67,10 @@
             navTimeSeries.plotArea(navMulti);
             selection.call(navTimeSeries);
         }
+
+        navChart.onViewChange = function(func) {
+            dispatch.on('viewChange', func);
+        };
 
         return navChart;
     };

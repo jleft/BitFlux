@@ -27,6 +27,8 @@
     }
 
     sc.chart.primaryChart = function() {
+        var dispatch = d3.dispatch('viewChange');
+
         var timeSeries = fc.chart.linearTimeSeries()
             .xTicks(6);
 
@@ -95,10 +97,18 @@
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(timeSeries.xScale())
-                .on('zoom', sc.util.zoomControl(zoom, selection, data, timeSeries.xScale()));
+                .on('zoom', function() {
+                    sc.util.zoomControl(zoom, selection, data, timeSeries.xScale());
+                    dispatch.viewChange(timeSeries.xDomain());
+                });
 
             selection.call(zoom);
         }
+
+        // Not sure if it would be better to just use d3.rebind on this?
+        primaryChart.onViewChange = function(func) {
+            dispatch.on('viewChange.primaryChart', func);
+        };
 
         primaryChart.changeSeries = function(series) {
             multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
