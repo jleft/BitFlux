@@ -15,9 +15,10 @@
     line.isLine = true;
     var area = fc.series.area();
 
-    var data = fc.data.random.financial()(250);
-
-    data.viewDomain = [];
+    var dataModel = {
+        data: fc.data.random.financial()(250),
+        viewDomain: []
+    };
 
     sc.util.calculateDimensions(container);
 
@@ -26,7 +27,7 @@
     var navChart = sc.chart.navChart();
 
     function onViewChanged(domain) {
-        data.viewDomain = [domain[0], domain[1]];
+        dataModel.viewDomain = [domain[0], domain[1]];
         render();
     }
 
@@ -77,6 +78,7 @@
         // Using golden ratio to make initial display area rectangle into the golden rectangle
         var goldenRatio = 1.618;
         var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+        var data = dataModel.data;
         var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
             data[data.length - 1].date];
         onViewChanged(standardDateDisplay);
@@ -86,13 +88,13 @@
     container.select('#reset-button').on('click', resetToLive);
 
     function render() {
-        svgMain.datum(data)
+        svgMain.datum(dataModel)
             .call(primaryChart);
 
-        svgRSI.datum(data)
+        svgRSI.datum(dataModel)
             .call(rsiChart);
 
-        svgNav.datum(data)
+        svgNav.datum(dataModel)
             .call(navChart);
     }
 

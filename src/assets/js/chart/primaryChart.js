@@ -68,8 +68,9 @@
             });
 
         function primaryChart(selection) {
-            var data = selection.datum();
-            timeSeries.xDomain(data.viewDomain);
+            var data = selection.datum().data;
+            var viewDomain = selection.datum().viewDomain;
+            timeSeries.xDomain(viewDomain);
 
             movingAverage(data);
 

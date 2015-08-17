@@ -13,10 +13,11 @@
             .yScale(rsiScale);
 
         function rsiChart(selection) {
-            var data = selection.datum();
+            var data = selection.datum().data;
+            var viewDomain = selection.datum().viewDomain;
 
             rsi.xScale()
-                .domain(data.viewDomain)
+                .domain(viewDomain)
                 .range([0, selection.attr('width')]);
             rsi.yScale().range([parseInt(selection.style('height'), 10), 0]);
 
@@ -30,7 +31,8 @@
                 });
 
             selection.call(zoom);
-            selection.call(rsi);
+            selection.datum(data)
+                .call(rsi);
         }
 
         d3.rebind(rsiChart, dispatch, 'on');

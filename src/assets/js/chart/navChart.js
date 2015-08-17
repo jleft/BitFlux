@@ -20,9 +20,10 @@
         var viewScale = fc.scale.dateTime();
 
         function navChart(selection) {
-            var data = selection.datum();
+            var data = selection.datum().data;
+            var viewDomain = selection.datum().viewDomain;
 
-            viewScale.domain(data.viewDomain)
+            viewScale.domain(viewDomain)
                 .range([0, selection.attr('width')]);
 
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data,
