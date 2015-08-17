@@ -46,7 +46,7 @@
                         zoom.translate([0, 0]);
                     } else {
                         // Usual behavior
-                        sc.zoomCall(zoom, data, viewScale)();
+                        sc.util.zoomControl(zoom, selection, data, viewScale)();
                     }
                 });
             selection.call(zoom);

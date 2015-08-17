@@ -24,6 +24,11 @@
 
     sc.util.calculateDimensions(container);
 
+    var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+
+    var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+        data[data.length - 1].date];
+
     var primaryChart = sc.chart.primaryChart();
     data.viewDomain = primaryChart.xDomain();
     var rsiChart = sc.chart.rsiChart();
@@ -78,10 +83,6 @@
 
     // Set Reset button event
     function resetToLive() {
-        var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
-        var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
-            data[data.length - 1].date];
-        
         sc.dispatch.viewChange(standardDateDisplay);
         render();
     }
@@ -99,34 +100,14 @@
             .call(navChart);
     }
 
-    var multi = fc.series.multi()
-        .series([gridlines, ma, currentSeries, closeAxisAnnotation])
-        .mapping(function(series) {
-            switch (series) {
-                case closeAxisAnnotation:
-                    return [data[data.length - 1]];
-                default:
-                    return data;
-            }
-        })
-        .key(function(series, index) {
-            switch (series) {
-                case line:
-                    return index;
-                default:
-                    return series;
-            }
-        });
-
-    sc.zoomCall = function(zoom, data, scale) {
-        return function() {
-            sc.util.zoomControl(zoom, selection, data, scale);
-            sc.dispatch.viewChange(scale.domain());
-        };
-    }
-
     function resize() {
         sc.util.calculateDimensions(container);
+
+        var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
+
+        standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
+            data[data.length - 1].date];
+
         render();
     }
 

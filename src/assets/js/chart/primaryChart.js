@@ -95,10 +95,7 @@
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(timeSeries.xScale())
-                .on('zoom', sc.zoomCall(zoom, data, timeSeries.xScale()))
-                .on('zoomend', function() {
-                    sc.dispatch.viewChange(timeSeries.xDomain());
-                });
+                .on('zoom', sc.util.zoomControl(zoom, selection, data, timeSeries.xScale()));
 
             selection.call(zoom);
         }

@@ -22,7 +22,7 @@
 
             var zoom = d3.behavior.zoom();
             zoom.x(rsi.xScale())
-                .on('zoom', sc.zoomCall(zoom, data, rsi.xScale()));
+                .on('zoom', sc.util.zoomControl(zoom, selection, data, rsi.xScale()));
 
             selection.call(zoom);
             selection.call(rsi);
