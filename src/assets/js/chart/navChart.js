@@ -68,9 +68,7 @@
             selection.call(navTimeSeries);
         }
 
-        navChart.onViewChange = function(func) {
-            dispatch.on('viewChange.navChart', func);
-        };
+        d3.rebind(navChart, dispatch, 'on');
 
         return navChart;
     };

@@ -25,14 +25,14 @@
     var rsiChart = sc.chart.rsiChart();
     var navChart = sc.chart.navChart();
 
-    function onViewChange(domain) {
+    function onViewChanged(domain) {
         data.viewDomain = [domain[0], domain[1]];
         render();
     }
 
-    primaryChart.onViewChange(onViewChange);
-    rsiChart.onViewChange(onViewChange);
-    navChart.onViewChange(onViewChange);
+    primaryChart.on('viewChange', onViewChanged);
+    rsiChart.on('viewChange', onViewChanged);
+    navChart.on('viewChange', onViewChanged);
 
     function changeSeries(seriesTypeString) {
         var currentSeries;
@@ -79,7 +79,7 @@
         var navAspect = parseInt(svgNav.style('height'), 10) / svgNav.attr('width');
         var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
             data[data.length - 1].date];
-        onViewChange(standardDateDisplay);
+        onViewChanged(standardDateDisplay);
         render();
     }
 

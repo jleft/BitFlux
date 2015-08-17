@@ -33,9 +33,7 @@
             selection.call(rsi);
         }
 
-        rsiChart.onViewChange = function(func) {
-            dispatch.on('viewChange.rsiChart', func);
-        };
+        d3.rebind(rsiChart, dispatch, 'on');
 
         return rsiChart;
     };

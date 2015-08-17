@@ -101,9 +101,7 @@
             selection.call(zoom);
         }
 
-        primaryChart.onViewChange = function(func) {
-            dispatch.on('viewChange.primaryChart', func);
-        };
+        d3.rebind(primaryChart, dispatch, 'on');
 
         primaryChart.changeSeries = function(series) {
             multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
