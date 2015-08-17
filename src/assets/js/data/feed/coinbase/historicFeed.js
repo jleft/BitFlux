@@ -2,7 +2,6 @@
     'use strict';
 
     sc.data.feed.coinbase.historicFeed = function() {
-        // In seconds - maybe take this out and have chart pass in a period whenever needed
         var feed = fc.data.feed.coinbase();
         var n = 0;
 

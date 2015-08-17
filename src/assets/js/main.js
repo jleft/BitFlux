@@ -93,7 +93,7 @@
         .period(60);
 
     var currDate = new Date();
-    var startDate = d3.time.minute.offset(currDate, -199);
+    var startDate = d3.time.minute.offset(currDate, -200);
 
     var historicFeed = sc.data.feed.coinbase.historicFeed()
         .granularity(60)
@@ -111,13 +111,11 @@
 
     function liveCallback(event, latestBasket) {
         if (!event && latestBasket) {
-            console.log(latestBasket);
             newBasketReceived(latestBasket);
         } else if (event.type === 'open') {
             // On successful open
-            console.log('Connected, waiting for data...');
         } else if (event.type === 'close' && event.code === 1000) {
-            // No need for a message on successful close
+            // On successful close
         } else {
             console.log('Error loading data from coinbase websocket: ' +
                 event.type + ' ' + event.code);
@@ -133,23 +131,13 @@
         } else { console.log('Error getting historic data: ' + err); }
     }
 
-    function toggleLiveFeedUI(visible) {
-        var visibility = (visible === true) ? 'visible' : 'hidden';
-        d3.select('#period-span').style('visibility', visibility);
-        d3.select('#product-span').style('visibility', visibility);
-    }
-
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
             if (type === 'live') {
-                data = [];
-                toggleLiveFeedUI(true);
                 historicFeed(historicCallback);
                 render();
-
             } else if (type === 'fake') {
-                toggleLiveFeedUI(false);
                 ohlcConverter.close();
                 historicFeed.invalidateCallback();
                 data = fc.data.random.financial()(250);
