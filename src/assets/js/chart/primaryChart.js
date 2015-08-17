@@ -84,10 +84,6 @@
 
             // Scale y axis
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, timeSeries.xDomain()), ['low', 'high']);
-            // Add 10% either side of extreme high/lows
-            var variance = yExtent[1] - yExtent[0];
-            yExtent[0] -= variance * 0.1;
-            yExtent[1] += variance * 0.1;
             timeSeries.yDomain(yExtent);
 
             // Redraw
@@ -105,7 +101,6 @@
             selection.call(zoom);
         }
 
-        // Not sure if it would be better to just use d3.rebind on this?
         primaryChart.onViewChange = function(func) {
             dispatch.on('viewChange.primaryChart', func);
         };
@@ -114,8 +109,6 @@
             multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
             return primaryChart;
         };
-
-        d3.rebind(primaryChart, timeSeries, 'xDomain');
 
         return primaryChart;
     };

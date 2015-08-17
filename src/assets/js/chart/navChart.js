@@ -69,7 +69,7 @@
         }
 
         navChart.onViewChange = function(func) {
-            dispatch.on('viewChange', func);
+            dispatch.on('viewChange.navChart', func);
         };
 
         return navChart;
