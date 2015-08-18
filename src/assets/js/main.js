@@ -2,7 +2,7 @@
     'use strict';
 
     // Set SVGs & column padding
-    var container = d3.select('#chart-example');
+    var container = d3.select('#app-container');
 
     var svgMain = container.select('svg.primary');
     var svgRSI = container.select('svg.rsi');
