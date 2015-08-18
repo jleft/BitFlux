@@ -110,8 +110,7 @@
             var type = d3.select(this).property('value');
             if (type === 'live') {
                 historicFeed(historicCallback);
-                render();
-            } else if (type === 'fake') {
+            } else if (type === 'generated') {
                 historicFeed.invalidateCallback();
                 dataModel.data = fc.data.random.financial()(250);
                 resetToLive();

@@ -16,7 +16,7 @@
             });
         }
 
-        d3.rebind(historicFeed, feed, 'granularity', 'start', 'end');
+        d3.rebind(historicFeed, feed, 'granularity', 'start', 'end', 'product');
 
         historicFeed.invalidateCallback = function() {
             n++;
