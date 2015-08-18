@@ -14,11 +14,21 @@
     var line = fc.series.line();
     line.isLine = true;
     var area = fc.series.area();
+    var currentIndicator;
+    var currentSeries;
 
     var dataModel = {
         data: fc.data.random.financial()(250),
         viewDomain: []
     };
+
+    var movingAverage = fc.series.line()
+        .decorate(function(select) {
+            select.enter().classed('movingAverage', true);
+        })
+        .yValue(function(d) { return d.movingAverage; });
+
+    var bollinger = fc.indicator.renderer.bollingerBands();
 
     sc.util.calculateDimensions(container);
 
@@ -36,7 +46,6 @@
     navChart.on('viewChange', onViewChanged);
 
     function changeSeries(seriesTypeString) {
-        var currentSeries;
         switch (seriesTypeString) {
             case 'ohlc':
                 currentSeries = ohlc;
@@ -57,7 +66,7 @@
                 currentSeries = candlestick;
                 break;
         }
-        primaryChart.changeSeries(currentSeries);
+        primaryChart.changeSeries(currentSeries, currentIndicator);
     }
 
     changeSeries('candlestick');
@@ -70,6 +79,36 @@
                 .node()
                 .value;
             changeSeries(seriesTypeString);
+            render();
+        });
+
+
+    function changeIndicator(indicatorType) {
+        switch (indicatorType) {
+            case 'movingAverage':
+                currentIndicator = movingAverage;
+                break;
+            case 'bollinger':
+                currentIndicator = bollinger;
+                break;
+            case 'no-indicator':
+                currentIndicator = null;
+                break;
+            default:
+                currentIndicator = null;
+                break;
+        }
+        primaryChart.changeIndicator(currentIndicator, currentSeries);
+    }
+
+    d3.select('#indicator-buttons')
+        .selectAll('.btn')
+        .on('click', function() {
+            var indicatorType = d3.select(this)
+                .select('input')
+                .node()
+                .value;
+            changeIndicator(indicatorType);
             render();
         });
 

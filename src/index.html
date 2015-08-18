@@ -39,6 +39,18 @@
               <input type="radio" name="options" value="area"> Area
             </label>
           </div>
+          
+          <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default active" id="no-indicator-button">
+              <input type="radio" name="indicators" value="no-indicator" checked>None 
+            </label>
+            <label class="btn btn-default" id="ma-button">
+              <input type="radio" name="indicators" value="movingAverage" >Moving Average
+            </label>
+            <label class="btn btn-default" id="bollinger-button">
+              <input type="radio" name="indicators" value="bollinger">Bollinger Bands
+            </label>
+          </div>
 
           <div class="pull-right">
             <div id="reset-button">

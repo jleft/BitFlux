@@ -39,13 +39,7 @@
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
 
-        // Create a line that renders the result
-        var movingAverageLine = fc.series.line()
-            .decorate(function(selection) {
-                selection.enter()
-                    .classed('ma', true);
-            })
-            .yValue(function(d) { return d.movingAverage; });
+        var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
         var priceFormat = d3.format('.2f');
 
@@ -59,7 +53,7 @@
             });
 
         var multi = fc.series.multi()
-            .series([gridlines, movingAverageLine, closeAxisAnnotation])
+            .series([gridlines, closeAxisAnnotation])
             .key(function(series, index) {
                 if (series.isLine) {
                     return index;
@@ -73,6 +67,7 @@
             timeSeries.xDomain(viewDomain);
 
             movingAverage(data);
+            bollingerAlgorithm(data);
 
             multi.mapping(function(series) {
                 switch (series) {
@@ -104,9 +99,23 @@
 
         d3.rebind(primaryChart, dispatch, 'on');
 
-        primaryChart.changeSeries = function(series) {
-            multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
+        primaryChart.changeSeries = function(series, indicator) {
+            if (indicator == null) {
+                multi.series([gridlines, series, closeAxisAnnotation]);
+            } else {
+                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
+            }
             return primaryChart;
+        };
+
+        primaryChart.changeIndicator = function(indicator, series) {
+            if (indicator == null) {
+                multi.series([gridlines, series, closeAxisAnnotation]);
+            } else {
+                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
+            }
+            return primaryChart;
+
         };
 
         return primaryChart;
