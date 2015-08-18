@@ -8,6 +8,7 @@
     /* jshint ignore:end */
 
     global.sc = {
+        chart: {},
         data: {
             feed: {
                 coinbase: {}

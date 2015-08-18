@@ -27,5 +27,4 @@
 
         zoom.translate([tx, ty]);
     };
-
 })(d3, fc);

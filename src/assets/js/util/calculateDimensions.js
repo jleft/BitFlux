@@ -19,7 +19,7 @@
         var rsiHeightRatio = 0.3;
         var totalHeightRatio = mainHeightRatio + rsiHeightRatio;
 
-        container.select('svg.main').attr('width', targetWidth)
+        container.select('svg.primary').attr('width', targetWidth)
             .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
         container.select('svg.rsi').attr('width', targetWidth)
             .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
