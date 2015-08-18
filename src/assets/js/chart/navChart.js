@@ -29,8 +29,7 @@
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data,
                 fc.util.extent(data, 'date')), ['low', 'high']);
 
-            navTimeSeries = fc.chart.linearTimeSeries()
-                .xDomain(fc.util.extent(data, 'date'))
+            navTimeSeries.xDomain(fc.util.extent(data, 'date'))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
