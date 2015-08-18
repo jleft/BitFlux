@@ -89,9 +89,6 @@
         onViewChanged(standardDateDisplay);
     }
 
-    var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor()
-        .period(60);
-
     var currDate = new Date();
     var startDate = d3.time.minute.offset(currDate, -200);
 
@@ -100,33 +97,10 @@
         .start(startDate)
         .end(currDate);
 
-    function newBasketReceived(basket) {
-        if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
-            data.push(basket);
-        } else {
-            data[data.length - 1] = basket;
-        }
-        render();
-    }
-
-    function liveCallback(event, latestBasket) {
-        if (!event && latestBasket) {
-            newBasketReceived(latestBasket);
-        } else if (event.type === 'open') {
-            // On successful open
-        } else if (event.type === 'close' && event.code === 1000) {
-            // On successful close
-        } else {
-            console.log('Error loading data from coinbase websocket: ' +
-                event.type + ' ' + event.code);
-        }
-    }
-
     function historicCallback(err, newData) {
         if (!err) {
-            data = newData;
+            dataModel.data = newData;
             resetToLive();
-            ohlcConverter(liveCallback);
             render();
         } else { console.log('Error getting historic data: ' + err); }
     }
@@ -138,9 +112,8 @@
                 historicFeed(historicCallback);
                 render();
             } else if (type === 'fake') {
-                ohlcConverter.close();
                 historicFeed.invalidateCallback();
-                data = fc.data.random.financial()(250);
+                dataModel.data = fc.data.random.financial()(250);
                 resetToLive();
                 render();
             }
@@ -148,64 +121,9 @@
 
     container.select('#reset-button').on('click', resetToLive);
 
-    // Create main chart and set how much data is initially viewed
-    var timeSeries = fc.chart.linearTimeSeries()
-        .xTicks(6);
-
-    var gridlines = fc.annotation.gridline()
-        .yTicks(5)
-        .xTicks(0);
-
-    function calculateCloseAxisTagPath(width, height) {
-        var h2 = height / 2;
-        return [
-            [0, 0],
-            [h2, -h2],
-            [width, -h2],
-            [width, h2],
-            [h2, h2],
-            [0, 0]
-        ];
-    }
-
-    function positionCloseAxis(sel) {
-        sel.enter()
-            .select('.right-handle')
-            .insert('path', ':first-child')
-            .attr('transform', 'translate(' + -40 + ', 0)')
-            .attr('d', d3.svg.area()(calculateCloseAxisTagPath(40, 14)));
-
-        sel.select('text')
-            .attr('transform', 'translate(' + (-2) + ', ' + 2 + ')')
-            .attr('x', 0)
-            .attr('y', 0);
-    }
-
-    var priceFormat = d3.format('.2f');
-
-    var closeAxisAnnotation = fc.annotation.line()
-        .orient('horizontal')
-        .value(function(d) { return d.close; })
-        .label(function(d) { return priceFormat(d.close); })
-        .decorate(function(sel) {
-            positionCloseAxis(sel);
-            sel.enter().classed('close', true);
-        });
-
-    // Create and apply the Moving Average
-    var movingAverage = fc.indicator.algorithm.movingAverage();
-
-    // Create a line that renders the result
-    var ma = fc.series.line()
-        .decorate(function(selection) {
-            selection.enter()
-                .classed('ma', true);
-        })
-        .yValue(function(d) { return d.movingAverage; });
-
     function render() {
-        svgMain.datum(data)
-            .call(mainChart);
+        svgMain.datum(dataModel)
+            .call(primaryChart);
 
         svgRSI.datum(dataModel)
             .call(rsiChart);
@@ -223,5 +141,4 @@
 
     resetToLive();
     resize();
-
 })(d3, fc, sc);
