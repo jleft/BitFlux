@@ -41,14 +41,6 @@
 
         var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
-        // Create a line that renders the result
-        var movingAverageLine = fc.series.line()
-            .decorate(function(selection) {
-                selection.enter()
-                    .classed('ma', true);
-            })
-            .yValue(function(d) { return d.movingAverage; });
-
         var priceFormat = d3.format('.2f');
 
         var closeAxisAnnotation = fc.annotation.line()
@@ -61,7 +53,7 @@
             });
 
         var multi = fc.series.multi()
-            .series([gridlines, movingAverageLine, closeAxisAnnotation])
+            .series([gridlines, closeAxisAnnotation])
             .key(function(series, index) {
                 if (series.isLine) {
                     return index;

@@ -22,9 +22,9 @@
         viewDomain: []
     };
 
-    var ma = fc.series.line()
+    var movingAverage = fc.series.line()
         .decorate(function(select) {
-            select.enter().classed('ma', true);
+            select.enter().classed('movingAverage', true);
         })
         .yValue(function(d) { return d.movingAverage; });
 
@@ -82,10 +82,11 @@
             render();
         });
 
+
     function changeIndicator(indicatorType) {
         switch (indicatorType) {
-            case 'ma':
-                currentIndicator = ma;
+            case 'movingAverage':
+                currentIndicator = movingAverage;
                 break;
             case 'bollinger':
                 currentIndicator = bollinger;
@@ -108,6 +109,7 @@
                 .node()
                 .value;
             changeIndicator(indicatorType);
+            render();
         });
 
     // Set Reset button event
