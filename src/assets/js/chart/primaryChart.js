@@ -39,6 +39,8 @@
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
 
+        var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
+
         // Create a line that renders the result
         var movingAverageLine = fc.series.line()
             .decorate(function(selection) {
@@ -73,6 +75,7 @@
             timeSeries.xDomain(viewDomain);
 
             movingAverage(data);
+            bollingerAlgorithm(data);
 
             multi.mapping(function(series) {
                 switch (series) {
@@ -104,9 +107,23 @@
 
         d3.rebind(primaryChart, dispatch, 'on');
 
-        primaryChart.changeSeries = function(series) {
-            multi.series([gridlines, movingAverageLine, series, closeAxisAnnotation]);
+        primaryChart.changeSeries = function(series, indicator) {
+            if (indicator == null) {
+                multi.series([gridlines, series, closeAxisAnnotation]);
+            } else {
+                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
+            }
             return primaryChart;
+        };
+
+        primaryChart.changeIndicator = function(indicator, series) {
+            if (indicator == null) {
+                multi.series([gridlines, series, closeAxisAnnotation]);
+            } else {
+                multi.series([gridlines, indicator, series, closeAxisAnnotation]);
+            }
+            return primaryChart;
+
         };
 
         return primaryChart;

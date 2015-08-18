@@ -14,13 +14,13 @@
     var line = fc.series.line();
     line.isLine = true;
     var area = fc.series.area();
+    var currentIndicator;
+    var currentSeries;
 
     var dataModel = {
         data: fc.data.random.financial()(250),
         viewDomain: []
     };
-
-    var movingAverage = fc.indicator.algorithm.movingAverage();
 
     var ma = fc.series.line()
         .decorate(function(select) {
@@ -28,11 +28,7 @@
         })
         .yValue(function(d) { return d.movingAverage; });
 
-    var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
-    bollingerAlgorithm(data);
     var bollinger = fc.indicator.renderer.bollingerBands();
-
-    var currentIndicator;
 
     sc.util.calculateDimensions(container);
 
@@ -50,7 +46,6 @@
     navChart.on('viewChange', onViewChanged);
 
     function changeSeries(seriesTypeString) {
-        var currentSeries;
         switch (seriesTypeString) {
             case 'ohlc':
                 currentSeries = ohlc;
@@ -71,7 +66,7 @@
                 currentSeries = candlestick;
                 break;
         }
-        primaryChart.changeSeries(currentSeries);
+        primaryChart.changeSeries(currentSeries, currentIndicator);
     }
 
     changeSeries('candlestick');
@@ -102,12 +97,7 @@
                 currentIndicator = null;
                 break;
         }
-        if (currentIndicator == null) {
-            multi.series([gridlines, currentSeries, closeAxisAnnotation]);
-        } else {
-            multi.series([gridlines, currentIndicator, currentSeries, closeAxisAnnotation]);
-        }
-        render();
+        primaryChart.changeIndicator(currentIndicator, currentSeries);
     }
 
     d3.select('#indicator-buttons')
