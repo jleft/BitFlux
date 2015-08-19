@@ -9,7 +9,7 @@
     var svgNav = container.select('svg.nav');
 
     var dataModel = {
-        data: fc.data.random.financial()(250),
+        data: fc.data.random.financial()(40),
         viewDomain: []
     };
 
@@ -80,7 +80,9 @@
     // Set Reset button event
     function resetToLive() {
         var data = dataModel.data;
-        var standardDateDisplay = [data[Math.floor(data.length * 3 / 4)].date,
+
+        var pointsDisplayed = data.length < 50 ? data.length : 50;
+        var standardDateDisplay = [data[data.length - pointsDisplayed].date,
             data[data.length - 1].date];
         onViewChanged(standardDateDisplay);
         render();
