@@ -9,7 +9,7 @@
     var svgNav = container.select('svg.nav');
 
     var dataModel = {
-        data: fc.data.random.financial()(40),
+        data: fc.data.random.financial()(250),
         viewDomain: []
     };
 
