@@ -1,5 +1,7 @@
 #x-axis-row {
-
   height: @x-axis-height;
-  width: calc(100% - @y-axis-width);
+
+  > .col-chart {
+    padding-right : calc(@bootstrap-padding-width + @y-axis-width);
+  }
 }

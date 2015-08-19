@@ -1,7 +1,3 @@
-#secondary-row {
-  width: 100%;
-}
-
-#secondary-row > [class*="col-"] {
-  width: calc(100% - @y-axis-width);
+#secondary-row > .col-chart {
+  padding-right : calc(@bootstrap-padding-width + @y-axis-width);
 }

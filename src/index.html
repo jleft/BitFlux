@@ -19,8 +19,25 @@
   <body>
 
     <div class="container" id="app-container">
-      <div class="row menu" id="head-row">
-        <div class="col-md-2">
+      <div class="row row-offcanvas-right head-menu" id="head-row">
+        <div class="col-xs-12 col-sm-12 col-md-9">
+          <div class="pull-right">
+            <div id="reset-button">
+              <button class="btn btn-default" type="button">Reset</button>
+            </div>
+            <div id="toggle-button">
+              <button class="btn btn-default visible-xs visible-sm" type="button">Toggle</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right" id="primary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart primary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
           <select id="type-selection" selected="type" class="form-control">
             <option value="generated">Data generator</option>
             <option value="bitcoin">Bitcoin data</option>
@@ -30,40 +47,33 @@
             <option value="300">5 min</option>
             <option value="60">1 min</option>
           </select>
-        </div>
-        <div class="col-md-9">
           <div id="series-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons"></div>
         </div>
-        <div class="col-md-1">
-          <div class="pull-right" id="reset-button">
-            <button class="btn btn-default" type="button">Reset</button>
-          </div>
-        </div>
-      </div>
-      <div class="row" id="primary-row">
-        <div class="col-md-12">
-          <svg class="chart primary"></svg>
-        </div>
       </div>        
-      <div class="row" id="secondary-row"> 
-        <div class="col-md-12">
+      <div class="row row-offcanvas-right" id="secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
           <svg class="chart secondary"></svg>
         </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
       </div>
-     <div class="row" id="x-axis-row"> 
-        <div class="col-md-12">
+      <div class="row row-offcanvas-right" id="x-axis-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
           <svg class="chart x-axis"></svg>
         </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
       </div>        
-      <div class="row" id="nav-row">
-        <div class="col-md-12">
+      <div class="row row-offcanvas-right" id="nav-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
           <svg class="chart nav"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
         </div>
       </div>
     </div>
-
     <script src="assets/js/app.js"></script>
     <script src="//localhost:35729/livereload.js"></script>
   </body>

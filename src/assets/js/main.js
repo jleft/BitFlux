@@ -87,7 +87,17 @@
             }
         });
 
-    var mainMenu = sc.menu.main()
+    var headMenu = sc.menu.head()
+        .on('resetToLive', resetToLive)
+        .on('toggleSlideout', function() {
+            container.selectAll('.row-offcanvas-right').classed('active',
+                !container.selectAll('.row-offcanvas-right').classed('active'));
+        });
+
+    container.selectAll('.head-menu')
+        .call(headMenu);
+
+    var sideMenu = sc.menu.side()
         .on('primaryChartSeriesChange', function(series) {
             primaryChart.changeSeries(series);
             /* Elements are drawn in the order they appear in the HTML - at this minute,
@@ -126,10 +136,8 @@
             dataInterface(dataModel.period);
         });
 
-    container.select('.menu')
-        .call(mainMenu);
-
-    container.select('#reset-button').on('click', resetToLive);
+    container.selectAll('.sidebar-menu')
+        .call(sideMenu);
 
     d3.select(window).on('resize', resize);
 

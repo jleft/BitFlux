@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.menu.main = function() {
+    sc.menu.side = function() {
 
         var dispatch = d3.dispatch('primaryChartSeriesChange',
             'primaryChartIndicatorChange',
@@ -49,7 +49,7 @@
             });
         };
 
-        var main = function(selection) {
+        var side = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this);
                 selection.select('#type-selection')
@@ -65,6 +65,6 @@
             });
         };
 
-        return d3.rebind(main, dispatch, 'on');
+        return d3.rebind(side, dispatch, 'on');
     };
 })(d3, fc, sc);
