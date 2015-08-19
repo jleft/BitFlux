@@ -92,26 +92,32 @@
     var currDate = new Date();
     var startDate = d3.time.minute.offset(currDate, -200);
 
-    var historicFeed = sc.data.feed.coinbase.historicFeed()
+    var historicFeed = fc.data.feed.coinbase()
         .granularity(60)
         .start(startDate)
         .end(currDate);
 
-    function historicCallback(err, newData) {
+    var callbackGenerator = sc.data.feed.coinbase.invalidator();
+
+    function onHistoricDataLoaded(err, newData) {
         if (!err) {
-            dataModel.data = newData;
+            dataModel.data = newData.reverse();
             resetToLive();
             render();
         } else { console.log('Error getting historic data: ' + err); }
     }
 
+    function historicCallback() {
+        return callbackGenerator(onHistoricDataLoaded);
+    }
+
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
-            if (type === 'live') {
-                historicFeed(historicCallback);
+            if (type === 'bitcoin') {
+                historicFeed(historicCallback());
             } else if (type === 'generated') {
-                historicFeed.invalidateCallback();
+                callbackGenerator.invalidateCallback();
                 dataModel.data = fc.data.random.financial()(250);
                 resetToLive();
                 render();

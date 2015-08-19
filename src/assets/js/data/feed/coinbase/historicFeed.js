@@ -1,29 +1,23 @@
 (function(sc) {
     'use strict';
 
-    sc.data.feed.coinbase.historicFeed = function() {
-        var feed = fc.data.feed.coinbase();
+    sc.data.feed.coinbase.invalidator = function() {
         var n = 0;
 
-        function historicFeed(callback) {
+        function invalidator(callback) {
             var id = ++n;
-            feed(function(err, newData) {
+            return function(err, data) {
                 if (id < n) { return; }
-                if (!err) {
-                    newData = newData.reverse();
-                    callback(null, newData);
-                } else { callback(err, null); }
-            });
+                callback(err, data);
+            };
         }
 
-        d3.rebind(historicFeed, feed, 'granularity', 'start', 'end', 'product');
-
-        historicFeed.invalidateCallback = function() {
+        invalidator.invalidateCallback = function() {
             n++;
-            return historicFeed;
+            return invalidator;
         };
 
-        return historicFeed;
+        return invalidator;
     };
 
 })(sc);
