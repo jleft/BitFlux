@@ -36,7 +36,7 @@
             .yTicks(5)
             .xTicks(0);
 
-        var currentSeries = sc.menu.selectSeries('');
+        var currentSeries = fc.series.candlestick();
         var currentIndicator = null;
 
         // Create and apply the Moving Average
@@ -56,10 +56,10 @@
             });
 
         var multi = fc.series.multi()
-            .series([gridlines, currentSeries, closeAxisAnnotation])
+            .series([gridlines, fc.series.candlestick(), closeAxisAnnotation])
             .key(function(series, index) {
                 switch (series) {
-                    case sc.menu.selectSeries('line'):
+                    case fc.series.line():
                         return index;
                     default:
                         return series;

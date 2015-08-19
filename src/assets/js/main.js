@@ -19,6 +19,9 @@
     var rsiChart = sc.chart.rsiChart();
     var navChart = sc.chart.navChart();
 
+    var seriesOptions = sc.menu.optionGenerator();
+    var indicatorOptions = sc.menu.optionGenerator();
+
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
         render();
@@ -28,29 +31,54 @@
     rsiChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
+    var SeriesType = function(displayString, valueString, series) {
+        this.displayString = displayString;
+        this.valueString = valueString;
+        this.series = series;
+    };
+
+    var candlestick = new SeriesType('Candlestick', 'candlestick', fc.series.candlestick());
+    var ohlc = new SeriesType('OHLC', 'ohlc', fc.series.ohlc());
+    var line = new SeriesType('Line', 'line', fc.series.line());
+    var point = new SeriesType('Point', 'point', fc.series.point());
+    var area = new SeriesType('Area', 'area', fc.series.area());
+
     container.select('#series-buttons')
-        .selectAll('.btn')
-        .on('click', function() {
-            var seriesTypeString = d3.select(this)
-                .select('input')
-                .node()
-                .value;
-            var selectedSeries = sc.menu.selectSeries(seriesTypeString);
-            primaryChart.changeSeries(selectedSeries);
-            render();
-        });
+        .datum([candlestick, ohlc, line, point, area])
+        .call(seriesOptions);
+
+    var IndicatorType = function(displayString, valueString, indicator) {
+        this.displayString = displayString;
+        this.valueString = valueString;
+        this.indicator = indicator;
+    };
+
+    var movingAverage = fc.series.line()
+        .decorate(function(select) {
+            select.enter().classed('movingAverage', true);
+        })
+        .yValue(function(d) { return d.movingAverage; });
+
+    var noIndicator = new IndicatorType('None', 'no-indicator', null);
+    var movingAverageIndicator = new IndicatorType('Moving Average', 'movingAverage', movingAverage);
+    var bollingerIndicator = new IndicatorType('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
 
     container.select('#indicator-buttons')
-        .selectAll('.btn')
-        .on('click', function() {
-            var indicatorTypeString = d3.select(this)
-                .select('input')
-                .node()
-                .value;
-            var selectedIndicator = sc.menu.selectIndicator(indicatorTypeString);
-            primaryChart.changeIndicator(selectedIndicator);
-            render();
-        });
+        .datum([noIndicator, movingAverageIndicator, bollingerIndicator])
+        .call(indicatorOptions);
+
+    function onSeriesChanged(seriesType) {
+        primaryChart.changeSeries(seriesType.series);
+        render();
+    }
+
+    function onIndicatorChanged(indicatorType) {
+        primaryChart.changeIndicator(indicatorType.indicator);
+        render();
+    }
+
+    seriesOptions.on('optionChange', onSeriesChanged);
+    indicatorOptions.on('optionChange', onIndicatorChanged);
 
     // Set Reset button event
     function resetToLive() {
