@@ -26,6 +26,8 @@
           </div>
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
           </div>
+          <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons">
+          </div>
           <div class="pull-right">
             <div id="reset-button">
               <button class="btn btn-default" type="button">Reset</button>
@@ -42,7 +44,7 @@
         
       <div class="row"> 
         <div class="col-md-12">
-          <svg class="chart rsi"></svg>
+          <svg class="chart secondary"></svg>
         </div>
       </div>
         
@@ -54,15 +56,15 @@
 
     </div>
     <script src="assets/js/sc.js"></script>
+    <script src="assets/js/chart/primaryChart.js"></script>
+    <script src="assets/js/chart/rsiChart.js"></script>
+    <script src="assets/js/chart/navChart.js"></script>
     <script src="assets/js/util/zoomControl.js"></script>
     <script src="assets/js/util/calculateDimensions.js"></script>
     <script src="assets/js/menu/optionGenerator.js"></script>
     <script src="assets/js/util/filterDataInDateRange.js"></script>
     <script src="assets/js/data/feed/coinbase/webSocket.js"></script>
     <script src="assets/js/data/feed/coinbase/ohlcWebSocketAdaptor.js"></script>
-    <script src="assets/js/chart/primaryChart.js"></script>
-    <script src="assets/js/chart/rsiChart.js"></script>
-    <script src="assets/js/chart/navChart.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="//localhost:35729/livereload.js"></script>
   </body>
