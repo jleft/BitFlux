@@ -5,12 +5,13 @@
         var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
         var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
 
-        var headRowHeight = parseInt(container.select('#head-row').style('height'), 10);
+        var headRowHeight = parseInt(container.select('#head-row').style('height'), 10) +
+            parseInt(container.select('#head-row').style('margin-top'), 10) +
+            parseInt(container.select('#head-row').style('margin-bottom'), 10);
         var navHeight = parseInt(container.select('svg.nav').style('height'), 10);
 
         var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
-        var useableScreenHeight = window.innerHeight - headRowHeight - navHeight -
-            2 * fc.chart.linearTimeSeries().xAxisHeight();
+        var useableScreenHeight = window.innerHeight - headRowHeight - navHeight;
 
         var targetWidth = useableScreenWidth;
         var targetHeight = useableScreenHeight;
