@@ -105,10 +105,10 @@
         d3.rebind(primaryChart, dispatch, 'on');
 
         function updateMultiSeries() {
-            if (currentIndicator === null) {
-                multi.series([gridlines, currentSeries, closeAxisAnnotation]);
-            } else {
+            if (currentIndicator) {
                 multi.series([gridlines, currentIndicator, currentSeries, closeAxisAnnotation]);
+            } else {
+                multi.series([gridlines, currentSeries, closeAxisAnnotation]);
             }
         }
 
