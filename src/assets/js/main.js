@@ -19,8 +19,18 @@
     var rsiChart = sc.chart.rsiChart();
     var navChart = sc.chart.navChart();
 
-    var seriesOptions = sc.menu.optionGenerator();
-    var indicatorOptions = sc.menu.optionGenerator();
+    var seriesOptions = sc.menu.optionGenerator()
+        .on('optionChange', function(seriesType) {
+            primaryChart.changeSeries(seriesType.series);
+            render();
+        });
+
+    var indicatorOptions = sc.menu.optionGenerator()
+        .on('optionChange', function(indicatorType) {
+            primaryChart.changeIndicator(indicatorType.indicator);
+            render();
+        });
+
 
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
@@ -66,19 +76,6 @@
     container.select('#indicator-buttons')
         .datum([noIndicator, movingAverageIndicator, bollingerIndicator])
         .call(indicatorOptions);
-
-    function onSeriesChanged(seriesType) {
-        primaryChart.changeSeries(seriesType.series);
-        render();
-    }
-
-    function onIndicatorChanged(indicatorType) {
-        primaryChart.changeIndicator(indicatorType.indicator);
-        render();
-    }
-
-    seriesOptions.on('optionChange', onSeriesChanged);
-    indicatorOptions.on('optionChange', onIndicatorChanged);
 
     // Set Reset button event
     function resetToLive() {

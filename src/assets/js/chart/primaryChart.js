@@ -56,7 +56,6 @@
             });
 
         var multi = fc.series.multi()
-            .series([gridlines, fc.series.candlestick(), closeAxisAnnotation])
             .key(function(series, index) {
                 switch (series) {
                     case fc.series.line():
@@ -73,6 +72,8 @@
 
             movingAverage(data);
             bollingerAlgorithm(data);
+
+            updateMultiSeries();
 
             multi.mapping(function(series) {
                 switch (series) {
