@@ -1,10 +1,10 @@
 (function(sc) {
     'use strict';
 
-    sc.data.feed.coinbase.invalidator = function() {
+    sc.data.feed.coinbase.callbackInvalidator = function(callback) {
         var n = 0;
 
-        function invalidator(callback) {
+        function callbackInvalidator(callback) {
             var id = ++n;
             return function(err, data) {
                 if (id < n) { return; }
@@ -12,12 +12,12 @@
             };
         }
 
-        invalidator.invalidateCallback = function() {
+        callbackInvalidator.invalidateCallback = function() {
             n++;
-            return invalidator;
+            return callbackInvalidator;
         };
 
-        return invalidator;
+        return callbackInvalidator;
     };
 
 })(sc);
