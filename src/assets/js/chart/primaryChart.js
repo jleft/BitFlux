@@ -86,6 +86,10 @@
 
             // Scale y axis
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, timeSeries.xDomain()), ['low', 'high']);
+            // Add 10% either side of extreme high/lows
+            var variance = yExtent[1] - yExtent[0];
+            yExtent[0] -= variance * 0.1;
+            yExtent[1] += variance * 0.1;
             timeSeries.yDomain(yExtent);
 
             // Redraw
