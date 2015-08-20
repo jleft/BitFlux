@@ -4,8 +4,8 @@
     // Set SVGs & column padding
     var container = d3.select('#app-container');
 
-    var svgMain = container.select('svg.primary');
-    var svgRSI = container.select('svg.rsi');
+    var svgPrimary = container.select('svg.primary');
+    var svgSecondary = container.select('svg.secondary');
     var svgNav = container.select('svg.nav');
 
     var dataModel = {
@@ -16,7 +16,7 @@
     sc.util.calculateDimensions(container);
 
     var primaryChart = sc.chart.primaryChart();
-    var rsiChart = sc.chart.rsiChart();
+    var secondaryChart = null;
     var navChart = sc.chart.navChart();
 
     var seriesOptions = sc.menu.optionGenerator()
@@ -31,14 +31,12 @@
             render();
         });
 
-
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
         render();
     }
 
     primaryChart.on('viewChange', onViewChanged);
-    rsiChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
     var SeriesType = function(displayString, valueString, series) {
@@ -77,6 +75,28 @@
     container.select('#indicator-buttons')
         .datum([noIndicator, movingAverageIndicator, bollingerIndicator])
         .call(indicatorOptions);
+
+    var secondaryChartOptions = sc.menu.optionGenerator()
+        .on('optionChange', function(secondaryChartType) {
+            secondaryChart = secondaryChartType.chart;
+            if (secondaryChart) {
+                secondaryChart.on('viewChange', onViewChanged);
+            }
+            resize();
+        });
+
+    var SecondaryChartType = function(displayString, valueString, chart) {
+        this.displayString = displayString;
+        this.valueString = valueString;
+        this.chart = chart;
+    };
+
+    var noChart = new SecondaryChartType('None', 'no-chart', null);
+    var rsiChart = new SecondaryChartType('RSI', 'rsi', sc.chart.rsiChart());
+
+    container.select('#secondary-chart-buttons')
+        .datum([noChart, rsiChart])
+        .call(secondaryChartOptions);
 
     // Set Reset button event
     function resetToLive() {
@@ -130,18 +150,22 @@
     container.select('#reset-button').on('click', resetToLive);
 
     function render() {
-        svgMain.datum(dataModel)
+        svgPrimary.datum(dataModel)
             .call(primaryChart);
 
-        svgRSI.datum(dataModel)
-            .call(rsiChart);
+        if (secondaryChart) {
+            svgSecondary.datum(dataModel)
+                .call(secondaryChart);
+        } else {
+            svgSecondary.selectAll('*').remove();
+        }
 
         svgNav.datum(dataModel)
             .call(navChart);
     }
 
     function resize() {
-        sc.util.calculateDimensions(container);
+        sc.util.calculateDimensions(container, secondaryChart);
         render();
     }
 

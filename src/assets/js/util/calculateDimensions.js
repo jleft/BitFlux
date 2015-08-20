@@ -1,7 +1,7 @@
 (function(d3, fc) {
     'use strict';
 
-    sc.util.calculateDimensions = function(container) {
+    sc.util.calculateDimensions = function(container, secondaryChartShown) {
         var leftPadding = parseInt(container.select('.col-md-12').style('padding-left'), 10);
         var rightPadding = parseInt(container.select('.col-md-12').style('padding-right'), 10);
 
@@ -13,18 +13,16 @@
         var useableScreenWidth = parseInt(container.style('width'), 10) - (leftPadding + rightPadding);
         var useableScreenHeight = window.innerHeight - headRowHeight - navHeight;
 
-        var targetWidth = useableScreenWidth;
-        var targetHeight = useableScreenHeight;
+        var primaryHeightRatio = secondaryChartShown ? 2 : 1;
+        var secondaryHeightRatio = secondaryChartShown ? 1 : 0;
 
-        var mainHeightRatio = 0.6;
-        var rsiHeightRatio = 0.3;
-        var totalHeightRatio = mainHeightRatio + rsiHeightRatio;
+        var totalHeightRatio = primaryHeightRatio + secondaryHeightRatio;
 
-        container.select('svg.primary').attr('width', targetWidth)
-            .attr('height', mainHeightRatio * targetHeight / totalHeightRatio);
-        container.select('svg.rsi').attr('width', targetWidth)
-            .attr('height', rsiHeightRatio * targetHeight / totalHeightRatio);
-        container.select('svg.nav').attr('width', targetWidth);
+        container.select('svg.primary').attr('width', useableScreenWidth)
+            .attr('height', primaryHeightRatio * useableScreenHeight / totalHeightRatio);
+        container.select('svg.secondary').attr('width', useableScreenWidth)
+            .attr('height', secondaryHeightRatio * useableScreenHeight / totalHeightRatio);
+        container.select('svg.nav').attr('width', useableScreenWidth);
     };
 
 })(d3, fc);
