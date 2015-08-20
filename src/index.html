@@ -23,35 +23,9 @@
       <div class="row" id="head-row">
         <div class="col-md-12">
           <div id="series-buttons" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active" id="candlestick-button">
-              <input type="radio" name="options" value="candlestick" checked> Candlestick
-            </label>
-            <label class="btn btn-default" id="ohlc-button">
-              <input type="radio" name="options" value="ohlc"> OHLC
-            </label>
-            <label class="btn btn-default" id="line-button">
-              <input type="radio" name="options" value="line"> Line
-            </label>
-            <label class="btn btn-default" id="point-button">
-              <input type="radio" name="options"value="point"> Point
-            </label>
-            <label class="btn btn-default" id="area-button">
-              <input type="radio" name="options" value="area"> Area
-            </label>
           </div>
-          
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active" id="no-indicator-button">
-              <input type="radio" name="indicators" value="no-indicator" checked>None 
-            </label>
-            <label class="btn btn-default" id="ma-button">
-              <input type="radio" name="indicators" value="movingAverage" >Moving Average
-            </label>
-            <label class="btn btn-default" id="bollinger-button">
-              <input type="radio" name="indicators" value="bollinger">Bollinger Bands
-            </label>
           </div>
-
           <div class="pull-right">
             <div id="reset-button">
               <button class="btn btn-default" type="button">Reset</button>
@@ -82,6 +56,7 @@
     <script src="assets/js/sc.js"></script>
     <script src="assets/js/util/zoomControl.js"></script>
     <script src="assets/js/util/calculateDimensions.js"></script>
+    <script src="assets/js/menu/optionGenerator.js"></script>
     <script src="assets/js/util/filterDataInDateRange.js"></script>
     <script src="assets/js/data/feed/coinbase/webSocket.js"></script>
     <script src="assets/js/data/feed/coinbase/ohlcWebSocketAdaptor.js"></script>

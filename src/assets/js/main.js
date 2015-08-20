@@ -8,33 +8,29 @@
     var svgRSI = container.select('svg.rsi');
     var svgNav = container.select('svg.nav');
 
-    var candlestick = fc.series.candlestick();
-    var ohlc = fc.series.ohlc();
-    var point = fc.series.point();
-    var line = fc.series.line();
-    line.isLine = true;
-    var area = fc.series.area();
-    var currentIndicator;
-    var currentSeries;
-
     var dataModel = {
         data: fc.data.random.financial()(250),
         viewDomain: []
     };
-
-    var movingAverage = fc.series.line()
-        .decorate(function(select) {
-            select.enter().classed('movingAverage', true);
-        })
-        .yValue(function(d) { return d.movingAverage; });
-
-    var bollinger = fc.indicator.renderer.bollingerBands();
 
     sc.util.calculateDimensions(container);
 
     var primaryChart = sc.chart.primaryChart();
     var rsiChart = sc.chart.rsiChart();
     var navChart = sc.chart.navChart();
+
+    var seriesOptions = sc.menu.optionGenerator()
+        .on('optionChange', function(seriesType) {
+            primaryChart.changeSeries(seriesType.series);
+            render();
+        });
+
+    var indicatorOptions = sc.menu.optionGenerator()
+        .on('optionChange', function(indicatorType) {
+            primaryChart.changeIndicator(indicatorType.indicator);
+            render();
+        });
+
 
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
@@ -45,72 +41,41 @@
     rsiChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
-    function changeSeries(seriesTypeString) {
-        switch (seriesTypeString) {
-            case 'ohlc':
-                currentSeries = ohlc;
-                break;
-            case 'candlestick':
-                currentSeries = candlestick;
-                break;
-            case 'line':
-                currentSeries = line;
-                break;
-            case 'point':
-                currentSeries = point;
-                break;
-            case 'area':
-                currentSeries = area;
-                break;
-            default:
-                currentSeries = candlestick;
-                break;
-        }
-        primaryChart.changeSeries(currentSeries, currentIndicator);
-    }
+    var SeriesType = function(displayString, valueString, series) {
+        this.displayString = displayString;
+        this.valueString = valueString;
+        this.series = series;
+    };
 
-    changeSeries('candlestick');
+    var candlestick = new SeriesType('Candlestick', 'candlestick', fc.series.candlestick());
+    var ohlc = new SeriesType('OHLC', 'ohlc', fc.series.ohlc());
+    var line = new SeriesType('Line', 'line', fc.series.line());
+    var point = new SeriesType('Point', 'point', fc.series.point());
+    var area = new SeriesType('Area', 'area', fc.series.area());
 
-    d3.select('#series-buttons')
-        .selectAll('.btn')
-        .on('click', function() {
-            var seriesTypeString = d3.select(this)
-                .select('input')
-                .node()
-                .value;
-            changeSeries(seriesTypeString);
-            render();
-        });
+    container.select('#series-buttons')
+        .datum([candlestick, ohlc, line, point, area])
+        .call(seriesOptions);
 
+    var IndicatorType = function(displayString, valueString, indicator) {
+        this.displayString = displayString;
+        this.valueString = valueString;
+        this.indicator = indicator;
+    };
 
-    function changeIndicator(indicatorType) {
-        switch (indicatorType) {
-            case 'movingAverage':
-                currentIndicator = movingAverage;
-                break;
-            case 'bollinger':
-                currentIndicator = bollinger;
-                break;
-            case 'no-indicator':
-                currentIndicator = null;
-                break;
-            default:
-                currentIndicator = null;
-                break;
-        }
-        primaryChart.changeIndicator(currentIndicator, currentSeries);
-    }
+    var movingAverage = fc.series.line()
+        .decorate(function(select) {
+            select.enter().classed('movingAverage', true);
+        })
+        .yValue(function(d) { return d.movingAverage; });
 
-    d3.select('#indicator-buttons')
-        .selectAll('.btn')
-        .on('click', function() {
-            var indicatorType = d3.select(this)
-                .select('input')
-                .node()
-                .value;
-            changeIndicator(indicatorType);
-            render();
-        });
+    var noIndicator = new IndicatorType('None', 'no-indicator', null);
+    var movingAverageIndicator = new IndicatorType('Moving Average', 'movingAverage', movingAverage);
+    var bollingerIndicator = new IndicatorType('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
+
+    container.select('#indicator-buttons')
+        .datum([noIndicator, movingAverageIndicator, bollingerIndicator])
+        .call(indicatorOptions);
 
     // Set Reset button event
     function resetToLive() {
