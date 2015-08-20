@@ -50,6 +50,7 @@
     var candlestick = new SeriesType('Candlestick', 'candlestick', fc.series.candlestick());
     var ohlc = new SeriesType('OHLC', 'ohlc', fc.series.ohlc());
     var line = new SeriesType('Line', 'line', fc.series.line());
+    line.series.isLine = true;
     var point = new SeriesType('Point', 'point', fc.series.point());
     var area = new SeriesType('Area', 'area', fc.series.area());
 

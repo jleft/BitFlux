@@ -57,12 +57,10 @@
 
         var multi = fc.series.multi()
             .key(function(series, index) {
-                switch (series) {
-                    case fc.series.line():
-                        return index;
-                    default:
-                        return series;
+                if (series.isLine) {
+                    return index;
                 }
+                return series;
             });
 
         function primaryChart(selection) {
@@ -107,7 +105,7 @@
 
         function updateMultiSeries() {
             if (currentIndicator) {
-                multi.series([gridlines, currentIndicator, currentSeries, closeAxisAnnotation]);
+                multi.series([gridlines, currentSeries, closeAxisAnnotation, currentIndicator]);
             } else {
                 multi.series([gridlines, currentSeries, closeAxisAnnotation]);
             }
