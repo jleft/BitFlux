@@ -99,11 +99,15 @@
 
     var callbackGenerator = sc.data.feed.coinbase.invalidator();
 
+    function updateDataAndResetChart(newData) {
+        dataModel.data = newData;
+        resetToLive();
+        render();
+    }
+
     function onHistoricDataLoaded(err, newData) {
         if (!err) {
-            dataModel.data = newData.reverse();
-            resetToLive();
-            render();
+            updateDataAndResetChart(newData.reverse());
         } else { console.log('Error getting historic data: ' + err); }
     }
 
@@ -118,9 +122,8 @@
                 historicFeed(historicCallback());
             } else if (type === 'generated') {
                 callbackGenerator.invalidateCallback();
-                dataModel.data = fc.data.random.financial()(250);
-                resetToLive();
-                render();
+                var newData = fc.data.random.financial()(250);
+                updateDataAndResetChart(newData);
             }
         });
 
