@@ -87,8 +87,45 @@
         var standardDateDisplay = [data[Math.floor((1 - navAspect * goldenRatio) * data.length)].date,
             data[data.length - 1].date];
         onViewChanged(standardDateDisplay);
+    }
+
+    var currDate = new Date();
+    var startDate = d3.time.minute.offset(currDate, -200);
+
+    var historicFeed = fc.data.feed.coinbase()
+        .granularity(60)
+        .start(startDate)
+        .end(currDate);
+
+    var callbackGenerator = sc.util.callbackInvalidator();
+
+    function updateDataAndResetChart(newData) {
+        dataModel.data = newData;
+        resetToLive();
         render();
     }
+
+    function onHistoricDataLoaded(err, newData) {
+        if (!err) {
+            updateDataAndResetChart(newData.reverse());
+        } else { console.log('Error getting historic data: ' + err); }
+    }
+
+    function historicCallback() {
+        return callbackGenerator(onHistoricDataLoaded);
+    }
+
+    d3.select('#type-selection')
+        .on('change', function() {
+            var type = d3.select(this).property('value');
+            if (type === 'bitcoin') {
+                historicFeed(historicCallback());
+            } else if (type === 'generated') {
+                callbackGenerator.invalidateCallback();
+                var newData = fc.data.random.financial()(250);
+                updateDataAndResetChart(newData);
+            }
+        });
 
     container.select('#reset-button').on('click', resetToLive);
 
@@ -112,5 +149,4 @@
 
     resetToLive();
     resize();
-
 })(d3, fc, sc);

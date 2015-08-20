@@ -24,7 +24,13 @@
         <div class="col-md-12">
           <div id="series-buttons" class="btn-group" data-toggle="buttons">
           </div>
-          <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
+            <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
+          </div>
+          <div class="col-md-2">
+            <select id="type-selection" selected="type" class="form-control">
+              <option value="generated">Data generator</option>
+              <option value="bitcoin">Bitcoin data</option>
+            </select>
           </div>
           <div class="pull-right">
             <div id="reset-button">
@@ -58,6 +64,7 @@
     <script src="assets/js/util/calculateDimensions.js"></script>
     <script src="assets/js/menu/optionGenerator.js"></script>
     <script src="assets/js/util/filterDataInDateRange.js"></script>
+    <script src="assets/js/util/callbackInvalidator.js"></script>
     <script src="assets/js/data/feed/coinbase/webSocket.js"></script>
     <script src="assets/js/data/feed/coinbase/ohlcWebSocketAdaptor.js"></script>
     <script src="assets/js/chart/primaryChart.js"></script>
