@@ -7,8 +7,8 @@
         var period = 60 * 60 * 24;
         var liveFeed = sc.data.feed.coinbase.webSocket();
 
-        function ohlc(cb) {
-            var basket = null;
+        function ohlc(cb, initialBasket) {
+            var basket = initialBasket || null;
             liveFeed(function(err, datum) {
                 if (datum) {
                     basket = updateBasket(basket, datum);
@@ -35,7 +35,9 @@
             var startTime = basket.date.getTime();
             var msPeriod = period * 1000;
             if (latestTime > startTime + msPeriod) {
-                basket = createNewBasket(datum, new Date(startTime + msPeriod));
+                var timeIntoCurrentPeriod = (latestTime - startTime) % msPeriod;
+                var newTime = latestTime - timeIntoCurrentPeriod;
+                basket = createNewBasket(datum, new Date(newTime));
             } else {
                 // Update current basket
                 basket.high = Math.max(basket.high, datum.price);
