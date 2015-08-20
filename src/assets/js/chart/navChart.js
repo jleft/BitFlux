@@ -5,7 +5,8 @@
         var dispatch = d3.dispatch('viewChange');
 
         var navTimeSeries = fc.chart.linearTimeSeries()
-            .yTicks(0);
+            .yTicks(0)
+            .yOrient('right');
 
         var area = fc.series.area()
             .yValue(function(d) { return d.open; });

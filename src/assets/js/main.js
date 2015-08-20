@@ -6,6 +6,7 @@
 
     var svgPrimary = container.select('svg.primary');
     var svgSecondary = container.select('svg.secondary');
+    var svgXAxis = container.select('svg.x-axis');
     var svgNav = container.select('svg.nav');
 
     var dataModel = {
@@ -15,6 +16,7 @@
 
     var primaryChart = sc.chart.primaryChart();
     var secondaryChart = null;
+    var xAxisChart = sc.chart.xAxisChart();
     var navChart = sc.chart.navChart();
 
     function onViewChanged(domain) {
@@ -23,6 +25,7 @@
     }
 
     primaryChart.on('viewChange', onViewChanged);
+    xAxisChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
     var mainMenu = sc.menu.main()
@@ -133,6 +136,9 @@
                 .call(secondaryChart);
         }
 
+        svgXAxis.datum(dataModel)
+            .call(xAxisChart);
+
         svgNav.datum(dataModel)
             .call(navChart);
     }
@@ -144,6 +150,6 @@
 
     d3.select(window).on('resize', resize);
 
-    sc.util.calculateDimensions(container);
+    sc.util.calculateDimensions(container, secondaryChart);
     resetToLive();
 })(d3, fc, sc);
