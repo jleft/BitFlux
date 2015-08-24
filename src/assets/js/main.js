@@ -133,7 +133,7 @@
     }
 
     function liveCallback(socketEvent, latestBasket) {
-        if (!socketEvent && latestBasket) {
+        if (socketEvent.type === 'message' && latestBasket) {
             newBasketReceived(latestBasket);
         } else if (socketEvent) {
             var successfulOpen = socketEvent.type === 'open';
