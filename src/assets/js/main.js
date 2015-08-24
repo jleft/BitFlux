@@ -119,6 +119,34 @@
 
     var callbackGenerator = sc.util.callbackInvalidator();
 
+    var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor()
+        .period(60);
+
+    function newBasketReceived(basket) {
+        var data = dataModel.data;
+        if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
+            data.push(basket);
+        } else {
+            data[data.length - 1] = basket;
+        }
+        render();
+    }
+
+    function liveCallback(socketEvent, latestBasket) {
+        if (latestBasket) {
+            newBasketReceived(latestBasket);
+        }
+
+        if (socketEvent) {
+            var successfulOpen = socketEvent.type === 'open';
+            var successfulClose = socketEvent.type === 'close' && socketEvent.code === 1000;
+            if (!successfulOpen && !successfulClose) {
+                console.log('Error loading data from coinbase websocket: ' +
+                    socketEvent.type + ' ' + socketEvent.code);
+            }
+        }
+    }
+
     function updateDataAndResetChart(newData) {
         dataModel.data = newData;
         resetToLive();
@@ -128,6 +156,7 @@
     function onHistoricDataLoaded(err, newData) {
         if (!err) {
             updateDataAndResetChart(newData.reverse());
+            ohlcConverter(liveCallback, newData[newData.length - 1]);
         } else { console.log('Error getting historic data: ' + err); }
     }
 
@@ -142,6 +171,7 @@
                 historicFeed(historicCallback());
             } else if (type === 'generated') {
                 callbackGenerator.invalidateCallback();
+                ohlcConverter.close();
                 var newData = fc.data.random.financial()(250);
                 updateDataAndResetChart(newData);
             }
