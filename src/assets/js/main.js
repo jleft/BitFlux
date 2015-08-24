@@ -134,8 +134,6 @@
 
     function liveCallback(socketEvent, latestBasket) {
         if (!socketEvent && latestBasket) {
-            console.log(latestBasket);
-            console.log(socketEvent);
             newBasketReceived(latestBasket);
         } else if (socketEvent) {
             var successfulOpen = socketEvent.type === 'open';
@@ -148,7 +146,6 @@
     }
 
     function updateDataAndResetChart(newData) {
-        console.log(newData);
         dataModel.data = newData;
         resetToLive();
         render();
