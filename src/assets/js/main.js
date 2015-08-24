@@ -132,16 +132,15 @@
         render();
     }
 
-    function liveCallback(event, latestBasket) {
-        if (!event && latestBasket) {
+    function liveCallback(socketEvent, latestBasket) {
+        if (latestBasket) {
             newBasketReceived(latestBasket);
-        } else if (event.type === 'open') {
-            // On successful open
-        } else if (event.type === 'close' && event.code === 1000) {
-            // On successful close
-        } else {
+        }
+        var successfulOpen = socketEvent.type === 'open';
+        var successfulClose = socketEvent.type === 'close' && socketEvent.code === 1000;
+        if (socketEvent && !successfulOpen && !successfulClose) {
             console.log('Error loading data from coinbase websocket: ' +
-                event.type + ' ' + event.code);
+                socketEvent.type + ' ' + socketEvent.code);
         }
     }
 
