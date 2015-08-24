@@ -25,7 +25,7 @@
                     datum.date = new Date(messageData.time);
                     datum.price = parseFloat(messageData.price);
                     datum.volume = parseFloat(messageData.size);
-                    cb(null, datum);
+                    cb(event, datum);
                 }
             };
 
