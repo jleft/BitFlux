@@ -258,9 +258,9 @@ module.exports = function(grunt) {
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
 
-    grunt.registerTask('build', ['check', 'clean', 'copy', 'less:production']);
-    grunt.registerTask('build:development', ['check', 'clean', 'copy', 'less:development']);
-    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'copy', 'less:development']);
+    grunt.registerTask('build', ['check', 'clean', 'less:production', 'copy']);
+    grunt.registerTask('build:development', ['check', 'clean', 'less:development', 'copy']);
+    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'less:development', 'copy']);
 
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
