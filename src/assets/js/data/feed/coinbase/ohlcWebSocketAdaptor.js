@@ -8,7 +8,7 @@
         var liveFeed = sc.data.feed.coinbase.webSocket();
 
         function ohlcWebSocketAdaptor(cb, initialBasket) {
-            var basket = initialBasket || null;
+            var basket = initialBasket;
             liveFeed(function(err, datum) {
                 if (datum) {
                     basket = updateBasket(basket, datum);
