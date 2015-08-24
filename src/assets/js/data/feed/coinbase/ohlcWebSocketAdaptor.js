@@ -7,7 +7,7 @@
         var period = 60 * 60 * 24;
         var liveFeed = sc.data.feed.coinbase.webSocket();
 
-        function ohlc(cb, initialBasket) {
+        function ohlcWebSocketAdaptor(cb, initialBasket) {
             var basket = initialBasket || null;
             liveFeed(function(err, datum) {
                 if (datum) {
@@ -17,15 +17,15 @@
             });
         }
 
-        ohlc.period = function(x) {
+        ohlcWebSocketAdaptor.period = function(x) {
             if (!arguments.length) {
                 return period;
             }
             period = x;
-            return ohlc;
+            return ohlcWebSocketAdaptor;
         };
 
-        d3.rebind(ohlc, liveFeed, 'product', 'messageType', 'close');
+        d3.rebind(ohlcWebSocketAdaptor, liveFeed, 'product', 'messageType', 'close');
 
         function updateBasket(basket, datum) {
             if (basket == null) {
@@ -59,6 +59,6 @@
             };
         }
 
-        return ohlc;
+        return ohlcWebSocketAdaptor;
     };
 })(sc);
