@@ -7,8 +7,8 @@
         var period = 60 * 60 * 24;
         var liveFeed = sc.data.feed.coinbase.webSocket();
 
-        function ohlc(cb) {
-            var basket = null;
+        function ohlcWebSocketAdaptor(cb, initialBasket) {
+            var basket = initialBasket;
             liveFeed(function(err, datum) {
                 if (datum) {
                     basket = updateBasket(basket, datum);
@@ -17,15 +17,15 @@
             });
         }
 
-        ohlc.period = function(x) {
+        ohlcWebSocketAdaptor.period = function(x) {
             if (!arguments.length) {
                 return period;
             }
             period = x;
-            return ohlc;
+            return ohlcWebSocketAdaptor;
         };
 
-        d3.rebind(ohlc, liveFeed, 'product', 'messageType', 'close');
+        d3.rebind(ohlcWebSocketAdaptor, liveFeed, 'product', 'messageType', 'close');
 
         function updateBasket(basket, datum) {
             if (basket == null) {
@@ -35,7 +35,9 @@
             var startTime = basket.date.getTime();
             var msPeriod = period * 1000;
             if (latestTime > startTime + msPeriod) {
-                basket = createNewBasket(datum, new Date(startTime + msPeriod));
+                var timeIntoCurrentPeriod = (latestTime - startTime) % msPeriod;
+                var newTime = latestTime - timeIntoCurrentPeriod;
+                basket = createNewBasket(datum, new Date(newTime));
             } else {
                 // Update current basket
                 basket.high = Math.max(basket.high, datum.price);
@@ -57,6 +59,6 @@
             };
         }
 
-        return ohlc;
+        return ohlcWebSocketAdaptor;
     };
 })(sc);

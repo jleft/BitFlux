@@ -7,9 +7,7 @@
     <meta name="description" content="A cross-platform financial charting application to showcase the functionality of d3fc components">
     <title>d3fc Showcase</title>
 
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/d3fc.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <script src="assets/js/d3.js"></script> 
     <script src="assets/js/Layout.js"></script>
@@ -20,31 +18,25 @@
   </head>
   <body>
   
-    <div class="container" id="chart-example">
+    <div class="container" id="app-container">
 
-      <div class="row">
+      <div class="row" id="head-row">
         <div class="col-md-12">
           <div id="series-buttons" class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default active" id="candlestick-button">
-              <input type="radio" name="options" value="candlestick" checked> Candlestick
-            </label>
-            <label class="btn btn-default" id="ohlc-button">
-              <input type="radio" name="options" value="ohlc"> OHLC
-            </label>
-            <label class="btn btn-default" id="line-button">
-              <input type="radio" name="options" value="line"> Line
-            </label>
-            <label class="btn btn-default" id="point-button">
-              <input type="radio" name="options"value="point"> Point
-            </label>
-            <label class="btn btn-default" id="area-button">
-              <input type="radio" name="options" value="area"> Area
-            </label>
           </div>
-
-          <div id="reset-row" class="pull-right">
+            <div id="indicator-buttons" class="btn-group" data-toggle="buttons">
+          </div>
+          <div class="col-md-2">
+            <select id="type-selection" selected="type" class="form-control">
+              <option value="generated">Data generator</option>
+              <option value="bitcoin">Bitcoin data</option>
+            </select>
+          </div>
+          <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons">
+          </div>
+          <div class="pull-right">
             <div id="reset-button">
-              <button class="btn btn-default" type="button" >Reset</button>
+              <button class="btn btn-default" type="button">Reset</button>
             </div>
           </div>
         </div>
@@ -52,26 +44,35 @@
 
       <div class="row">
         <div class="col-md-12">
-          <svg class="main"></svg>
+          <svg class="chart primary"></svg>
         </div>
       </div>
         
       <div class="row"> 
         <div class="col-md-12">
-          <svg class="rsi"></svg>
+          <svg class="chart secondary"></svg>
         </div>
       </div>
         
       <div class="row"> 
         <div class="col-md-12">
-          <svg class="nav"></svg>
+          <svg class="chart nav"></svg>
         </div>
       </div>
 
     </div>
     <script src="assets/js/sc.js"></script>
-    <script src="assets/js/webSocket.js"></script>
-    <script src="assets/js/ohlc.js"></script>
+    <script src="assets/js/chart/primaryChart.js"></script>
+    <script src="assets/js/chart/rsiChart.js"></script>
+    <script src="assets/js/chart/navChart.js"></script>
+    <script src="assets/js/util/zoomControl.js"></script>
+    <script src="assets/js/util/calculateDimensions.js"></script>
+    <script src="assets/js/menu/optionGenerator.js"></script>
+    <script src="assets/js/util/filterDataInDateRange.js"></script>
+    <script src="assets/js/util/callbackInvalidator.js"></script>
+    <script src="assets/js/data/feed/coinbase/webSocket.js"></script>
+    <script src="assets/js/data/feed/coinbase/ohlcWebSocketAdaptor.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="//localhost:35729/livereload.js"></script>
   </body>
 </html>
