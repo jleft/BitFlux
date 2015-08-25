@@ -161,8 +161,6 @@
         .end(currDate);
     }
 
-    setHistoricDates();
-
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
