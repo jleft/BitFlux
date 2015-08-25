@@ -109,13 +109,8 @@
         onViewChanged(standardDateDisplay);
     }
 
-    var currDate = new Date();
-    var startDate = d3.time.minute.offset(currDate, -200);
-
     var historicFeed = fc.data.feed.coinbase()
-        .granularity(60)
-        .start(startDate)
-        .end(currDate);
+        .granularity(60);        
 
     var callbackGenerator = sc.util.callbackInvalidator();
 
@@ -159,10 +154,20 @@
         return callbackGenerator(onHistoricDataLoaded);
     }
 
+    function setHistoricDates() {
+        var currDate = new Date();
+        var startDate = d3.time.minute.offset(currDate, -200);
+        historicFeed.start(startDate)
+        .end(currDate);
+    }
+    
+    setHistoricDates();
+    
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
             if (type === 'bitcoin') {
+                setHistoricDates();
                 historicFeed(historicCallback());
             } else if (type === 'generated') {
                 callbackGenerator.invalidateCallback();
