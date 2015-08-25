@@ -110,7 +110,7 @@
     }
 
     var historicFeed = fc.data.feed.coinbase()
-        .granularity(60);        
+        .granularity(60);
 
     var callbackGenerator = sc.util.callbackInvalidator();
 
@@ -160,9 +160,9 @@
         historicFeed.start(startDate)
         .end(currDate);
     }
-    
+
     setHistoricDates();
-    
+
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
