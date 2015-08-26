@@ -76,7 +76,8 @@
     var callbackGenerator = sc.util.callbackInvalidator();
     var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
 
-    changePeriod(60 * 60 * 12);
+    var period = 60 * 60 * 12;
+    changePeriod(period);
 
     function setPeriodChangeVisibility(visible) {
         var visibility = visible ? 'visible' : 'hidden';
@@ -125,7 +126,7 @@
 
     function updateHistoricFeedDateRangeToPresent() {
         var currDate = new Date();
-        var startDate = d3.time.minute.offset(currDate, -200);
+        var startDate = d3.time.second.offset(currDate, -200 * period);
         historicFeed.start(startDate)
             .end(currDate);
     }
@@ -149,10 +150,11 @@
     // hide/show on type change
     d3.select('#period-selection')
         .on('change', function() {
-            var period = d3.select(this).property('value');
+            period = d3.select(this).property('value');
             changePeriod(period);
             callbackGenerator.invalidateCallback();
             ohlcConverter.close();
+            updateHistoricFeedDateRangeToPresent();
             historicFeed(historicCallback());
         });
 
