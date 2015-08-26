@@ -76,7 +76,7 @@
     var callbackGenerator = sc.util.callbackInvalidator();
     var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
 
-    var period = 60 * 60 * 12;
+    var period = 60 * 60;
     changePeriod(period);
 
     function setPeriodChangeVisibility(visible) {
