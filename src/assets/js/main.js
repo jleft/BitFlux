@@ -67,13 +67,24 @@
         onViewChanged(standardDateDisplay);
     }
 
-    var historicFeed = fc.data.feed.coinbase()
-        .granularity(60);
+    function changePeriod(period) {
+        historicFeed.granularity(period);
+        ohlcConverter.period(period);
+    }
 
+    var historicFeed = fc.data.feed.coinbase();
     var callbackGenerator = sc.util.callbackInvalidator();
+    var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
 
-    var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor()
-        .period(60);
+    changePeriod(60 * 60 * 12);
+
+    function setPeriodChangeVisibility(visible) {
+        var visibility = visible ? 'visible' : 'hidden';
+        d3.select('#period-selection')
+        .style('visibility', visibility);
+    }
+
+    setPeriodChangeVisibility(false);
 
     function newBasketReceived(basket) {
         var data = dataModel.data;
@@ -125,12 +136,24 @@
             if (type === 'bitcoin') {
                 updateHistoricFeedDateRangeToPresent();
                 historicFeed(historicCallback());
+                setPeriodChangeVisibility(true);
             } else if (type === 'generated') {
                 callbackGenerator.invalidateCallback();
                 ohlcConverter.close();
                 var newData = fc.data.random.financial()(250);
                 updateDataAndResetChart(newData);
+                setPeriodChangeVisibility(false);
             }
+        });
+
+    // hide/show on type change
+    d3.select('#period-selection')
+        .on('change', function() {
+            var period = d3.select(this).property('value');
+            changePeriod(period);
+            callbackGenerator.invalidateCallback();
+            ohlcConverter.close();
+            historicFeed(historicCallback());
         });
 
     container.select('#reset-button').on('click', resetToLive);
