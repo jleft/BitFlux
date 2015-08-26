@@ -34,9 +34,9 @@ npm install
 grunt
 ```
 
-## Running
+### Running
 
-### Local server
+#### Local server
 
 To run on local server, run the grunt task:
 
@@ -46,7 +46,7 @@ grunt serve
 
 The project is then accessible at http://localhost:PORTNUMBER/index.html
 
-### GitHub Pages
+#### GitHub Pages
 
 For this option to be available, you should have forked the ScottLogic/d3fc-showcase repository to your GitHub account.
 
@@ -57,6 +57,14 @@ grunt deploy
 ```
 
 The project is then accessible at the obvious address (USERNAME.github.io/REPO-NAME).
+
+### Testing
+
+To run the unit tests, run the grunt command:
+
+```
+grunt test
+```
 
 ## License
 
