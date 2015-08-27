@@ -45,7 +45,7 @@
         this.series = series;
     };
 
-    var candlestick = new SeriesType('Candlestick', 'candlestick', fc.series.candlestick());
+    var candlestick = new SeriesType('Candlestick', 'candlestick', sc.series.candlestick());
     var ohlc = new SeriesType('OHLC', 'ohlc', fc.series.ohlc());
     var line = new SeriesType('Line', 'line', fc.series.line());
     line.series.isLine = true;
