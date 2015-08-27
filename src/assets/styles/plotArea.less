@@ -19,14 +19,16 @@
       stroke: @moving-average-line-colour;
     }
   }
+  
+  path.down {
+    stroke: @candlestick-down-stroke;
+    fill: @candlestick-down-fill;
+  }
+  
+  path.up {
+    stroke: @candlestick-up-stroke;
+    fill: @candlestick-up-fill;
+  }
 
 }
 
-path.down {
-  stroke: #000;
-  fill: #c60;
-}
-path.up {
-  stroke: #000;
-  fill: #6c0;
-}
