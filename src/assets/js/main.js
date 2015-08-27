@@ -52,6 +52,8 @@
     var point = new SeriesType('Point', 'point', fc.series.point());
     var area = new SeriesType('Area', 'area', fc.series.area());
 
+    primaryChart.changeSeries(candlestick.series);
+
     container.select('#series-buttons')
         .datum([candlestick, ohlc, line, point, area])
         .call(seriesOptions);

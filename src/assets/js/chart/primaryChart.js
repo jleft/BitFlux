@@ -36,8 +36,8 @@
             .yTicks(5)
             .xTicks(0);
 
-        var currentSeries = fc.series.candlestick();
-        var currentIndicator = null;
+        var currentSeries;
+        var currentIndicator;
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
