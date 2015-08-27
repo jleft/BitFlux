@@ -15,6 +15,7 @@ module.exports = function(grunt) {
                 'src/assets/js/util/**/*.js',
                 'src/assets/js/data/**/*.js',
                 'src/assets/js/chart/**/*.js',
+                'src/assets/js/series/**/*.js',
                 'src/assets/js/main.js'
             ],
             testJsFiles: [
