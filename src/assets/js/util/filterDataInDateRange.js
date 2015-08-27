@@ -1,4 +1,4 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.util.filterDataInDateRange = function(data, dateExtent) {
@@ -12,4 +12,4 @@
         return filteredData;
     };
 
-})(d3, fc);
+})(d3, fc, sc);
