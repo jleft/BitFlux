@@ -46,17 +46,17 @@
     primaryChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
-    var seriesButtons = container.select('#series-buttons');
-    sc.util.bindSeriesToContainer(seriesButtons);
-    seriesButtons.call(seriesOptions);
+    container.select('#series-buttons')
+        .datum(sc.menu.returnPrimarySeries())
+        .call(seriesOptions);
 
-    var secondaryChartButtons = container.select('#secondary-chart-buttons');
-    sc.util.bindSecondarySeriesToContainer(secondaryChartButtons);
-    secondaryChartButtons.call(secondaryChartOptions);
+    container.select('#secondary-chart-buttons')
+        .datum(sc.menu.returnSecondarySeries())
+        .call(secondaryChartOptions);
 
-    var indicatorButtons = container.select('#indicator-buttons');
-    sc.util.bindIndicatorsToContainer(indicatorButtons);
-    indicatorButtons.call(indicatorOptions);
+    container.select('#indicator-buttons')
+        .datum(sc.menu.returnIndicators())
+        .call(indicatorOptions);
 
     // Set Reset button event
     function resetToLive() {

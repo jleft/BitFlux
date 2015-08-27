@@ -10,7 +10,7 @@
     var noChart = new SecondaryChartType('None', 'no-chart', null);
     var rsiChart = new SecondaryChartType('RSI', 'rsi', sc.chart.rsiChart());
 
-    sc.util.bindSecondarySeriesToContainer = function(selection) {
-        selection.datum([noChart, rsiChart]);
+    sc.menu.returnSecondarySeries = function() {
+        return [noChart, rsiChart];
     };
 })(d3, fc, sc);

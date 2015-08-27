@@ -17,7 +17,7 @@
     var movingAverageIndicator = new IndicatorType('Moving Average', 'movingAverage', movingAverage);
     var bollingerIndicator = new IndicatorType('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
 
-    sc.util.bindIndicatorsToContainer = function(selection) {
-        selection.datum([noIndicator, movingAverageIndicator, bollingerIndicator]);
+    sc.menu.returnIndicators = function() {
+        return [noIndicator, movingAverageIndicator, bollingerIndicator];
     };
 })(d3, fc, sc);
