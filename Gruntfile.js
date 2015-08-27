@@ -11,10 +11,10 @@ module.exports = function(grunt) {
             ],
             srcJsFiles: [
                 'src/assets/js/sc.js',
+                'src/assets/js/chart/**/*.js',
                 'src/assets/js/menu/**/*.js',
                 'src/assets/js/util/**/*.js',
                 'src/assets/js/data/**/*.js',
-                'src/assets/js/chart/**/*.js',
                 'src/assets/js/series/**/*.js',
                 'src/assets/js/main.js'
             ],
