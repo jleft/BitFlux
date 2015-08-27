@@ -47,15 +47,15 @@
     navChart.on('viewChange', onViewChanged);
 
     container.select('#series-buttons')
-        .datum(sc.menu.returnPrimarySeries())
+        .datum(sc.menu.primarySeries())
         .call(seriesOptions);
 
     container.select('#secondary-chart-buttons')
-        .datum(sc.menu.returnSecondarySeries())
+        .datum(sc.menu.secondarySeries())
         .call(secondaryChartOptions);
 
     container.select('#indicator-buttons')
-        .datum(sc.menu.returnIndicators())
+        .datum(sc.menu.indicators())
         .call(indicatorOptions);
 
     // Set Reset button event

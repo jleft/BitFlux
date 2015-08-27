@@ -14,7 +14,7 @@
     var point = new SeriesType('Point', 'point', fc.series.point());
     var area = new SeriesType('Area', 'area', fc.series.area());
 
-    sc.menu.returnPrimarySeries = function() {
+    sc.menu.primarySeries = function() {
         return [candlestick, ohlc, line, point, area];
     };
 })(d3, fc, sc);
