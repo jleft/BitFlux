@@ -36,7 +36,7 @@
             .yTicks(5)
             .xTicks(0);
 
-        var currentSeries;
+        var currentSeries = sc.series.candlestick();
         var currentIndicator;
 
         // Create and apply the Moving Average
