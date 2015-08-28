@@ -12,7 +12,7 @@
         var point = sc.menu.option('Point', 'point', fc.series.point());
         var area = sc.menu.option('Area', 'area', fc.series.area());
 
-        var options = sc.menu.option.group.generator()
+        var options = sc.menu.generator.buttonGroup()
             .on('optionChange', function(series) {
                 dispatch.primaryChartSeriesChange(series);
             });

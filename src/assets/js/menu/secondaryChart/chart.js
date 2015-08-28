@@ -8,7 +8,7 @@
         var noChart = sc.menu.option('None', 'no-chart', null);
         var rsiChart = sc.menu.option('RSI', 'rsi', sc.chart.rsiChart());
 
-        var options = sc.menu.option.group.generator()
+        var options = sc.menu.generator.buttonGroup()
             .on('optionChange', function(chart) {
                 dispatch.secondaryChartChange(chart);
             });

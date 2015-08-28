@@ -15,7 +15,7 @@
             }
         },
         menu: {
-            option: {},
+            generator: {},
             primaryChart: {},
             secondaryChart: {}
         },
