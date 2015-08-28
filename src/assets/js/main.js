@@ -36,6 +36,7 @@
         })
         .on('secondaryChartChange', function(chart) {
             secondaryChart = chart.option;
+            svgSecondary.selectAll('*').remove();
             if (secondaryChart) {
                 secondaryChart.on('viewChange', onViewChanged);
             }
@@ -127,7 +128,6 @@
         svgPrimary.datum(dataModel)
             .call(primaryChart);
 
-        svgSecondary.selectAll('*').remove();
         if (secondaryChart) {
             svgSecondary.datum(dataModel)
                 .call(secondaryChart);

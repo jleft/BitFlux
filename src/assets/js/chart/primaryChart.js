@@ -1,6 +1,6 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
-    // Helper functions
+
     function calculateCloseAxisTagPath(width, height) {
         var h2 = height / 2;
         return [
@@ -129,4 +129,4 @@
 
         return primaryChart;
     };
-})(sc);
+})(d3, fc, sc);

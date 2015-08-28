@@ -1,6 +1,6 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
-    // Helper functions
+
     sc.chart.macdChart = function() {
         var dispatch = d3.dispatch('viewChange');
 
@@ -43,4 +43,4 @@
         return macdChart;
     };
 
-})(sc);
+})(d3, fc, sc);
