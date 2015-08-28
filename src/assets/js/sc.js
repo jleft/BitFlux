@@ -14,7 +14,11 @@
                 coinbase: {}
             }
         },
-        menu: {},
+        menu: {
+            option: {},
+            primaryChart: {},
+            secondaryChart: {}
+        },
         series: {},
         util: {}
     };
