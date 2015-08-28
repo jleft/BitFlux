@@ -127,11 +127,10 @@
         svgPrimary.datum(dataModel)
             .call(primaryChart);
 
+        svgSecondary.selectAll('*').remove();
         if (secondaryChart) {
             svgSecondary.datum(dataModel)
                 .call(secondaryChart);
-        } else {
-            svgSecondary.selectAll('*').remove();
         }
 
         svgNav.datum(dataModel)
