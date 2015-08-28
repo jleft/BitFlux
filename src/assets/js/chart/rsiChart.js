@@ -18,7 +18,7 @@
 
             rsi.xScale()
                 .domain(viewDomain)
-                .range([0, selection.attr('width')]);
+                .range([0, parseInt(selection.style('width'), 10)]);
             rsi.yScale().range([parseInt(selection.style('height'), 10), 0]);
 
             rsiAlgorithm(data);
