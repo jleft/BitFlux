@@ -17,27 +17,6 @@
     var secondaryChart = null;
     var navChart = sc.chart.navChart();
 
-    var seriesOptions = sc.menu.optionGenerator()
-        .on('optionChange', function(seriesType) {
-            primaryChart.changeSeries(seriesType.series);
-            render();
-        });
-
-    var secondaryChartOptions = sc.menu.optionGenerator()
-        .on('optionChange', function(secondaryChartType) {
-            secondaryChart = secondaryChartType.chart;
-            if (secondaryChart) {
-                secondaryChart.on('viewChange', onViewChanged);
-            }
-            resize();
-        });
-
-    var indicatorOptions = sc.menu.optionGenerator()
-        .on('optionChange', function(indicatorType) {
-            primaryChart.changeIndicator(indicatorType.indicator);
-            render();
-        });
-
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
         render();
@@ -46,17 +25,25 @@
     primaryChart.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
-    container.select('#series-buttons')
-        .datum(sc.menu.primarySeries())
-        .call(seriesOptions);
+    var mainMenu = sc.menu.main()
+        .on('primaryChartSeriesChange', function(series) {
+            primaryChart.changeSeries(series.option);
+            render();
+        })
+        .on('primaryChartIndicatorChange', function(indicator) {
+            primaryChart.changeIndicator(indicator.option);
+            render();
+        })
+        .on('secondaryChartChange', function(chart) {
+            secondaryChart = chart.option;
+            if (secondaryChart) {
+                secondaryChart.on('viewChange', onViewChanged);
+            }
+            resize();
+        });
 
-    container.select('#secondary-chart-buttons')
-        .datum(sc.menu.secondarySeries())
-        .call(secondaryChartOptions);
-
-    container.select('#indicator-buttons')
-        .datum(sc.menu.indicators())
-        .call(indicatorOptions);
+    container.select('.menu')
+        .call(mainMenu);
 
     // Set Reset button event
     function resetToLive() {
