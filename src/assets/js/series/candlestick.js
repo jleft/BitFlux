@@ -20,12 +20,12 @@
         var upDataJoin = fc.util.dataJoin()
             .selector('path.up')
             .element('path')
-            .attrs({'class': 'up'});
+            .attr('class', 'up');
 
         var downDataJoin = fc.util.dataJoin()
             .selector('path.down')
             .element('path')
-            .attrs({'class': 'down'});
+            .attr('class', 'down');
 
         var candlestick = function(selection) {
             selection.each(function(data) {
