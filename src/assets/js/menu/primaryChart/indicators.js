@@ -16,7 +16,7 @@
         var movingAverageIndicator = sc.menu.option('Moving Average', 'movingAverage', movingAverage);
         var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
 
-        var options = sc.menu.option.group.generator()
+        var options = sc.menu.generator.buttonGroup()
             .on('optionChange', function(indicator) {
                 dispatch.primaryChartIndicatorChange(indicator);
             });

@@ -1,7 +1,7 @@
 (function(d3, fc) {
     'use strict';
 
-    sc.menu.option.group.generator = function() {
+    sc.menu.generator.buttonGroup = function() {
         var dispatch = d3.dispatch('optionChange');
 
         function layoutButtons(sel) {
