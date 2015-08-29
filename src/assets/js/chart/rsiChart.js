@@ -1,6 +1,6 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
-    // Helper functions
+
     sc.chart.rsiChart = function() {
         var dispatch = d3.dispatch('viewChange');
 
@@ -40,4 +40,4 @@
         return rsiChart;
     };
 
-})(sc);
+})(d3, fc, sc);

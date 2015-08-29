@@ -1,6 +1,6 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
-    // Helper functions
+
     sc.chart.navChart = function() {
         var dispatch = d3.dispatch('viewChange');
 
@@ -73,4 +73,4 @@
         return navChart;
     };
 
-})(sc);
+})(d3, fc, sc);
