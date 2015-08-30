@@ -10,7 +10,7 @@
         var max = scale(xExtent[1]);
 
         // Don't pan off sides
-        var width = selection.attr('width');
+        var width = parseInt(selection.style('width'), 10);
         if (min > 0) {
             tx -= min;
         } else if (max - width < 0) {
