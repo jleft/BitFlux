@@ -11,6 +11,7 @@
 
     var dataModel = {
         data: fc.data.random.financial()(250),
+        period: 60 * 60 * 24,
         viewDomain: []
     };
 
@@ -67,17 +68,24 @@
         onViewChanged(standardDateDisplay);
     }
 
-    function changePeriod(period) {
-        historicFeed.granularity(period);
-        ohlcConverter.period(period);
-    }
-
-    var historicFeed = fc.data.feed.coinbase();
-    var callbackGenerator = sc.util.callbackInvalidator();
-    var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
-
-    var period = 60 * 60;
-    changePeriod(period);
+    var dataInterface = sc.data.dataInterface()
+        .on('messageReceived', function(socketEvent, data) {
+            if (socketEvent.type === 'error' ||
+                (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
+                console.log('Error loading data from coinbase websocket: ' +
+                socketEvent.type + ' ' + socketEvent.code);
+            }
+            dataModel.data = data;
+            render();
+        })
+        .on('historicDataLoaded', function(err, data) {
+            if (err) {
+                console.log('Error getting historic data: ' + err);
+            }
+            dataModel.data = data;
+            resetToLive();
+            render();
+        });
 
     function setPeriodChangeVisibility(visible) {
         var visibility = visible ? 'visible' : 'hidden';
@@ -87,62 +95,17 @@
 
     setPeriodChangeVisibility(false);
 
-    function newBasketReceived(basket) {
-        var data = dataModel.data;
-        if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
-            data.push(basket);
-        } else {
-            data[data.length - 1] = basket;
-        }
-        render();
-    }
-
-    function liveCallback(socketEvent, latestBasket) {
-        if (socketEvent.type === 'message' && latestBasket) {
-            newBasketReceived(latestBasket);
-        } else if (socketEvent.type === 'error' ||
-            (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
-            console.log('Error loading data from coinbase websocket: ' +
-                socketEvent.type + ' ' + socketEvent.code);
-        }
-    }
-
-    function updateDataAndResetChart(newData) {
-        dataModel.data = newData;
-        resetToLive();
-        render();
-    }
-
-    function onHistoricDataLoaded(err, newData) {
-        if (!err) {
-            updateDataAndResetChart(newData.reverse());
-            ohlcConverter(liveCallback, newData[newData.length - 1]);
-        } else { console.log('Error getting historic data: ' + err); }
-    }
-
-    function historicCallback() {
-        return callbackGenerator(onHistoricDataLoaded);
-    }
-
-    function updateHistoricFeedDateRangeToPresent() {
-        var currDate = new Date();
-        var startDate = d3.time.second.offset(currDate, -200 * period);
-        historicFeed.start(startDate)
-            .end(currDate);
-    }
-
     d3.select('#type-selection')
         .on('change', function() {
             var type = d3.select(this).property('value');
             if (type === 'bitcoin') {
-                updateHistoricFeedDateRangeToPresent();
-                historicFeed(historicCallback());
+                dataInterface(dataModel.period);
                 setPeriodChangeVisibility(true);
             } else if (type === 'generated') {
-                callbackGenerator.invalidateCallback();
-                ohlcConverter.close();
-                var newData = fc.data.random.financial()(250);
-                updateDataAndResetChart(newData);
+                dataInterface.invalidate();
+                dataModel.data = fc.data.random.financial()(250);
+                resetToLive();
+                render();
                 setPeriodChangeVisibility(false);
             }
         });
@@ -150,12 +113,9 @@
     // hide/show on type change
     d3.select('#period-selection')
         .on('change', function() {
-            period = d3.select(this).property('value');
-            changePeriod(period);
-            callbackGenerator.invalidateCallback();
-            ohlcConverter.close();
-            updateHistoricFeedDateRangeToPresent();
-            historicFeed(historicCallback());
+            dataModel.period = d3.select(this).property('value');
+            dataInterface.invalidate();
+            dataInterface(dataModel.period);
         });
 
     container.select('#reset-button').on('click', resetToLive);
