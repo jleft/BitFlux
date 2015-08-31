@@ -5,7 +5,6 @@
         var historicFeed = fc.data.feed.coinbase();
         var callbackGenerator = sc.util.callbackInvalidator();
         var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
-        var currentData = [];
         var dispatch = d3.dispatch('messageReceived', 'historicDataLoaded');
 
         function dataInterface(period) {
@@ -14,10 +13,11 @@
             historicFeed.granularity(period);
             ohlcConverter.period(period);
             updateHistoricFeedDateRangeToPresent(period);
+            var currentData = [];
             historicFeed(callbackGenerator(function(err, data) {
                 if (!err) {
                     currentData = data.reverse();
-                    ohlcConverter(liveCallback, currentData[currentData.length - 1]);
+                    ohlcConverter(liveCallback(currentData), currentData[currentData.length - 1]);
                 }
                 dispatch.historicDataLoaded(err, currentData);
             }));
@@ -38,18 +38,20 @@
                 .end(currDate);
         }
 
-        function liveCallback(socketEvent, latestBasket) {
-            if (socketEvent.type === 'message' && latestBasket) {
-                newBasketReceived(latestBasket);
-            }
-            dispatch.messageReceived(socketEvent, currentData);
+        function liveCallback(data) {
+            return function(socketEvent, latestBasket) {
+                if (socketEvent.type === 'message' && latestBasket) {
+                    newBasketReceived(latestBasket, data);
+                }
+                dispatch.messageReceived(socketEvent, data);
+            };
         }
 
-        function newBasketReceived(basket) {
-            if (currentData[currentData.length - 1].date.getTime() !== basket.date.getTime()) {
-                currentData.push(basket);
+        function newBasketReceived(basket, data) {
+            if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
+                data.push(basket);
             } else {
-                currentData[currentData.length - 1] = basket;
+                data[data.length - 1] = basket;
             }
         }
 

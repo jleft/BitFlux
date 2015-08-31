@@ -61,7 +61,6 @@
     // Set Reset button event
     function resetToLive() {
         var data = dataModel.data;
-
         var pointsDisplayed = data.length < 50 ? data.length : 50;
         var standardDateDisplay = [data[data.length - pointsDisplayed].date,
             data[data.length - 1].date];
@@ -114,7 +113,6 @@
     d3.select('#period-selection')
         .on('change', function() {
             dataModel.period = d3.select(this).property('value');
-            dataInterface.invalidate();
             dataInterface(dataModel.period);
         });
 
