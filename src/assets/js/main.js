@@ -16,7 +16,7 @@
 
     var primaryChart = sc.chart.primaryChart();
     var secondaryChart = null;
-    var xAxisChart = sc.chart.xAxisChart();
+    var xAxis = sc.chart.xAxis();
     var navChart = sc.chart.navChart();
 
     function onViewChanged(domain) {
@@ -25,7 +25,7 @@
     }
 
     primaryChart.on('viewChange', onViewChanged);
-    xAxisChart.on('viewChange', onViewChanged);
+    xAxis.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
 
     var mainMenu = sc.menu.main()
@@ -137,7 +137,7 @@
         }
 
         svgXAxis.datum(dataModel)
-            .call(xAxisChart);
+            .call(xAxis);
 
         svgNav.datum(dataModel)
             .call(navChart);

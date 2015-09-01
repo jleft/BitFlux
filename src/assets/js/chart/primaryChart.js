@@ -14,13 +14,15 @@
     }
 
     sc.chart.primaryChart = function() {
+        var yAxisWidth = 45;
+
         var dispatch = d3.dispatch('viewChange');
 
         var priceFormat = d3.format('.2f');
 
         var timeSeries = fc.chart.linearTimeSeries()
             .xAxisHeight(0)
-            .yAxisWidth(50)
+            .yAxisWidth(yAxisWidth)
             .yOrient('right')
             .yTickFormat(priceFormat);
 
@@ -49,6 +51,16 @@
                 return series;
             });
 
+        function findLinearDifference(values) {
+            var arrayDifference = [values[1] - values[0]];
+            for (var i = 2; i < values.length; i++) {
+                arrayDifference.push(values[i] - values[i - 1]);
+                if (arrayDifference[i - 1] === arrayDifference[i - 2]) {
+                    return arrayDifference[i - 2];
+                }
+            }
+        }
+
         function primaryChart(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
@@ -68,9 +80,13 @@
             var yScale = timeSeries.yScale();
             var tickValues = yScale.ticks.apply(yScale, []);
 
-            // Removes values that are within 0.1 of the close price to aid clarity of axis
+            var linearTickDifference = findLinearDifference(tickValues);
+
+            // Removes values that are within a percentage of the close price to aid clarity of axis
             for (var i = 0; i < tickValues.length; i++) {
-                if (Math.abs(tickValues[i] - data[data.length - 1].close) < 0.1) {
+                var percentageDifference = Math.abs(tickValues[i] - data[data.length - 1].close) /
+                    linearTickDifference;
+                if (percentageDifference <= 0.1) {
                     tickValues.splice(i, 1);
                 }
             }
@@ -83,7 +99,7 @@
                         })
                         .select('path').attr('d', function(d) {
                             if (d === data[data.length - 1].close) {
-                                return d3.svg.area()(calculateCloseAxisTagPath(45, 20));
+                                return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
                             }
                         });
                 });
