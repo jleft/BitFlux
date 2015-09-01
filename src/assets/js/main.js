@@ -61,10 +61,12 @@
     // Set Reset button event
     function resetToLive() {
         var data = dataModel.data;
-        var pointsDisplayed = data.length < 50 ? data.length : 50;
-        var standardDateDisplay = [data[data.length - pointsDisplayed].date,
-            data[data.length - 1].date];
-        onViewChanged(standardDateDisplay);
+        var extent = fc.util.extent(data, 'date');
+        var timeExtent = (extent[1].getTime() - extent[0].getTime()) / 1000;
+        var navTimeExtent = timeExtent / 5;
+        var latest = data[data.length - 1].date;
+        var navTimeDomain = [d3.time.second.offset(latest, -navTimeExtent), latest];
+        onViewChanged(navTimeDomain);
     }
 
     var dataInterface = sc.data.dataInterface()
@@ -74,7 +76,9 @@
                 console.log('Error loading data from coinbase websocket: ' +
                 socketEvent.type + ' ' + socketEvent.code);
             }
-            dataModel.data = data;
+            if (socketEvent.type === 'message') {
+                dataModel.data = data;
+            }
             render();
         })
         .on('historicDataLoaded', function(err, data) {
@@ -103,6 +107,7 @@
             } else if (type === 'generated') {
                 dataInterface.invalidate();
                 dataModel.data = fc.data.random.financial()(250);
+                dataModel.period = 60 * 60 * 24;
                 resetToLive();
                 render();
                 setPeriodChangeVisibility(false);
