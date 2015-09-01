@@ -181,7 +181,7 @@
         };
 
         primaryChart.toggleIndicator = function(indicator) {
-            if (indicator.show) {
+            if (indicatorMulti.series().indexOf(indicator.option) === -1) {
                 indicatorMulti.series()
                     .push(indicator.option);
                 indicatorStrings.push(indicator.valueString);

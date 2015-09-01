@@ -5,7 +5,7 @@
     var container = d3.select('#app-container');
 
     var svgPrimary = container.select('svg.primary');
-    var svgSecondary = container.select('svg.secondary');
+    var svgSecondary = container.selectAll('svg.secondary');
     var svgXAxis = container.select('svg.x-axis');
     var svgNav = container.select('svg.nav');
 
@@ -17,7 +17,7 @@
     };
 
     var primaryChart = sc.chart.primaryChart();
-    var secondaryChart = null;
+    var secondaryChart = [];
     var xAxis = sc.chart.xAxis();
     var navChart = sc.chart.navChart();
 
@@ -25,10 +25,11 @@
         svgPrimary.datum(dataModel)
             .call(primaryChart);
 
-        if (secondaryChart) {
-            svgSecondary.datum(dataModel)
-                .call(secondaryChart);
-        }
+        svgSecondary.datum(dataModel)
+            .filter(function(d, i) { return i < secondaryChart.length; })
+            .each(function(d, i) {
+                d3.select(this).call(secondaryChart[i]);
+            });
 
         svgXAxis.datum(dataModel)
             .call(xAxis);
@@ -127,12 +128,13 @@
             render();
         })
         .on('secondaryChartChange', function(chart) {
-            secondaryChart = chart.option;
-            svgSecondary.selectAll('*')
-                .remove();
-            if (secondaryChart) {
-                secondaryChart.on('viewChange', onViewChanged);
+            if (secondaryChart.indexOf(chart.option) !== -1) {
+                secondaryChart.splice(secondaryChart.indexOf(chart.option), 1);
+            } else {
+                chart.option.on('viewChange', onViewChanged);
+                secondaryChart.push(chart.option);
             }
+            svgSecondary.selectAll('*').remove();
             resize();
         });
 
