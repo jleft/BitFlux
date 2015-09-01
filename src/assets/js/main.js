@@ -53,6 +53,23 @@
                 secondaryChart.on('viewChange', onViewChanged);
             }
             resize();
+        })
+        .on('dataTypeChange', function(type) {
+            if (type === 'bitcoin') {
+                dataInterface(dataModel.period);
+                setPeriodChangeVisibility(true);
+            } else if (type === 'generated') {
+                dataInterface.invalidate();
+                dataModel.data = fc.data.random.financial()(250);
+                dataModel.period = 60 * 60 * 24;
+                resetToLive();
+                render();
+                setPeriodChangeVisibility(false);
+            }
+        })
+        .on('periodChange', function(period) {
+            dataModel.period = period;
+            dataInterface(dataModel.period);
         });
 
     container.select('.menu')
@@ -97,29 +114,6 @@
     }
 
     setPeriodChangeVisibility(false);
-
-    d3.select('#type-selection')
-        .on('change', function() {
-            var type = d3.select(this).property('value');
-            if (type === 'bitcoin') {
-                dataInterface(dataModel.period);
-                setPeriodChangeVisibility(true);
-            } else if (type === 'generated') {
-                dataInterface.invalidate();
-                dataModel.data = fc.data.random.financial()(250);
-                dataModel.period = 60 * 60 * 24;
-                resetToLive();
-                render();
-                setPeriodChangeVisibility(false);
-            }
-        });
-
-    // hide/show on type change
-    d3.select('#period-selection')
-        .on('change', function() {
-            dataModel.period = d3.select(this).property('value');
-            dataInterface(dataModel.period);
-        });
 
     container.select('#reset-button').on('click', resetToLive);
 

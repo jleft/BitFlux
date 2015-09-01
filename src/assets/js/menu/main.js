@@ -5,7 +5,9 @@
 
         var dispatch = d3.dispatch('primaryChartSeriesChange',
             'primaryChartIndicatorChange',
-            'secondaryChartChange');
+            'secondaryChartChange',
+            'dataTypeChange',
+            'periodChange');
 
         var primaryChartSeriesOptions = sc.menu.primaryChart.series()
             .on('primaryChartSeriesChange', function(series) {
@@ -22,9 +24,27 @@
                 dispatch.secondaryChartChange(chart);
             });
 
+        var dataTypeChangeOptions = function(selection) {
+            selection.on('change', function() {
+                var type = d3.select(this).property('value');
+                dispatch.dataTypeChange(type);
+            });
+        };
+
+        var periodChangeOptions = function(selection) {
+            selection.on('change', function() {
+                var period = d3.select(this).property('value');
+                dispatch.periodChange(period);
+            });
+        };
+
         var main = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this);
+                selection.select('#type-selection')
+                    .call(dataTypeChangeOptions);
+                selection.select('#period-selection')
+                    .call(periodChangeOptions);
                 selection.select('#series-buttons')
                     .call(primaryChartSeriesOptions);
                 selection.select('#indicator-buttons')
