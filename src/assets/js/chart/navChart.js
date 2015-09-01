@@ -24,7 +24,7 @@
             var viewDomain = selection.datum().viewDomain;
 
             viewScale.domain(viewDomain)
-                .range([0, selection.attr('width')]);
+                .range([0, parseInt(selection.style('width'), 10)]);
 
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data,
                 fc.util.extent(data, 'date')), ['low', 'high']);
