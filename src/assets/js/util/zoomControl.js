@@ -1,4 +1,4 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.util.zoomControl = function(zoom, selection, data, scale) {
@@ -10,7 +10,7 @@
         var max = scale(xExtent[1]);
 
         // Don't pan off sides
-        var width = parseInt(selection.style('width'), 10);
+        var width = selection.attr('width') || parseInt(selection.style('width'), 10);
         if (min > 0) {
             tx -= min;
         } else if (max - width < 0) {
@@ -27,4 +27,4 @@
 
         zoom.translate([tx, ty]);
     };
-})(d3, fc);
+})(d3, fc, sc);
