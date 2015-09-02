@@ -56,6 +56,7 @@
         })
         .on('dataTypeChange', function(type) {
             if (type === 'bitcoin') {
+                dataModel.period = container.select('#period-selection').property('value');
                 dataInterface(dataModel.period);
                 setPeriodChangeVisibility(true);
             } else if (type === 'generated') {
@@ -101,10 +102,11 @@
         .on('historicDataLoaded', function(err, data) {
             if (err) {
                 console.log('Error getting historic data: ' + err);
+            } else {
+                dataModel.data = data;
+                resetToLive();
+                render();
             }
-            dataModel.data = data;
-            resetToLive();
-            render();
         });
 
     function setPeriodChangeVisibility(visible) {
