@@ -31,10 +31,12 @@
     var mainMenu = sc.menu.main()
         .on('primaryChartSeriesChange', function(series) {
             primaryChart.changeSeries(series.option);
+            svgPrimary.selectAll('.multi').remove();
             render();
         })
         .on('primaryChartIndicatorChange', function(indicator) {
             primaryChart.changeIndicator(indicator.option);
+            svgPrimary.selectAll('.multi').remove();
             render();
         })
         .on('secondaryChartChange', function(chart) {
