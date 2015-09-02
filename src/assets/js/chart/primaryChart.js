@@ -13,6 +13,19 @@
         ];
     }
 
+    function produceAnnotatedTickValues(scale, annotation) {
+        var annotatedTickValues = scale.ticks.apply(scale, []);
+
+        var extent = scale.domain();
+        for (var i = 0; i < annotation.length; i++) {
+            if (annotation[i] > extent[0] && annotation[i] < extent[1]) {
+                annotatedTickValues.push(annotation[i]);
+            }
+        }
+
+        return annotatedTickValues;
+    }
+
     sc.chart.primaryChart = function() {
         var yAxisWidth = 45;
 
@@ -51,16 +64,6 @@
                 return series;
             });
 
-        function findLinearDifference(values) {
-            var arrayDifference = [values[1] - values[0]];
-            for (var i = 2; i < values.length; i++) {
-                arrayDifference.push(values[i] - values[i - 1]);
-                if (arrayDifference[i - 1] === arrayDifference[i - 2]) {
-                    return arrayDifference[i - 2];
-                }
-            }
-        }
-
         function primaryChart(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
@@ -75,30 +78,17 @@
             yExtent[1] += variance * 0.1;
             timeSeries.yDomain(yExtent);
 
-
             // Find current tick values and add close price to this list, then set it explicitly below
-            var yScale = timeSeries.yScale();
-            var tickValues = yScale.ticks.apply(yScale, []);
-
-            var linearTickDifference = findLinearDifference(tickValues);
-
-            // Removes values that are within a percentage of the close price to aid clarity of axis
-            for (var i = 0; i < tickValues.length; i++) {
-                var percentageDifference = Math.abs(tickValues[i] - data[data.length - 1].close) /
-                    linearTickDifference;
-                if (percentageDifference <= 0.1) {
-                    tickValues.splice(i, 1);
-                }
-            }
-            tickValues.push(data[data.length - 1].close);
+            var closePrice = data[data.length - 1].close;
+            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
 
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.classed('closeLine', function(d) {
-                            return d === data[data.length - 1].close;
+                            return d === closePrice;
                         })
                         .select('path').attr('d', function(d) {
-                            if (d === data[data.length - 1].close) {
+                            if (d === closePrice) {
                                 return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
                             }
                         });
