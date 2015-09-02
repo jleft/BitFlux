@@ -13,24 +13,31 @@
         ];
     }
 
-    function positionCloseAxis(sel) {
-        sel.enter()
-            .select('.right-handle')
-            .insert('path', ':first-child')
-            .attr('transform', 'translate(' + -40 + ', 0)')
-            .attr('d', d3.svg.area()(calculateCloseAxisTagPath(40, 14)));
+    function produceAnnotatedTickValues(scale, annotation) {
+        var annotatedTickValues = scale.ticks.apply(scale, []);
 
-        sel.select('text')
-            .attr('transform', 'translate(' + (-2) + ', ' + 2 + ')')
-            .attr('x', 0)
-            .attr('y', 0);
+        var extent = scale.domain();
+        for (var i = 0; i < annotation.length; i++) {
+            if (annotation[i] > extent[0] && annotation[i] < extent[1]) {
+                annotatedTickValues.push(annotation[i]);
+            }
+        }
+
+        return annotatedTickValues;
     }
 
     sc.chart.primaryChart = function() {
+        var yAxisWidth = 45;
+
         var dispatch = d3.dispatch('viewChange');
 
+        var priceFormat = d3.format('.2f');
+
         var timeSeries = fc.chart.linearTimeSeries()
-            .xTicks(6);
+            .xAxisHeight(0)
+            .yAxisWidth(yAxisWidth)
+            .yOrient('right')
+            .yTickFormat(priceFormat);
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
@@ -44,16 +51,10 @@
 
         var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
-        var priceFormat = d3.format('.2f');
-
-        var closeAxisAnnotation = fc.annotation.line()
+        var closeLine = fc.annotation.line()
             .orient('horizontal')
             .value(function(d) { return d.close; })
-            .label(function(d) { return priceFormat(d.close); })
-            .decorate(function(sel) {
-                positionCloseAxis(sel);
-                sel.enter().classed('close', true);
-            });
+            .label('');
 
         var multi = fc.series.multi()
             .key(function(series, index) {
@@ -66,21 +67,8 @@
         function primaryChart(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
+
             timeSeries.xDomain(viewDomain);
-
-            movingAverage(data);
-            bollingerAlgorithm(data);
-
-            updateMultiSeries();
-
-            multi.mapping(function(series) {
-                switch (series) {
-                    case closeAxisAnnotation:
-                        return [data[data.length - 1]];
-                    default:
-                        return data;
-                }
-            });
 
             // Scale y axis
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, timeSeries.xDomain()), ['low', 'high']);
@@ -90,6 +78,36 @@
             yExtent[1] += variance * 0.1;
             timeSeries.yDomain(yExtent);
 
+            // Find current tick values and add close price to this list, then set it explicitly below
+            var closePrice = data[data.length - 1].close;
+            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
+
+            timeSeries.yTickValues(tickValues)
+                .yDecorate(function(s) {
+                    s.classed('closeLine', function(d) {
+                            return d === closePrice;
+                        })
+                        .select('path').attr('d', function(d) {
+                            if (d === closePrice) {
+                                return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
+                            }
+                        });
+                });
+
+            movingAverage(data);
+            bollingerAlgorithm(data);
+
+            updateMultiSeries();
+
+            multi.mapping(function(series) {
+                switch (series) {
+                    case closeLine:
+                        return [data[data.length - 1]];
+                    default:
+                        return data;
+                }
+            });
+
             // Redraw
             timeSeries.plotArea(multi);
             selection.call(timeSeries);
@@ -98,7 +116,7 @@
             var zoom = d3.behavior.zoom();
             zoom.x(timeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection, data, timeSeries.xScale());
+                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, timeSeries.xScale());
                     dispatch.viewChange(timeSeries.xDomain());
                 });
 
@@ -109,11 +127,13 @@
 
         function updateMultiSeries() {
             if (currentIndicator) {
-                multi.series([gridlines, currentSeries, closeAxisAnnotation, currentIndicator]);
+                multi.series([gridlines, currentSeries, closeLine, currentIndicator]);
             } else {
-                multi.series([gridlines, currentSeries, closeAxisAnnotation]);
+                multi.series([gridlines, currentSeries, closeLine]);
             }
         }
+
+        primaryChart.yAxisWidth = function() { return timeSeries.yAxisWidth; };
 
         primaryChart.changeSeries = function(series) {
             currentSeries = series;

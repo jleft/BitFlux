@@ -6,8 +6,9 @@
             parseInt(container.select('#head-row').style('padding-top'), 10) +
             parseInt(container.select('#head-row').style('padding-bottom'), 10);
         var navHeight = parseInt(container.select('#nav-row').style('height'), 10);
+        var xAxisHeight = parseInt(container.select('#x-axis-row').style('height'), 10);
 
-        var useableScreenHeight = window.innerHeight - headRowHeight - navHeight;
+        var useableScreenHeight = window.innerHeight - headRowHeight - xAxisHeight - navHeight;
 
         var primaryHeightRatio = secondaryChartShown ? 2 : 1;
         var secondaryHeightRatio = secondaryChartShown ? 1 : 0;
