@@ -5,7 +5,8 @@
         var historicFeed = fc.data.feed.coinbase();
         var callbackGenerator = sc.util.callbackInvalidator();
         var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
-        var dispatch = d3.dispatch('messageReceived', 'historicDataLoaded');
+        var dataGenerator = fc.data.random.financial();
+        var dispatch = d3.dispatch('messageReceived', 'dataLoaded');
 
         function dataInterface(period) {
             dataInterface.invalidate();
@@ -18,9 +19,15 @@
                     currentData = data.reverse();
                     ohlcConverter(liveCallback(currentData), currentData[currentData.length - 1]);
                 }
-                dispatch.historicDataLoaded(err, currentData);
+                dispatch.dataLoaded(err, currentData);
             }));
         }
+
+        dataInterface.generateData = function() {
+            dataInterface.invalidate();
+            dispatch.dataLoaded(null, dataGenerator(200));
+            return dataInterface;
+        };
 
         dataInterface.invalidate = function() {
             ohlcConverter.close();

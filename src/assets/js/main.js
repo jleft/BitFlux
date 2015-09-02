@@ -10,7 +10,7 @@
     var svgNav = container.select('svg.nav');
 
     var dataModel = {
-        data: fc.data.random.financial()(250),
+        data: [],
         period: 60 * 60 * 24,
         viewDomain: []
     };
@@ -58,14 +58,9 @@
             if (type === 'bitcoin') {
                 dataModel.period = container.select('#period-selection').property('value');
                 dataInterface(dataModel.period);
-                setPeriodChangeVisibility(true);
             } else if (type === 'generated') {
-                dataInterface.invalidate();
-                dataModel.data = fc.data.random.financial()(250);
+                dataInterface.generateData();
                 dataModel.period = 60 * 60 * 24;
-                resetToLive();
-                render();
-                setPeriodChangeVisibility(false);
             }
         })
         .on('periodChange', function(period) {
@@ -98,7 +93,7 @@
             }
             render();
         })
-        .on('historicDataLoaded', function(err, data) {
+        .on('dataLoaded', function(err, data) {
             if (err) {
                 console.log('Error getting historic data: ' + err);
             } else {
@@ -107,14 +102,6 @@
                 render();
             }
         });
-
-    function setPeriodChangeVisibility(visible) {
-        var visibility = visible ? 'visible' : 'hidden';
-        d3.select('#period-selection')
-            .style('visibility', visibility);
-    }
-
-    setPeriodChangeVisibility(false);
 
     container.select('#reset-button').on('click', resetToLive);
 
@@ -141,6 +128,7 @@
 
     d3.select(window).on('resize', resize);
 
+    dataInterface.generateData();
     sc.util.calculateDimensions(container, secondaryChart);
     resetToLive();
 })(d3, fc, sc);

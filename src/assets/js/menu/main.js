@@ -9,6 +9,14 @@
             'dataTypeChange',
             'periodChange');
 
+        function setPeriodChangeVisibility(visible) {
+            var visibility = visible ? 'visible' : 'hidden';
+            d3.select('#period-selection')
+                .style('visibility', visibility);
+        }
+
+        setPeriodChangeVisibility(false);
+
         var primaryChartSeriesOptions = sc.menu.primaryChart.series()
             .on('primaryChartSeriesChange', function(series) {
                 dispatch.primaryChartSeriesChange(series);
@@ -26,6 +34,11 @@
 
         var dataTypeChangeOptions = function(selection) {
             selection.on('change', function() {
+                if (this.value === 'bitcoin') {
+                    setPeriodChangeVisibility(true);
+                } else {
+                    setPeriodChangeVisibility(false);
+                }
                 dispatch.dataTypeChange(this.value);
             });
         };
