@@ -26,14 +26,12 @@
 
         var dataTypeChangeOptions = function(selection) {
             selection.on('change', function() {
-                //var type = d3.select(this).property('value');
                 dispatch.dataTypeChange(this.value);
             });
         };
 
         var periodChangeOptions = function(selection) {
             selection.on('change', function() {
-                //var period = d3.select(this).property('value');
                 dispatch.periodChange(this.value);
             });
         };

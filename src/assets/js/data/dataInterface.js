@@ -8,8 +8,7 @@
         var dispatch = d3.dispatch('messageReceived', 'historicDataLoaded');
 
         function dataInterface(period) {
-            callbackGenerator.invalidateCallback();
-            ohlcConverter.close();
+            dataInterface.invalidate();
             historicFeed.granularity(period);
             ohlcConverter.period(period);
             updateHistoricFeedDateRangeToPresent(period);

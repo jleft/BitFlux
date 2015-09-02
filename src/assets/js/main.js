@@ -93,8 +93,7 @@
                 (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
                 console.log('Error loading data from coinbase websocket: ' +
                 socketEvent.type + ' ' + socketEvent.code);
-            }
-            if (socketEvent.type === 'message') {
+            } else if (socketEvent.type === 'message') {
                 dataModel.data = data;
             }
             render();
@@ -112,7 +111,7 @@
     function setPeriodChangeVisibility(visible) {
         var visibility = visible ? 'visible' : 'hidden';
         d3.select('#period-selection')
-        .style('visibility', visibility);
+            .style('visibility', visibility);
     }
 
     setPeriodChangeVisibility(false);
