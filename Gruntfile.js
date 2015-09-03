@@ -99,8 +99,8 @@ module.exports = function(grunt) {
                     expand: true
                 },
                 {
-                    cwd: 'node_modules/d3fc/node_modules/css-layout/src/',
-                    src: ['Layout.js'],
+                    cwd: 'node_modules/d3fc/node_modules/css-layout/dist/',
+                    src: ['css-layout.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 },
@@ -270,7 +270,7 @@ module.exports = function(grunt) {
             options: {
                 specs: '<%= meta.testJsFiles %>',
                 vendor: ['node_modules/d3fc/node_modules/d3/d3.js',
-                    'node_modules/d3fc/node_modules/css-layout/src/Layout.js',
+                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
                     'node_modules/d3fc/dist/d3fc.js',
                     'node_modules/jquery/dist/jquery.min.js',
                     'node_modules/bootstrap/dist/js/bootstrap.min.js'
