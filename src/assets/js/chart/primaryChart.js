@@ -25,7 +25,7 @@
         return annotatedTickValues;
     }
 
-    function findTotalYExtent(visibleData, currentSeries, currentIndicator) {
+    function findTotalYExtent(visibleData, data, currentSeries, indicator) {
         var extentAccessor;
         if (currentSeries.option.yLowValue && currentSeries.option.yHighValue) {
             extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
@@ -38,19 +38,10 @@
         }
         var extent = fc.util.extent(visibleData, extentAccessor);
 
-        var indicatorString = currentIndicator.valueString;
-        if (indicatorString === 'movingAverage') {
-            var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
-            extent[0] = Math.min(movingAverageExtent[0], extent[0]);
-            extent[1] = Math.max(movingAverageExtent[1], extent[1]);
-        } else if (indicatorString === 'bollinger') {
-            var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
-            var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
-            extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
-            extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
-        } else if (indicatorString !== 'no-indicator') {
-            throw new Error('Unexpected indicator type');
-        }
+        var bollingerBandsVisibleDataObject = data.map(function(d) { return d.bollingerBands; });
+        var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+        extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
+        extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
         return extent;
     }
 
@@ -72,11 +63,9 @@
             .xTicks(0);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
-        var currentIndicator = sc.menu.option('None', 'no-indicator', null);
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
-
         var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
         var closeLine = fc.annotation.line()
@@ -93,9 +82,17 @@
             })
             .series([gridlines, currentSeries, closeLine]);
 
+        var indMulti = fc.series.multi()
+                    .key(function(series, index) {
+                        if (series.isLine) {
+                            return index;
+                        }
+                        return series;
+                    });
+
         function updateMultiSeries() {
-            if (currentIndicator.option) {
-                multi.series([gridlines, currentSeries.option, closeLine, currentIndicator.option]);
+            if (indMulti.series()) {
+                multi.series([gridlines, currentSeries.option, closeLine, indMulti]);
             } else {
                 multi.series([gridlines, currentSeries.option, closeLine]);
             }
@@ -130,7 +127,7 @@
             updateMultiSeries();
 
             // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicator);
+            var yExtent = findTotalYExtent(visibleData, data, currentSeries, indMulti.series());
             // Add 10% either side of extreme high/lows
             var variance = yExtent[1] - yExtent[0];
             yExtent[0] -= variance * 0.1;
@@ -170,8 +167,17 @@
             return primaryChart;
         };
 
-        primaryChart.changeIndicator = function(indicator) {
-            currentIndicator = indicator;
+        primaryChart.toggleIndicator = function(indicator) {
+            var ind = indMulti.series();
+            if (indicator.show) {
+                ind.push(indicator.option);
+                indMulti.series(ind);
+            } else {
+                var index = ind.indexOf(indicator.option);
+                ind.splice(index, 1);
+                indMulti.series(ind);
+            }
+            updateMultiSeries();
             return primaryChart;
         };
 

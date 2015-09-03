@@ -92,7 +92,7 @@
             render();
         })
         .on('primaryChartIndicatorChange', function(indicator) {
-            primaryChart.changeIndicator(indicator);
+            primaryChart.toggleIndicator(indicator);
             svgPrimary.selectAll('.multi')
                 .remove();
             render();
