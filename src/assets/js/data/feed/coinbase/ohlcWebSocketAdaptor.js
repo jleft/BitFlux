@@ -7,25 +7,16 @@
         var period = 60 * 60 * 24;
         var liveFeed = sc.data.feed.coinbase.webSocket();
 
-        function ohlcWebSocketAdaptor(cb, initialBasket) {
-            var basket = initialBasket;
-            liveFeed(function(err, datum) {
-                if (datum) {
-                    basket = updateBasket(basket, datum);
-                }
-                cb(err, basket);
-            });
+        function createNewBasket(datum, time) {
+            return {
+                date: time,
+                open: datum.price,
+                close: datum.price,
+                low: datum.price,
+                high: datum.price,
+                volume: datum.volume
+            };
         }
-
-        ohlcWebSocketAdaptor.period = function(x) {
-            if (!arguments.length) {
-                return period;
-            }
-            period = x;
-            return ohlcWebSocketAdaptor;
-        };
-
-        d3.rebind(ohlcWebSocketAdaptor, liveFeed, 'product', 'messageType', 'close');
 
         function updateBasket(basket, datum) {
             if (basket == null) {
@@ -48,16 +39,25 @@
             return basket;
         }
 
-        function createNewBasket(datum, time) {
-            return {
-                date: time,
-                open: datum.price,
-                close: datum.price,
-                low: datum.price,
-                high: datum.price,
-                volume: datum.volume
-            };
+        function ohlcWebSocketAdaptor(cb, initialBasket) {
+            var basket = initialBasket;
+            liveFeed(function(err, datum) {
+                if (datum) {
+                    basket = updateBasket(basket, datum);
+                }
+                cb(err, basket);
+            });
         }
+
+        ohlcWebSocketAdaptor.period = function(x) {
+            if (!arguments.length) {
+                return period;
+            }
+            period = x;
+            return ohlcWebSocketAdaptor;
+        };
+
+        d3.rebind(ohlcWebSocketAdaptor, liveFeed, 'product', 'messageType', 'close');
 
         return ohlcWebSocketAdaptor;
     };
