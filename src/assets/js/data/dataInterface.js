@@ -9,6 +9,30 @@
         var dispatch = d3.dispatch('messageReceived', 'dataLoaded');
         var candlesOfData = 200;
 
+        function updateHistoricFeedDateRangeToPresent(period) {
+            var currDate = new Date();
+            var startDate = d3.time.second.offset(currDate, -candlesOfData * period);
+            historicFeed.start(startDate)
+                .end(currDate);
+        }
+
+        function newBasketReceived(basket, data) {
+            if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
+                data.push(basket);
+            } else {
+                data[data.length - 1] = basket;
+            }
+        }
+
+        function liveCallback(data) {
+            return function(socketEvent, latestBasket) {
+                if (socketEvent.type === 'message' && latestBasket) {
+                    newBasketReceived(latestBasket, data);
+                }
+                dispatch.messageReceived(socketEvent, data);
+            };
+        }
+
         function dataInterface(period) {
             dataInterface.invalidate();
             historicFeed.granularity(period);
@@ -37,30 +61,6 @@
         };
 
         d3.rebind(dataInterface, dispatch, 'on');
-
-        function updateHistoricFeedDateRangeToPresent(period) {
-            var currDate = new Date();
-            var startDate = d3.time.second.offset(currDate, -candlesOfData * period);
-            historicFeed.start(startDate)
-                .end(currDate);
-        }
-
-        function liveCallback(data) {
-            return function(socketEvent, latestBasket) {
-                if (socketEvent.type === 'message' && latestBasket) {
-                    newBasketReceived(latestBasket, data);
-                }
-                dispatch.messageReceived(socketEvent, data);
-            };
-        }
-
-        function newBasketReceived(basket, data) {
-            if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
-                data.push(basket);
-            } else {
-                data[data.length - 1] = basket;
-            }
-        }
 
         return dataInterface;
     };

@@ -20,14 +20,66 @@
     var xAxis = sc.chart.xAxis();
     var navChart = sc.chart.navChart();
 
+    function render() {
+        svgPrimary.datum(dataModel)
+            .call(primaryChart);
+
+        if (secondaryChart) {
+            svgSecondary.datum(dataModel)
+                .call(secondaryChart);
+        }
+
+        svgXAxis.datum(dataModel)
+            .call(xAxis);
+
+        svgNav.datum(dataModel)
+            .call(navChart);
+    }
+
+    function resize() {
+        sc.util.calculateDimensions(container, secondaryChart);
+        render();
+    }
+
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
         render();
     }
 
+    function resetToLive() {
+        var data = dataModel.data;
+        var extent = fc.util.extent(data, 'date');
+        var timeExtent = (extent[1].getTime() - extent[0].getTime()) / 1000;
+        var navTimeExtent = timeExtent / 5;
+        var latest = data[data.length - 1].date;
+        var navTimeDomain = [d3.time.second.offset(latest, -navTimeExtent), latest];
+        onViewChanged(navTimeDomain);
+    }
+
     primaryChart.on('viewChange', onViewChanged);
     xAxis.on('viewChange', onViewChanged);
     navChart.on('viewChange', onViewChanged);
+
+    var dataInterface = sc.data.dataInterface()
+        .on('messageReceived', function(socketEvent, data) {
+            if (socketEvent.type === 'error' ||
+                (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
+                console.log('Error loading data from coinbase websocket: ' +
+                socketEvent.type + ' ' + socketEvent.code);
+            } else if (socketEvent.type === 'message') {
+                dataModel.data = data;
+            }
+            render();
+        })
+        .on('dataLoaded', function(err, data) {
+            if (err) {
+                console.log('Error getting historic data: ' + err);
+            } else {
+                dataModel.data = data;
+                resetToLive();
+                render();
+            }
+        });
 
     var mainMenu = sc.menu.main()
         .on('primaryChartSeriesChange', function(series) {
@@ -71,60 +123,7 @@
     container.select('.menu')
         .call(mainMenu);
 
-    // Set Reset button event
-    function resetToLive() {
-        var data = dataModel.data;
-        var extent = fc.util.extent(data, 'date');
-        var timeExtent = (extent[1].getTime() - extent[0].getTime()) / 1000;
-        var navTimeExtent = timeExtent / 5;
-        var latest = data[data.length - 1].date;
-        var navTimeDomain = [d3.time.second.offset(latest, -navTimeExtent), latest];
-        onViewChanged(navTimeDomain);
-    }
-
-    var dataInterface = sc.data.dataInterface()
-        .on('messageReceived', function(socketEvent, data) {
-            if (socketEvent.type === 'error' ||
-                (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
-                console.log('Error loading data from coinbase websocket: ' +
-                socketEvent.type + ' ' + socketEvent.code);
-            } else if (socketEvent.type === 'message') {
-                dataModel.data = data;
-            }
-            render();
-        })
-        .on('dataLoaded', function(err, data) {
-            if (err) {
-                console.log('Error getting historic data: ' + err);
-            } else {
-                dataModel.data = data;
-                resetToLive();
-                render();
-            }
-        });
-
     container.select('#reset-button').on('click', resetToLive);
-
-    function render() {
-        svgPrimary.datum(dataModel)
-            .call(primaryChart);
-
-        if (secondaryChart) {
-            svgSecondary.datum(dataModel)
-                .call(secondaryChart);
-        }
-
-        svgXAxis.datum(dataModel)
-            .call(xAxis);
-
-        svgNav.datum(dataModel)
-            .call(navChart);
-    }
-
-    function resize() {
-        sc.util.calculateDimensions(container, secondaryChart);
-        render();
-    }
 
     d3.select(window).on('resize', resize);
 

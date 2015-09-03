@@ -65,6 +65,14 @@
             })
             .series([gridlines, currentSeries, closeLine]);
 
+        function updateMultiSeries() {
+            if (currentIndicator) {
+                multi.series([gridlines, currentSeries, closeLine, currentIndicator]);
+            } else {
+                multi.series([gridlines, currentSeries, closeLine]);
+            }
+        }
+
         function primaryChart(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
@@ -125,14 +133,6 @@
         }
 
         d3.rebind(primaryChart, dispatch, 'on');
-
-        function updateMultiSeries() {
-            if (currentIndicator) {
-                multi.series([gridlines, currentSeries, closeLine, currentIndicator]);
-            } else {
-                multi.series([gridlines, currentSeries, closeLine]);
-            }
-        }
 
         primaryChart.yAxisWidth = function() { return timeSeries.yAxisWidth; };
 
