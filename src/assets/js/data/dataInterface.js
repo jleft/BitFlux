@@ -7,6 +7,7 @@
         var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
         var dataGenerator = fc.data.random.financial();
         var dispatch = d3.dispatch('messageReceived', 'dataLoaded');
+        var candlesOfData = 200;
 
         function dataInterface(period) {
             dataInterface.invalidate();
@@ -25,7 +26,7 @@
 
         dataInterface.generateData = function() {
             dataInterface.invalidate();
-            dispatch.dataLoaded(null, dataGenerator(200));
+            dispatch.dataLoaded(null, dataGenerator(candlesOfData));
             return dataInterface;
         };
 
@@ -39,7 +40,7 @@
 
         function updateHistoricFeedDateRangeToPresent(period) {
             var currDate = new Date();
-            var startDate = d3.time.second.offset(currDate, -200 * period);
+            var startDate = d3.time.second.offset(currDate, -candlesOfData * period);
             historicFeed.start(startDate)
                 .end(currDate);
         }
