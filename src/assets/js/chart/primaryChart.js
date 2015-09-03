@@ -62,7 +62,8 @@
                     return index;
                 }
                 return series;
-            });
+            })
+            .series([gridlines, currentSeries, closeLine]);
 
         function primaryChart(selection) {
             var data = selection.datum().data;
