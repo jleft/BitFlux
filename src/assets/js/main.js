@@ -48,6 +48,8 @@
         var lastDatumTime = dataModel.data[dataModel.data.length - 1].date.getTime();
         if (latestViewedTime === lastDatumTime) {
             trackingLiveData = true;
+        } else {
+            trackingLiveData = false;
         }
         render();
     }
