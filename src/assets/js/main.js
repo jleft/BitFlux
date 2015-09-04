@@ -41,8 +41,14 @@
         render();
     }
 
+    var trackingLiveData = true;
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
+        var latestViewedTime = dataModel.viewDomain[1].getTime();
+        var lastDatumTime = dataModel.data[dataModel.data.length - 1].date.getTime();
+        if (latestViewedTime === lastDatumTime) {
+            trackingLiveData = true;
+        }
         render();
     }
 
@@ -68,6 +74,10 @@
                 socketEvent.type + ' ' + socketEvent.code);
             } else if (socketEvent.type === 'message') {
                 dataModel.data = data;
+                if (trackingLiveData) {
+                    var newDomain = sc.util.returnDomainShiftedToEndOfData(dataModel.viewDomain, dataModel.data);
+                    onViewChanged(newDomain);
+                }
             }
             render();
         })
