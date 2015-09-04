@@ -83,7 +83,7 @@
 
     var mainMenu = sc.menu.main()
         .on('primaryChartSeriesChange', function(series) {
-            primaryChart.changeSeries(series.option);
+            primaryChart.changeSeries(series);
             /* Elements are drawn in the order they appear in the HTML - at this minute,
             D3FC doesn't maintain the ordering of elements, so it's easiest to just
             remove them and re-write them to the DOM in the correct order. */
@@ -92,7 +92,7 @@
             render();
         })
         .on('primaryChartIndicatorChange', function(indicator) {
-            primaryChart.changeIndicator(indicator.option);
+            primaryChart.changeIndicator(indicator);
             svgPrimary.selectAll('.multi')
                 .remove();
             render();
