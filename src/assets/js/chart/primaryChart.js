@@ -22,8 +22,36 @@
                 annotatedTickValues.push(annotation[i]);
             }
         }
-
         return annotatedTickValues;
+    }
+
+    function findTotalYExtent(visibleData, currentSeries, currentIndicator) {
+        var extentAccessor;
+        if (currentSeries.option.yLowValue && currentSeries.option.yHighValue) {
+            extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
+        } else if (currentSeries.option.yValue) {
+            extentAccessor = currentSeries.option.yValue();
+        } else if (currentSeries.option.y1Value) {
+            extentAccessor = currentSeries.option.y1Value();
+        } else {
+            throw new Error('Main series given to chart does not have expected interface');
+        }
+        var extent = fc.util.extent(visibleData, extentAccessor);
+
+        var indicatorString = currentIndicator.valueString;
+        if (indicatorString === 'movingAverage') {
+            var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
+            extent[0] = Math.min(movingAverageExtent[0], extent[0]);
+            extent[1] = Math.max(movingAverageExtent[1], extent[1]);
+        } else if (indicatorString === 'bollinger') {
+            var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
+            var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+            extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
+            extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+        } else if (indicatorString !== 'no-indicator') {
+            throw new Error('Unexpected indicator type');
+        }
+        return extent;
     }
 
     sc.chart.primaryChart = function() {
@@ -43,8 +71,8 @@
             .yTicks(5)
             .xTicks(0);
 
-        var currentSeries = sc.series.candlestick();
-        var currentIndicator;
+        var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var currentIndicator = sc.menu.option('None', 'no-indicator', null);
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
@@ -66,10 +94,10 @@
             .series([gridlines, currentSeries, closeLine]);
 
         function updateMultiSeries() {
-            if (currentIndicator) {
-                multi.series([gridlines, currentSeries, closeLine, currentIndicator]);
+            if (currentIndicator.option) {
+                multi.series([gridlines, currentSeries.option, closeLine, currentIndicator.option]);
             } else {
-                multi.series([gridlines, currentSeries, closeLine]);
+                multi.series([gridlines, currentSeries.option, closeLine]);
             }
         }
 
@@ -79,8 +107,10 @@
 
             timeSeries.xDomain(viewDomain);
 
+            var visibleData = sc.util.filterDataInDateRange(data, timeSeries.xDomain());
+
             // Scale y axis
-            var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data, timeSeries.xDomain()), ['low', 'high']);
+            var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicator);
             // Add 10% either side of extreme high/lows
             var variance = yExtent[1] - yExtent[0];
             yExtent[0] -= variance * 0.1;
@@ -90,7 +120,6 @@
             // Find current tick values and add close price to this list, then set it explicitly below
             var closePrice = data[data.length - 1].close;
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
-
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.classed('closeLine', function(d) {
@@ -138,13 +167,11 @@
 
         primaryChart.changeSeries = function(series) {
             currentSeries = series;
-            updateMultiSeries();
             return primaryChart;
         };
 
         primaryChart.changeIndicator = function(indicator) {
             currentIndicator = indicator;
-            updateMultiSeries();
             return primaryChart;
         };
 

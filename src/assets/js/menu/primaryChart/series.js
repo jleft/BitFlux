@@ -5,7 +5,7 @@
 
         var dispatch = d3.dispatch('primaryChartSeriesChange');
 
-        var candlestick = sc.menu.option('Candlestick', 'candlestick', fc.series.candlestick());
+        var candlestick = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var ohlc = sc.menu.option('OHLC', 'ohlc', fc.series.ohlc());
         var line = sc.menu.option('Line', 'line', fc.series.line());
         line.option.isLine = true;
