@@ -22,27 +22,41 @@
         var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
         function rsi(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            rsiTimeSeries.xDomain(viewDomain)
+            rsiAlgorithm(dataModel.data);
+
+            rsiTimeSeries.xDomain(dataModel.viewDomain)
                 .yDomain([0, 100]);
-
-            rsiAlgorithm(data);
 
             // Redraw
             rsiTimeSeries.plotArea(multi);
             selection.call(rsiTimeSeries);
 
+            selection.selectAll('rect.foreground')
+                .data([dataModel])
+                .enter()
+                .append('rect')
+                .attr('class', 'foreground')
+                .layout({
+                    position: 'absolute',
+                    top: 0,
+                    right: yAxisWidth,
+                    bottom: 0,
+                    left: 0
+                });
+
+            selection.layout();
+
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(rsiTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, rsiTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, selection.select('rect.foreground'), rsiTimeSeries.xScale());
                     dispatch.viewChange(rsiTimeSeries.xDomain());
                 });
 
-            selection.call(zoom);
+            selection.select('rect.foreground').call(zoom);
         }
 
         d3.rebind(rsi, dispatch, 'on');

@@ -161,15 +161,11 @@
 
             initialiseResize();
 
-            dataInterface.generateData();
-
             updateLayout();
 
-            resetToLive();
+            dataInterface.generateData();
         };
 
         return app;
     };
-
-
 })(d3, fc, sc);

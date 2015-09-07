@@ -33,15 +33,14 @@
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            macdAlgorithm(data);
+            macdAlgorithm(dataModel.data);
 
-            macdTimeSeries.xDomain(viewDomain);
+            macdTimeSeries.xDomain(dataModel.viewDomain);
 
             // Add percentage padding either side of extreme high/lows
-            var maxYExtent = d3.max(data, function(d) {
+            var maxYExtent = d3.max(dataModel.data, function(d) {
                 return Math.abs(d.macd.macd);
             });
             var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
@@ -51,15 +50,30 @@
             macdTimeSeries.plotArea(multi);
             selection.call(macdTimeSeries);
 
+            selection.selectAll('rect.foreground')
+                .data([dataModel])
+                .enter()
+                .append('rect')
+                .attr('class', 'foreground')
+                .layout({
+                    position: 'absolute',
+                    top: 0,
+                    right: yAxisWidth,
+                    bottom: 0,
+                    left: 0
+                });
+
+            selection.layout();
+
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(macdTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, macdTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, selection.select('rect.foreground'), macdTimeSeries.xScale());
                     dispatch.viewChange(macdTimeSeries.xDomain());
                 });
 
-            selection.call(zoom);
+            selection.select('rect.foreground').call(zoom);
         }
 
         d3.rebind(macd, dispatch, 'on');

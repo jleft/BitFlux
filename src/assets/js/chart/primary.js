@@ -134,27 +134,27 @@
         }
 
         function primary(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            timeSeries.xDomain(viewDomain);
+            timeSeries.xDomain(dataModel.viewDomain);
 
             updateYValueAccessorUsed();
             updateMultiSeries();
 
-            movingAverage(data);
-            bollingerAlgorithm(data);
+            movingAverage(dataModel.data);
+            bollingerAlgorithm(dataModel.data);
 
             var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), data);
 
             // Scale y axis
+            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), dataModel.data);
             var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
             // Add percentage padding either side of extreme high/lows
             var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
             timeSeries.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
-            var latestPrice = currentYValueAccessor(data[data.length - 1]);
+            var latestPrice = currentYValueAccessor(dataModel.data[dataModel.data.length - 1]);
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
@@ -170,15 +170,30 @@
             timeSeries.plotArea(multi);
             selection.call(timeSeries);
 
+            selection.selectAll('rect.foreground')
+                .data([dataModel])
+                .enter()
+                .append('rect')
+                .attr('class', 'foreground')
+                .layout({
+                    position: 'absolute',
+                    top: 0,
+                    right: yAxisWidth,
+                    bottom: 0,
+                    left: 0
+                });
+
+            selection.layout();
+
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(timeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, timeSeries.xScale());
+                    sc.util.zoomControl(zoom, selection.select('rect.foreground'), timeSeries.xScale());
                     dispatch.viewChange(timeSeries.xDomain());
                 });
 
-            selection.call(zoom);
+            selection.select('rect.foreground').call(zoom);
         }
 
         d3.rebind(primary, dispatch, 'on');
