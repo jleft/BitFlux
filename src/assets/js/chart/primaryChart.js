@@ -128,10 +128,11 @@
 
             // Scale y axis
             var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
-            // Add 10% either side of extreme high/lows
+            // Add padding either side of extreme high/lows
+            var percentagePadding = 0.04;
             var variance = yExtent[1] - yExtent[0];
-            yExtent[0] -= variance * 0.1;
-            yExtent[1] += variance * 0.1;
+            yExtent[0] -= variance * percentagePadding;
+            yExtent[1] += variance * percentagePadding;
             timeSeries.yDomain(yExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
