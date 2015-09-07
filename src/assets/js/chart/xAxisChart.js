@@ -15,8 +15,6 @@
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
-            var zoom = d3.behavior.zoom();
-
             // Redraw
             var xAxisContainer = selection.selectAll('g.x-axis')
                 .data([data]);
@@ -37,15 +35,6 @@
                 .domain(viewDomain);
 
             xAxisContainer.call(xAxis);
-
-            // Behaves oddly if not reinitialized every render
-            zoom.x(xScale)
-                .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection, data, xScale);
-                    dispatch.viewChange(xScale.domain());
-                });
-
-            selection.call(zoom);
         }
 
         d3.rebind(xAxisChart, dispatch, 'on');
