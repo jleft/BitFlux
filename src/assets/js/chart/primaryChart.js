@@ -109,14 +109,6 @@
 
             var visibleData = sc.util.filterDataInDateRange(data, timeSeries.xDomain());
 
-            // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicator);
-            // Add 10% either side of extreme high/lows
-            var variance = yExtent[1] - yExtent[0];
-            yExtent[0] -= variance * 0.1;
-            yExtent[1] += variance * 0.1;
-            timeSeries.yDomain(yExtent);
-
             // Find current tick values and add close price to this list, then set it explicitly below
             var closePrice = data[data.length - 1].close;
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
@@ -136,6 +128,14 @@
             bollingerAlgorithm(data);
 
             updateMultiSeries();
+
+            // Scale y axis
+            var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicator);
+            // Add 10% either side of extreme high/lows
+            var variance = yExtent[1] - yExtent[0];
+            yExtent[0] -= variance * 0.1;
+            yExtent[1] += variance * 0.1;
+            timeSeries.yDomain(yExtent);
 
             multi.mapping(function(series) {
                 switch (series) {
