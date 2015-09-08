@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.util.filterDataInDateRange = function(data, dateExtent) {
+    sc.util.domain.filterDataInDateRange = function(data, dateExtent) {
         // Calculate visible data, given [startDate, endDate]
         var bisector = d3.bisector(function(d) { return d.date; });
         var filteredData = data.slice(

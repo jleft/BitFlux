@@ -20,6 +20,8 @@
             secondaryChart: {}
         },
         series: {},
-        util: {}
+        util: {
+            domain: {}
+        }
     };
 })();

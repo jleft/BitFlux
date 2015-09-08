@@ -12,6 +12,7 @@
     var dataModel = {
         data: [],
         period: 60 * 60 * 24,
+        trackingLive: true,
         viewDomain: []
     };
 
@@ -41,14 +42,9 @@
         render();
     }
 
-    function trackingLiveData() {
-        var latestViewedTime = dataModel.viewDomain[1].getTime();
-        var lastDatumTime = dataModel.data[dataModel.data.length - 1].date.getTime();
-        return (latestViewedTime === lastDatumTime);
-    }
-
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
+        dataModel.trackingLive = sc.util.domain.trackingLiveData(dataModel.viewDomain, dataModel.data);
         render();
     }
 
@@ -74,8 +70,8 @@
                 socketEvent.type + ' ' + socketEvent.code);
             } else if (socketEvent.type === 'message') {
                 dataModel.data = data;
-                if (trackingLiveData()) {
-                    var newDomain = sc.util.shiftToLiveData(dataModel.viewDomain, dataModel.data);
+                if (dataModel.trackingLive) {
+                    var newDomain = sc.util.domain.shiftToLiveData(dataModel.viewDomain, dataModel.data);
                     onViewChanged(newDomain);
                 }
             }

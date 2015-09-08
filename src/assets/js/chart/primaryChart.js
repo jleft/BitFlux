@@ -119,7 +119,7 @@
 
             timeSeries.xDomain(viewDomain);
 
-            var visibleData = sc.util.filterDataInDateRange(data, timeSeries.xDomain());
+            var visibleData = sc.util.domain.filterDataInDateRange(data, timeSeries.xDomain());
 
             movingAverage(data);
             bollingerAlgorithm(data);

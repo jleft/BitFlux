@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    describe('sc.util.filterDataInDateRange', function() {
+    describe('sc.util.domain.filterDataInDateRange', function() {
 
         function obj(val) {
             return {
@@ -22,7 +22,7 @@
 
 
         it('should return all data (without padding) when date range covers the data\'s date extent', function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [data[0].date, data[data.length - 1].date]);
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [data[0].date, data[data.length - 1].date]);
 
             expect(filteredData.length).toEqual(data.length);
             expect(filteredData[0].date).toEqual(monday);
@@ -33,7 +33,7 @@
         });
 
         it('should pad either side of the data when the date range is within the data\'s date extent', function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [wednesday, wednesday]);
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [wednesday, wednesday]);
 
             expect(filteredData.length).toEqual(3);
             expect(filteredData[0].date).toEqual(tuesday);
@@ -43,7 +43,7 @@
 
         it('should pad the start of the data' +
             'when the date range\'s end date is not at the end of the data\'s date extent', function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [monday, tuesday]);
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [monday, tuesday]);
 
             expect(filteredData.length).toEqual(3);
             expect(filteredData[0].date).toEqual(monday);
@@ -54,7 +54,7 @@
         it('should pad the end of the data' +
             'when the date range\'s start date is not at the start of the data\'s date extent',
             function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [thursday, friday]);
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [thursday, friday]);
 
             expect(filteredData.length).toEqual(3);
             expect(filteredData[0].date).toEqual(wednesday);
@@ -63,7 +63,7 @@
         });
 
         it('should return the first date when a date range is specified before the first datum\'s date', function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [
                 d3.time.day.offset(monday, -2),
                 d3.time.day.offset(monday, -1)]);
 
@@ -72,7 +72,7 @@
         });
 
         it('should return the last date when a date range is specified after the last datum\'s date', function() {
-            var filteredData = sc.util.filterDataInDateRange(data, [
+            var filteredData = sc.util.domain.filterDataInDateRange(data, [
                 d3.time.day.offset(friday, 1),
                 d3.time.day.offset(friday, 2)]);
 
