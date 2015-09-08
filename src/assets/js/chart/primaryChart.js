@@ -82,13 +82,7 @@
             })
             .series([gridlines, currentSeries, closeLine]);
 
-        var indMulti = fc.series.multi()
-                    .key(function(series, index) {
-                        if (series.isLine) {
-                            return index;
-                        }
-                        return series;
-                    });
+        var indMulti = fc.series.multi();
 
         function updateMultiSeries() {
             if (indMulti.series()) {
