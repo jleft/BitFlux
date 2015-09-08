@@ -10,7 +10,13 @@ module.exports = function(grunt) {
                 'src/**/*'
             ],
             srcJsFiles: [
-                'src/**/*.js'
+                'src/assets/js/sc.js',
+                'src/assets/js/chart/**/*.js',
+                'src/assets/js/menu/**/*.js',
+                'src/assets/js/util/**/*.js',
+                'src/assets/js/data/**/*.js',
+                'src/assets/js/series/**/*.js',
+                'src/assets/js/main.js'
             ],
             testJsFiles: [
                 'test/**/*Spec.js'
@@ -82,7 +88,7 @@ module.exports = function(grunt) {
             web: {
                 files: [{
                     cwd: 'src',
-                    src: ['index.html', '**/*.js'],
+                    src: ['index.html'],
                     dest: 'dist',
                     expand: true
                 },
@@ -93,8 +99,8 @@ module.exports = function(grunt) {
                     expand: true
                 },
                 {
-                    cwd: 'node_modules/d3fc/node_modules/css-layout/src/',
-                    src: ['Layout.js'],
+                    cwd: 'node_modules/d3fc/node_modules/css-layout/dist/',
+                    src: ['css-layout.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 },
@@ -241,6 +247,41 @@ module.exports = function(grunt) {
                     'dist/assets/css/style.css': 'src/assets/styles/style.less'
                 }
             }
+        },
+
+        concat: {
+            development: {
+                src: ['<%= meta.srcJsFiles %>'],
+                dest: 'dist/assets/js/app.js',
+                options: {
+                    sourceMap: true
+                }
+            },
+            production: {
+                src: ['<%= meta.srcJsFiles %>'],
+                dest: 'dist/assets/js/app.js',
+                options: {
+                    sourceMap: false
+                }
+            }
+        },
+
+        jasmine: {
+            options: {
+                specs: '<%= meta.testJsFiles %>',
+                vendor: ['node_modules/d3fc/node_modules/d3/d3.js',
+                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
+                    'node_modules/d3fc/dist/d3fc.js',
+                    'node_modules/jquery/dist/jquery.min.js',
+                    'node_modules/bootstrap/dist/js/bootstrap.min.js'
+                ]
+            },
+            test: {
+                src: ['<%= meta.srcJsFiles %>'],
+                options: {
+                    keepRunner: true
+                }
+            }
         }
 
     });
@@ -258,9 +299,14 @@ module.exports = function(grunt) {
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
 
-    grunt.registerTask('build', ['check', 'clean', 'less:production', 'copy']);
-    grunt.registerTask('build:development', ['check', 'clean', 'less:development', 'copy']);
-    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'clean', 'less:development', 'copy']);
+    grunt.registerTask('test', ['jasmine:test']);
+
+    grunt.registerTask('build', ['check', 'test', 'clean',
+        'concat:production', 'less:production', 'copy']);
+    grunt.registerTask('build:development', ['check', 'test', 'clean',
+        'concat:development', 'less:development', 'copy']);
+    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'test', 'clean',
+        'concat:development', 'less:development', 'copy']);
 
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);

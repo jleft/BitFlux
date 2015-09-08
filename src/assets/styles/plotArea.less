@@ -1,17 +1,5 @@
 .plot-area {
 
-  .annotation {
-    &.close {
-      text {
-        fill: @annotation-text-colour;
-      }
-
-      path {
-        fill: @primary-blue;
-      }
-    }
-  }
-
   path.line {
     stroke: @primary-blue;
 
@@ -19,5 +7,32 @@
       stroke: @moving-average-line-colour;
     }
   }
+  
+  path.down {
+    stroke: @candlestick-down-stroke;
+    fill: @candlestick-down-fill;
+  }
+  
+  path.up {
+    stroke: @candlestick-up-stroke;
+    fill: @candlestick-up-fill;
+  }
+
+  .upper > path.line {
+    stroke: @bollinger-upper-colour;
+  }
+
+  .lower > path.line {
+    stroke: @bollinger-lower-colour;
+  }
+
+  .average > path.line {
+    visibility: hidden;
+  }
+
+  .area > path.area {
+    fill: @bollinger-fill-colour;
+  }
 
 }
+

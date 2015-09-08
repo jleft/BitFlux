@@ -1,11 +1,12 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
-    // Helper functions
+
     sc.chart.navChart = function() {
         var dispatch = d3.dispatch('viewChange');
 
         var navTimeSeries = fc.chart.linearTimeSeries()
-            .yTicks(0);
+            .yTicks(0)
+            .yOrient('right');
 
         var area = fc.series.area()
             .yValue(function(d) { return d.open; });
@@ -24,7 +25,7 @@
             var viewDomain = selection.datum().viewDomain;
 
             viewScale.domain(viewDomain)
-                .range([0, selection.attr('width')]);
+                .range([0, parseInt(selection.style('width'), 10)]);
 
             var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data,
                 fc.util.extent(data, 'date')), ['low', 'high']);
@@ -73,4 +74,4 @@
         return navChart;
     };
 
-})(sc);
+})(d3, fc, sc);
