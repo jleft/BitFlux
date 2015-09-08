@@ -25,7 +25,7 @@
         return annotatedTickValues;
     }
 
-    function findTotalYExtent(visibleData, data, currentSeries, indicator) {
+    function findTotalYExtent(visibleData, currentSeries, indicator) {
         var extentAccessor;
         if (currentSeries.option.yLowValue && currentSeries.option.yHighValue) {
             extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
@@ -38,10 +38,12 @@
         }
         var extent = fc.util.extent(visibleData, extentAccessor);
 
-        var bollingerBandsVisibleDataObject = data.map(function(d) { return d.bollingerBands; });
-        var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
-        extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
-        extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+        if (indicator.length > 0) {
+            var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
+            var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+            extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
+            extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+        }
         return extent;
     }
 
@@ -82,11 +84,11 @@
             })
             .series([gridlines, currentSeries, closeLine]);
 
-        var indMulti = fc.series.multi();
+        var indicatorMulti = fc.series.multi();
 
         function updateMultiSeries() {
-            if (indMulti.series()) {
-                multi.series([gridlines, currentSeries.option, closeLine, indMulti]);
+            if (indicatorMulti.series()) {
+                multi.series([gridlines, currentSeries.option, closeLine, indicatorMulti]);
             } else {
                 multi.series([gridlines, currentSeries.option, closeLine]);
             }
@@ -121,7 +123,7 @@
             updateMultiSeries();
 
             // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, data, currentSeries, indMulti.series());
+            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorMulti.series());
             // Add 10% either side of extreme high/lows
             var variance = yExtent[1] - yExtent[0];
             yExtent[0] -= variance * 0.1;
@@ -163,12 +165,12 @@
 
         primaryChart.toggleIndicator = function(indicator) {
             if (indicator.show) {
-                indMulti.series()
+                indicatorMulti.series()
                     .push(indicator.option);
             } else {
-                var index = indMulti.series()
+                var index = indicatorMulti.series()
                     .indexOf(indicator.option);
-                indMulti.series()
+                indicatorMulti.series()
                     .splice(index, 1);
             }
             updateMultiSeries();

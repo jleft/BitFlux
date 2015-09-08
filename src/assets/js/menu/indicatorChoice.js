@@ -10,17 +10,13 @@
                 .enter()
                 .append('label')
                 .classed('btn btn-default', true)
-                .classed('checked', false)
-                .text(function(d, i) {return d.displayString; })
-                .insert('input')
-                .property('checked', false)
+                .text(function(d) {return d.displayString; })
+                .append('input')
                 .attr({
                     type: 'checkbox',
                     name: 'indicatorType',
-                    id: function(d) {
-                        return d.valueString;
-                    },
-                    value: function(d, i) { return d.valueString; }
+                    id: function(d) { return d.valueString; },
+                    value: function(d) { return d.valueString; }
                 });
         }
 
