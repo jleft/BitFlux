@@ -162,14 +162,14 @@
         };
 
         primaryChart.toggleIndicator = function(indicator) {
-            var ind = indMulti.series();
             if (indicator.show) {
-                ind.push(indicator.option);
-                indMulti.series(ind);
+                indMulti.series()
+                    .push(indicator.option);
             } else {
-                var index = ind.indexOf(indicator.option);
-                ind.splice(index, 1);
-                indMulti.series(ind);
+                var index = indMulti.series()
+                    .indexOf(indicator.option);
+                indMulti.series()
+                    .splice(index, 1);
             }
             updateMultiSeries();
             return primaryChart;
