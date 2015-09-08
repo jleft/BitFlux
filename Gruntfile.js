@@ -269,7 +269,8 @@ module.exports = function(grunt) {
         jasmine: {
             options: {
                 specs: '<%= meta.testJsFiles %>',
-                vendor: ['node_modules/d3fc/node_modules/d3/d3.js',
+                vendor: [
+                    'node_modules/d3fc/node_modules/d3/d3.js',
                     'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
                     'node_modules/d3fc/dist/d3fc.js',
                     'node_modules/jquery/dist/jquery.min.js',
@@ -277,7 +278,10 @@ module.exports = function(grunt) {
                 ]
             },
             test: {
-                src: ['<%= meta.srcJsFiles %>'],
+                src: [
+                    '<%= meta.srcJsFiles %>',
+                    '!src/assets/js/main.js'
+                ],
                 options: {
                     keepRunner: true
                 }
