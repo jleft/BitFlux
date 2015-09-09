@@ -21,6 +21,17 @@
     <div class="container" id="app-container">
       <div class="row row-offcanvas-right head-menu" id="head-row">
         <div class="col-xs-12 col-sm-12 col-md-9">
+          <div class="pull-left">
+            <select id="type-selection" selected="type" class="form-control">
+              <option value="generated">Data generator</option>
+              <option value="bitcoin">Bitcoin data</option>
+            </select>
+            <select id="period-selection" selected="period" class="form-control">
+              <option value="3600">1 hr</option>
+              <option value="300">5 min</option>
+              <option value="60">1 min</option>
+            </select>
+          </div>
           <div class="pull-right">
             <div id="reset-button">
               <button class="btn btn-default" type="button">Reset</button>
@@ -38,15 +49,6 @@
           <svg class="chart primary"></svg>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
-          <select id="type-selection" selected="type" class="form-control">
-            <option value="generated">Data generator</option>
-            <option value="bitcoin">Bitcoin data</option>
-          </select>
-          <select id="period-selection" selected="period" class="form-control">
-            <option value="3600">1 hr</option>
-            <option value="300">5 min</option>
-            <option value="60">1 min</option>
-          </select>
           <div id="series-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons"></div>

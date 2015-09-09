@@ -5,17 +5,7 @@
 
         var dispatch = d3.dispatch('primaryChartSeriesChange',
             'primaryChartIndicatorChange',
-            'secondaryChartChange',
-            'dataTypeChange',
-            'periodChange');
-
-        function setPeriodChangeVisibility(visible) {
-            var visibility = visible ? 'visible' : 'hidden';
-            d3.select('#period-selection')
-                .style('visibility', visibility);
-        }
-
-        setPeriodChangeVisibility(false);
+            'secondaryChartChange');
 
         var primaryChartSeriesOptions = sc.menu.primaryChart.series()
             .on('primaryChartSeriesChange', function(series) {
@@ -32,30 +22,9 @@
                 dispatch.secondaryChartChange(chart);
             });
 
-        var dataTypeChangeOptions = function(selection) {
-            selection.on('change', function() {
-                if (this.value === 'bitcoin') {
-                    setPeriodChangeVisibility(true);
-                } else {
-                    setPeriodChangeVisibility(false);
-                }
-                dispatch.dataTypeChange(this.value);
-            });
-        };
-
-        var periodChangeOptions = function(selection) {
-            selection.on('change', function() {
-                dispatch.periodChange(this.value);
-            });
-        };
-
         var side = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this);
-                selection.select('#type-selection')
-                    .call(dataTypeChangeOptions);
-                selection.select('#period-selection')
-                    .call(periodChangeOptions);
                 selection.select('#series-buttons')
                     .call(primaryChartSeriesOptions);
                 selection.select('#indicator-buttons')

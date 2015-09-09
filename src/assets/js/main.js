@@ -38,7 +38,7 @@
     }
 
     function resize() {
-        sc.util.calculateDimensions(container, secondaryChart);
+        sc.util.dimensions.layout(container, secondaryChart);
         render();
     }
 
@@ -88,6 +88,19 @@
         });
 
     var headMenu = sc.menu.head()
+        .on('dataTypeChange', function(type) {
+            if (type === 'bitcoin') {
+                dataModel.period = container.select('#period-selection').property('value');
+                dataInterface(dataModel.period);
+            } else if (type === 'generated') {
+                dataInterface.generateData();
+                dataModel.period = 60 * 60 * 24;
+            }
+        })
+        .on('periodChange', function(period) {
+            dataModel.period = period;
+            dataInterface(dataModel.period);
+        })
         .on('resetToLive', resetToLive)
         .on('toggleSlideout', function() {
             container.selectAll('.row-offcanvas-right').classed('active',
@@ -121,19 +134,6 @@
                 secondaryChart.on('viewChange', onViewChanged);
             }
             resize();
-        })
-        .on('dataTypeChange', function(type) {
-            if (type === 'bitcoin') {
-                dataModel.period = container.select('#period-selection').property('value');
-                dataInterface(dataModel.period);
-            } else if (type === 'generated') {
-                dataInterface.generateData();
-                dataModel.period = 60 * 60 * 24;
-            }
-        })
-        .on('periodChange', function(period) {
-            dataModel.period = period;
-            dataInterface(dataModel.period);
         });
 
     container.selectAll('.sidebar-menu')
@@ -142,6 +142,6 @@
     d3.select(window).on('resize', resize);
 
     dataInterface.generateData();
-    sc.util.calculateDimensions(container, secondaryChart);
+    sc.util.dimensions.layout(container, secondaryChart);
     resetToLive();
 })(d3, fc, sc);

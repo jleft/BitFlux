@@ -18,8 +18,8 @@
 
             rsi.xScale()
                 .domain(viewDomain)
-                .range([0, parseInt(selection.style('width'), 10)]);
-            rsi.yScale().range([parseInt(selection.style('height'), 10), 0]);
+                .range([0, fc.util.innerDimensions(selection.node()).width]);
+            rsi.yScale().range([fc.util.innerDimensions(selection.node()).height, 0]);
 
             rsiAlgorithm(data);
 
