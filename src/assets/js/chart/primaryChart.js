@@ -119,21 +119,18 @@
 
             timeSeries.xDomain(viewDomain);
 
-            var visibleData = sc.util.domain.filterDataInDateRange(data, timeSeries.xDomain());
+            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), data);
+
+            // Scale y axis
+            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
+            // Add percentage padding either side of extreme high/lows
+            var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
+            timeSeries.yDomain(paddedYExtent);
 
             movingAverage(data);
             bollingerAlgorithm(data);
 
             updateMultiSeries();
-
-            // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
-            // Add padding either side of extreme high/lows
-            var percentagePadding = 0.04;
-            var variance = yExtent[1] - yExtent[0];
-            yExtent[0] -= variance * percentagePadding;
-            yExtent[1] += variance * percentagePadding;
-            timeSeries.yDomain(yExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
             var closePrice = data[data.length - 1].close;
