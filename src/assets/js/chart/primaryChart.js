@@ -25,7 +25,7 @@
         return annotatedTickValues;
     }
 
-    function findTotalYExtent(visibleData, currentSeries, indicator) {
+    function findTotalYExtent(visibleData, currentSeries, indicators) {
         var extentAccessor;
         if (currentSeries.option.yLowValue && currentSeries.option.yHighValue) {
             extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
@@ -38,11 +38,19 @@
         }
         var extent = fc.util.extent(visibleData, extentAccessor);
 
-        if (indicator.length > 0) {
-            var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
-            var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
-            extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
-            extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+        if (indicators.length > 0) {
+            if (indicators.indexOf('bollinger') > -1) {
+                var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
+                var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+                extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
+                extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+            } else if (indicators.indexOf('movingAverage') > -1) {
+                var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
+                extent[0] = Math.min(movingAverageExtent[0], extent[0]);
+                extent[1] = Math.max(movingAverageExtent[1], extent[1]);
+            } else {
+                throw new Error('Unexpected indicator type');
+            }
         }
         return extent;
     }
@@ -85,6 +93,7 @@
             .series([gridlines, currentSeries, closeLine]);
 
         var indicatorMulti = fc.series.multi();
+        var indicatorStrings = [];
 
         function updateMultiSeries() {
             if (indicatorMulti.series()) {
@@ -123,7 +132,7 @@
             updateMultiSeries();
 
             // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorMulti.series());
+            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
             // Add 10% either side of extreme high/lows
             var variance = yExtent[1] - yExtent[0];
             yExtent[0] -= variance * 0.1;
@@ -167,11 +176,17 @@
             if (indicator.show) {
                 indicatorMulti.series()
                     .push(indicator.option);
+                indicatorStrings.push(indicator.valueString);
             } else {
                 var index = indicatorMulti.series()
                     .indexOf(indicator.option);
-                indicatorMulti.series()
-                    .splice(index, 1);
+                if (index > -1) {
+                    indicatorMulti.series()
+                        .splice(index, 1);
+                    indicatorStrings.splice(indicatorStrings.indexOf(indicator.valueString), 1);
+                } else {
+                    throw new Error('Cannot remove already removed indicator');
+                }
             }
             updateMultiSeries();
             return primaryChart;
