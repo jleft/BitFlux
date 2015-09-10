@@ -27,28 +27,38 @@
 
     function findTotalYExtent(visibleData, currentSeries, indicators) {
         var extentAccessor;
-        if (currentSeries.option.yLowValue && currentSeries.option.yHighValue) {
-            extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
-        } else if (currentSeries.option.yValue) {
-            extentAccessor = currentSeries.option.yValue();
-        } else if (currentSeries.option.y1Value) {
-            extentAccessor = currentSeries.option.y1Value();
-        } else {
-            throw new Error('Main series given to chart does not have expected interface');
+        switch (currentSeries.valueString) {
+            case 'candlestick':
+            case 'ohlc':
+                extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
+                break;
+            case 'line':
+            case 'point':
+                extentAccessor = currentSeries.option.yValue();
+                break;
+            case 'area' :
+                extentAccessor = currentSeries.option.y1Value();
+                break;
+            default:
+                throw new Error('Main series given to chart does not have expected interface');
         }
         var extent = fc.util.extent(visibleData, extentAccessor);
 
-        if (indicators.length > 0) {
-            if (indicators.indexOf('bollinger') > -1) {
+        if (indicators.length) {
+            var movingAverageShown = (indicators.indexOf('movingAverage') !== -1);
+            var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
+            if (bollingerBandsShown) {
                 var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
                 var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
                 extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
                 extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
-            } else if (indicators.indexOf('movingAverage') > -1) {
+            }
+            if (movingAverageShown) {
                 var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
                 extent[0] = Math.min(movingAverageExtent[0], extent[0]);
                 extent[1] = Math.max(movingAverageExtent[1], extent[1]);
-            } else {
+            }
+            if (!(movingAverageShown || bollingerBandsShown)) {
                 throw new Error('Unexpected indicator type');
             }
         }
@@ -111,6 +121,19 @@
 
             var visibleData = sc.util.filterDataInDateRange(data, timeSeries.xDomain());
 
+            movingAverage(data);
+            bollingerAlgorithm(data);
+
+            updateMultiSeries();
+
+            // Scale y axis
+            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
+            // Add 10% either side of extreme high/lows
+            var variance = yExtent[1] - yExtent[0];
+            yExtent[0] -= variance * 0.1;
+            yExtent[1] += variance * 0.1;
+            timeSeries.yDomain(yExtent);
+
             // Find current tick values and add close price to this list, then set it explicitly below
             var closePrice = data[data.length - 1].close;
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
@@ -125,19 +148,6 @@
                             }
                         });
                 });
-
-            movingAverage(data);
-            bollingerAlgorithm(data);
-
-            updateMultiSeries();
-
-            // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
-            // Add 10% either side of extreme high/lows
-            var variance = yExtent[1] - yExtent[0];
-            yExtent[0] -= variance * 0.1;
-            yExtent[1] += variance * 0.1;
-            timeSeries.yDomain(yExtent);
 
             multi.mapping(function(series) {
                 switch (series) {
@@ -188,7 +198,6 @@
                     throw new Error('Cannot remove already removed indicator');
                 }
             }
-            updateMultiSeries();
             return primaryChart;
         };
 
