@@ -21,6 +21,7 @@
         },
         series: {},
         util: {
+            dimensions: {},
             domain: {}
         }
     };

@@ -38,7 +38,7 @@
     }
 
     function resize() {
-        sc.util.calculateDimensions(container, secondaryChart);
+        sc.util.dimensions.layout(container, secondaryChart);
         render();
     }
 
@@ -87,7 +87,30 @@
             }
         });
 
-    var mainMenu = sc.menu.main()
+    var headMenu = sc.menu.head()
+        .on('dataTypeChange', function(type) {
+            if (type === 'bitcoin') {
+                dataModel.period = container.select('#period-selection').property('value');
+                dataInterface(dataModel.period);
+            } else if (type === 'generated') {
+                dataInterface.generateData();
+                dataModel.period = 60 * 60 * 24;
+            }
+        })
+        .on('periodChange', function(period) {
+            dataModel.period = period;
+            dataInterface(dataModel.period);
+        })
+        .on('resetToLive', resetToLive)
+        .on('toggleSlideout', function() {
+            container.selectAll('.row-offcanvas-right').classed('active',
+                !container.selectAll('.row-offcanvas-right').classed('active'));
+        });
+
+    container.selectAll('.head-menu')
+        .call(headMenu);
+
+    var sideMenu = sc.menu.side()
         .on('primaryChartSeriesChange', function(series) {
             primaryChart.changeSeries(series);
             /* Elements are drawn in the order they appear in the HTML - at this minute,
@@ -111,29 +134,14 @@
                 secondaryChart.on('viewChange', onViewChanged);
             }
             resize();
-        })
-        .on('dataTypeChange', function(type) {
-            if (type === 'bitcoin') {
-                dataModel.period = container.select('#period-selection').property('value');
-                dataInterface(dataModel.period);
-            } else if (type === 'generated') {
-                dataInterface.generateData();
-                dataModel.period = 60 * 60 * 24;
-            }
-        })
-        .on('periodChange', function(period) {
-            dataModel.period = period;
-            dataInterface(dataModel.period);
         });
 
-    container.select('.menu')
-        .call(mainMenu);
-
-    container.select('#reset-button').on('click', resetToLive);
+    container.selectAll('.sidebar-menu')
+        .call(sideMenu);
 
     d3.select(window).on('resize', resize);
 
     dataInterface.generateData();
-    sc.util.calculateDimensions(container, secondaryChart);
+    sc.util.dimensions.layout(container, secondaryChart);
     resetToLive();
 })(d3, fc, sc);

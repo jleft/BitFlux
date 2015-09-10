@@ -1,7 +1,7 @@
 (function(d3, fc) {
     'use strict';
 
-    sc.util.calculateDimensions = function(container, secondaryChartShown) {
+    sc.util.dimensions.layout = function(container, secondaryChartShown) {
         var headRowHeight = parseInt(container.select('#head-row').style('height'), 10) +
             parseInt(container.select('#head-row').style('padding-top'), 10) +
             parseInt(container.select('#head-row').style('padding-bottom'), 10);

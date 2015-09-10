@@ -1,0 +1,18 @@
+@media screen and (max-width: @bootstrap-md-width) {
+
+  .row-offcanvas-right.active {
+    right: @sidebar-width;
+  }
+
+  .row-offcanvas-right > .sidebar-offcanvas {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: -@sidebar-width;
+  }
+
+  .row-offcanvas-right.active > .sidebar-offcanvas {
+    display: block;
+  }
+
+}

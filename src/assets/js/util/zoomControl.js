@@ -10,7 +10,7 @@
         var max = scale(xExtent[1]);
 
         // Don't pan off sides
-        var width = selection.attr('width') || parseInt(selection.style('width'), 10);
+        var width = selection.attr('width') || fc.util.innerDimensions(selection.node()).width;
         if (min > 0) {
             tx -= min;
         } else if (max - width < 0) {

@@ -20,10 +20,10 @@
 
             macd.xScale()
                 .domain(viewDomain)
-                .range([0, parseInt(selection.style('width'), 10)]);
+                .range([0, fc.util.innerDimensions(selection.node()).width]);
             macd.yScale()
                 .domain([-maxYExtent, maxYExtent])
-                .range([parseInt(selection.style('height'), 10), 0]);
+                .range([fc.util.innerDimensions(selection.node()).height, 0]);
 
 
             var zoom = d3.behavior.zoom();
