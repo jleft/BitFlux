@@ -12,6 +12,7 @@
     var dataModel = {
         data: [],
         period: 60 * 60 * 24,
+        trackingLive: true,
         viewDomain: []
     };
 
@@ -43,6 +44,7 @@
 
     function onViewChanged(domain) {
         dataModel.viewDomain = [domain[0], domain[1]];
+        dataModel.trackingLive = sc.util.domain.trackingLiveData(dataModel.viewDomain, dataModel.data);
         render();
     }
 
@@ -68,6 +70,10 @@
                 socketEvent.type + ' ' + socketEvent.code);
             } else if (socketEvent.type === 'message') {
                 dataModel.data = data;
+                if (dataModel.trackingLive) {
+                    var newDomain = sc.util.domain.shiftToLiveData(dataModel.viewDomain, dataModel.data);
+                    onViewChanged(newDomain);
+                }
             }
             render();
         })

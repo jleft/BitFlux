@@ -27,8 +27,9 @@
             viewScale.domain(viewDomain)
                 .range([0, parseInt(selection.style('width'), 10)]);
 
-            var yExtent = fc.util.extent(sc.util.filterDataInDateRange(data,
-                fc.util.extent(data, 'date')), ['low', 'high']);
+            var yExtent = fc.util.extent(
+                sc.util.domain.filterDataInDateRange(fc.util.extent(data, 'date'), data),
+                ['low', 'high']);
 
             navTimeSeries.xDomain(fc.util.extent(data, 'date'))
                 .yDomain(yExtent);
