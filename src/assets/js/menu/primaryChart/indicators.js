@@ -12,19 +12,19 @@
             })
             .yValue(function(d) { return d.movingAverage; });
 
-        var noIndicator = sc.menu.option('None', 'no-indicator', null);
         var movingAverageIndicator = sc.menu.option('Moving Average', 'movingAverage', movingAverage);
         var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
+        var indicators = [movingAverageIndicator, bollingerIndicator];
 
-        var options = sc.menu.generator.buttonGroup()
-            .on('optionChange', function(indicator) {
+        var options = sc.menu.indicatorChoice()
+            .on('indicatorSelect', function(indicator) {
                 dispatch.primaryChartIndicatorChange(indicator);
             });
 
         var primaryChartSeriesMenu = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this)
-                    .datum([noIndicator, movingAverageIndicator, bollingerIndicator]);
+                    .data([indicators]);
                 selection.call(options);
             });
         };
