@@ -45,10 +45,7 @@
         var extent = fc.util.extent(visibleData, extentAccessor);
 
         if (currentIndicators.length) {
-            var indicators = [];
-            for (var i = 0; i < currentIndicators.length; i++) {
-                indicators.push(currentIndicators[i].valueString);
-            }
+            var indicators = currentIndicators.map(function(indicator) { return indicator.valueString; });
             var movingAverageShown = (indicators.indexOf('movingAverage') !== -1);
             var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
             if (bollingerBandsShown) {
@@ -108,12 +105,9 @@
             .series([gridlines, currentSeries, closeLine]);
 
         function updateMultiSeries() {
-            multi.series([gridlines, currentSeries.option, closeLine]);
-            if (currentIndicators.length) {
-                for (var i = 0; i < currentIndicators.length; i++) {
-                    multi.series().push(currentIndicators[i].option);
-                }
-            }
+            var baseChart = [gridlines, currentSeries.option, closeLine];
+            var indicators = currentIndicators.map(function(indicator) { return indicator.option; });
+            multi.series(baseChart.concat(indicators));
         }
 
         function primaryChart(selection) {
