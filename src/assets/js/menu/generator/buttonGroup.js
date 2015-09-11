@@ -1,4 +1,4 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.menu.generator.buttonGroup = function() {
@@ -37,4 +37,4 @@
         return optionGenerator;
     };
 
-})(d3, fc);
+})(d3, fc, sc);

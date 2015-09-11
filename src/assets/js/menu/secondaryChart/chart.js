@@ -5,20 +5,19 @@
 
         var dispatch = d3.dispatch('secondaryChartChange');
 
-        var noChart = sc.menu.option('None', 'no-chart', null);
         var rsiChart = sc.menu.option('RSI', 'rsi', sc.chart.rsiChart());
         var macdChart = sc.menu.option('MACD', 'macd', sc.chart.macdChart());
 
-        var options = sc.menu.generator.buttonGroup()
-            .on('optionChange', function(chart) {
+        var toggle = sc.menu.generator.toggleGroup()
+            .on('toggleChange', function(chart) {
                 dispatch.secondaryChartChange(chart);
             });
 
         var secondaryChartMenu = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this)
-                    .datum([noChart, rsiChart, macdChart]);
-                selection.call(options);
+                    .datum([rsiChart, macdChart]);
+                selection.call(toggle);
             });
         };
 

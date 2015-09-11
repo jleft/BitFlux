@@ -14,18 +14,17 @@
 
         var movingAverageIndicator = sc.menu.option('Moving Average', 'movingAverage', movingAverage);
         var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
-        var indicators = [movingAverageIndicator, bollingerIndicator];
 
-        var options = sc.menu.indicatorChoice()
-            .on('indicatorSelect', function(indicator) {
+        var toggle = sc.menu.generator.toggleGroup()
+            .on('toggleChange', function(indicator) {
                 dispatch.primaryChartIndicatorChange(indicator);
             });
 
         var primaryChartSeriesMenu = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this)
-                    .data([indicators]);
-                selection.call(options);
+                    .datum([movingAverageIndicator, bollingerIndicator]);
+                selection.call(toggle);
             });
         };
 

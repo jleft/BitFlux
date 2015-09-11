@@ -25,7 +25,7 @@
         return annotatedTickValues;
     }
 
-    function findTotalYExtent(visibleData, currentSeries, indicators) {
+    function findTotalYExtent(visibleData, currentSeries, currentIndicators) {
         var extentAccessor;
         switch (currentSeries.valueString) {
             case 'candlestick':
@@ -44,7 +44,8 @@
         }
         var extent = fc.util.extent(visibleData, extentAccessor);
 
-        if (indicators.length) {
+        if (currentIndicators.length) {
+            var indicators = currentIndicators.map(function(indicator) { return indicator.valueString; });
             var movingAverageShown = (indicators.indexOf('movingAverage') !== -1);
             var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
             if (bollingerBandsShown) {
@@ -83,6 +84,7 @@
             .xTicks(0);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var currentIndicators = [];
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
@@ -102,15 +104,10 @@
             })
             .series([gridlines, currentSeries, closeLine]);
 
-        var indicatorMulti = fc.series.multi();
-        var indicatorStrings = [];
-
         function updateMultiSeries() {
-            if (indicatorMulti.series()) {
-                multi.series([gridlines, currentSeries.option, closeLine, indicatorMulti]);
-            } else {
-                multi.series([gridlines, currentSeries.option, closeLine]);
-            }
+            var baseChart = [gridlines, currentSeries.option, closeLine];
+            var indicators = currentIndicators.map(function(indicator) { return indicator.option; });
+            multi.series(baseChart.concat(indicators));
         }
 
         function primaryChart(selection) {
@@ -127,7 +124,7 @@
             var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), data);
 
             // Scale y axis
-            var yExtent = findTotalYExtent(visibleData, currentSeries, indicatorStrings);
+            var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
             // Add percentage padding either side of extreme high/lows
             var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
             timeSeries.yDomain(paddedYExtent);
@@ -181,20 +178,10 @@
         };
 
         primaryChart.toggleIndicator = function(indicator) {
-            if (indicator.show) {
-                indicatorMulti.series()
-                    .push(indicator.option);
-                indicatorStrings.push(indicator.valueString);
-            } else {
-                var index = indicatorMulti.series()
-                    .indexOf(indicator.option);
-                if (index > -1) {
-                    indicatorMulti.series()
-                        .splice(index, 1);
-                    indicatorStrings.splice(indicatorStrings.indexOf(indicator.valueString), 1);
-                } else {
-                    throw new Error('Cannot remove already removed indicator');
-                }
+            if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
+                currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
+            } else if (indicator.toggled) {
+                currentIndicators.push(indicator.option);
             }
             return primaryChart;
         };
