@@ -128,19 +128,11 @@
             render();
         })
         .on('secondaryChartChange', function(toggledChart) {
-            if (secondaryChart.indexOf(toggledChart.option.option) !== -1) {
-                if (!toggledChart.toggled) {
-                    secondaryChart.splice(secondaryChart.indexOf(toggledChart.option.option), 1);
-                } else {
-                    throw new Error('Cannot add already added secondary chart');
-                }
-            } else {
-                if (toggledChart.toggled) {
-                    toggledChart.option.option.on('viewChange', onViewChanged);
-                    secondaryChart.push(toggledChart.option.option);
-                } else {
-                    throw new Error('Cannot remove already removed secondary chart');
-                }
+            if (secondaryChart.indexOf(toggledChart.option.option) !== -1 && !toggledChart.toggled) {
+                secondaryChart.splice(secondaryChart.indexOf(toggledChart.option.option), 1);
+            } else if (toggledChart.toggled) {
+                toggledChart.option.option.on('viewChange', onViewChanged);
+                secondaryChart.push(toggledChart.option.option);
             }
             svgSecondary.selectAll('*').remove();
             resize();

@@ -28,7 +28,7 @@
                     setTimeout(function() {
                         var toggledOption = {
                             option: self.datum(),
-                            toggled: self.classed('active')
+                            toggled: self.select('input').property('checked')
                         };
                         dispatch.toggleChange(toggledOption);
                     }, 0);

@@ -178,18 +178,10 @@
         };
 
         primaryChart.toggleIndicator = function(indicator) {
-            if (currentIndicators.indexOf(indicator.option) !== -1) {
-                if (!indicator.toggled) {
-                    currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
-                } else {
-                    throw new Error('Cannot add already added indicator');
-                }
-            } else {
-                if (indicator.toggled) {
-                    currentIndicators.push(indicator.option);
-                } else {
-                    throw new Error('Cannot remove already removed indicator');
-                }
+            if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
+                currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
+            } else if (indicator.toggled) {
+                currentIndicators.push(indicator.option);
             }
             return primaryChart;
         };
