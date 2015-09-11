@@ -24,9 +24,14 @@
 
             selection.selectAll('.btn')
                 .on('click', function() {
-                    var toggledOption = d3.select(this)
-                        .datum();
-                    dispatch.toggleChange(toggledOption);
+                    var self = d3.select(this);
+                    setTimeout(function() {
+                        var toggledOption = {
+                            option: self.datum(),
+                            toggled: self.classed('active')
+                        };
+                        dispatch.toggleChange(toggledOption);
+                    }, 0);
                 });
         }
 

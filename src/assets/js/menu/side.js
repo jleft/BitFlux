@@ -13,13 +13,13 @@
             });
 
         var primaryChartIndicatorOptions = sc.menu.primaryChart.indicators()
-            .on('primaryChartIndicatorChange', function(indicator) {
-                dispatch.primaryChartIndicatorChange(indicator);
+            .on('primaryChartIndicatorChange', function(toggledIndicator) {
+                dispatch.primaryChartIndicatorChange(toggledIndicator);
             });
 
         var secondaryChartOptions = sc.menu.secondaryChart.chart()
-            .on('secondaryChartChange', function(chart) {
-                dispatch.secondaryChartChange(chart);
+            .on('secondaryChartChange', function(toggledChart) {
+                dispatch.secondaryChartChange(toggledChart);
             });
 
         var side = function(selection) {

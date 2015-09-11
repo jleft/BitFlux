@@ -121,18 +121,26 @@
                 .remove();
             render();
         })
-        .on('primaryChartIndicatorChange', function(indicator) {
-            primaryChart.toggleIndicator(indicator);
+        .on('primaryChartIndicatorChange', function(toggledIndicator) {
+            primaryChart.toggleIndicator(toggledIndicator);
             svgPrimary.selectAll('.multi')
                 .remove();
             render();
         })
-        .on('secondaryChartChange', function(chart) {
-            if (secondaryChart.indexOf(chart.option) !== -1) {
-                secondaryChart.splice(secondaryChart.indexOf(chart.option), 1);
+        .on('secondaryChartChange', function(toggledChart) {
+            if (secondaryChart.indexOf(toggledChart.option.option) !== -1) {
+                if (!toggledChart.toggled) {
+                    secondaryChart.splice(secondaryChart.indexOf(toggledChart.option.option), 1);
+                } else {
+                    throw new Error('Cannot add already added secondary chart');
+                }
             } else {
-                chart.option.on('viewChange', onViewChanged);
-                secondaryChart.push(chart.option);
+                if (toggledChart.toggled) {
+                    toggledChart.option.option.on('viewChange', onViewChanged);
+                    secondaryChart.push(toggledChart.option.option);
+                } else {
+                    throw new Error('Cannot remove already removed secondary chart');
+                }
             }
             svgSecondary.selectAll('*').remove();
             resize();
