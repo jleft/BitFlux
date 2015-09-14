@@ -1,3 +1,16 @@
-.secondary-row > .col-chart {
-  padding-right : calc(@bootstrap-padding-width + @y-axis-width);
+.secondary {
+  .x-axis {
+    path {
+      stroke: @offwhite;
+    }
+  }
+
+  &.secondary-rsi {
+    .right-handle {
+      text {
+        display: none;
+      }
+    }
+  }
 }
+

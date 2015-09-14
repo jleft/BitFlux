@@ -30,7 +30,9 @@
             svgSecondary.datum(dataModel)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
-                    d3.select(this).call(secondaryCharts[i]);
+                    d3.select(this)
+                        .attr('class', 'chart secondary ' + secondaryCharts[i].valueString)
+                        .call(secondaryCharts[i].option);
                 });
 
             svgXAxis.datum(dataModel)
@@ -141,11 +143,11 @@
                     render();
                 })
                 .on('secondaryChartChange', function(toggledChart) {
-                    if (secondaryCharts.indexOf(toggledChart.option.option) !== -1 && !toggledChart.toggled) {
-                        secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option.option), 1);
+                    if (secondaryCharts.indexOf(toggledChart.option) !== -1 && !toggledChart.toggled) {
+                        secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option), 1);
                     } else if (toggledChart.toggled) {
                         toggledChart.option.option.on('viewChange', onViewChanged);
-                        secondaryCharts.push(toggledChart.option.option);
+                        secondaryCharts.push(toggledChart.option);
                     }
                     svgSecondary.selectAll('*').remove();
                     updateLayout();

@@ -5,8 +5,8 @@
 
         var dispatch = d3.dispatch('secondaryChartChange');
 
-        var rsi = sc.menu.option('RSI', 'rsi', sc.chart.rsi());
-        var macd = sc.menu.option('MACD', 'macd', sc.chart.macd());
+        var rsi = sc.menu.option('RSI', 'secondary-rsi', sc.chart.rsi());
+        var macd = sc.menu.option('MACD', 'secondary-macd', sc.chart.macd());
 
         var toggle = sc.menu.generator.toggleGroup()
             .on('toggleChange', function(chart) {

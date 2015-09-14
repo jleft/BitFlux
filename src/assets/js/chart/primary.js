@@ -71,26 +71,12 @@
 
         var dispatch = d3.dispatch('viewChange');
 
-        var priceFormat = d3.format('.2f');
-
-        var timeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
-            .yOrient('right')
-            .yTicks(5)
-            .yTickFormat(priceFormat);
+        var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var currentIndicators = [];
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
             .xTicks(0);
-
-        var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
-        var currentIndicators = [];
-
-        // Create and apply the Moving Average
-        var movingAverage = fc.indicator.algorithm.movingAverage();
-        var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
-
         var closeLine = fc.annotation.line()
             .orient('horizontal')
             .value(function(d) { return d.close; })
@@ -103,7 +89,27 @@
                 }
                 return series;
             })
-            .series([gridlines, currentSeries, closeLine]);
+            .series([gridlines, currentSeries.option, closeLine])
+            .mapping(function(series) {
+                switch (series) {
+                    case closeLine:
+                        return [this.data[this.data.length - 1]];
+                    default:
+                        return this.data;
+                }
+            });
+
+        var priceFormat = d3.format('.2f');
+
+        var timeSeries = fc.chart.linearTimeSeries()
+            .xAxisHeight(0)
+            .yAxisWidth(yAxisWidth)
+            .yOrient('right')
+            .yTickFormat(priceFormat);
+
+        // Create and apply the Moving Average
+        var movingAverage = fc.indicator.algorithm.movingAverage();
+        var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
         function updateMultiSeries() {
             var baseChart = [gridlines, currentSeries.option, closeLine];
@@ -143,15 +149,6 @@
                         });
                 });
 
-            multi.mapping(function(series) {
-                switch (series) {
-                    case closeLine:
-                        return [data[data.length - 1]];
-                    default:
-                        return data;
-                }
-            });
-
             // Redraw
             timeSeries.plotArea(multi);
             selection.call(timeSeries);
@@ -168,8 +165,6 @@
         }
 
         d3.rebind(primary, dispatch, 'on');
-
-        primary.yAxisWidth = function() { return timeSeries.yAxisWidth; };
 
         primary.changeSeries = function(series) {
             currentSeries = series;

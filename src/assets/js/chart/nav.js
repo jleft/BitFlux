@@ -8,17 +8,23 @@
             .yTicks(0)
             .yOrient('right');
 
+        var viewScale = fc.scale.dateTime();
+
         var area = fc.series.area()
             .yValue(function(d) { return d.open; });
-
         var line = fc.series.line()
             .yValue(function(d) { return d.open; });
-
         var brush = d3.svg.brush();
-
-        var navMulti = fc.series.multi().series([area, line, brush]);
-
-        var viewScale = fc.scale.dateTime();
+        var navMulti = fc.series.multi().series([area, line, brush])
+            .mapping(function(series) {
+                if (series === brush) {
+                    brush.extent([
+                        [viewScale.domain()[0], navTimeSeries.yDomain()[0]],
+                        [viewScale.domain()[1], navTimeSeries.yDomain()[1]]
+                    ]);
+                }
+                return this.data;
+            });
 
         function nav(selection) {
             var data = selection.datum().data;
@@ -54,17 +60,6 @@
                     }
                 });
             selection.call(zoom);
-
-
-            navMulti.mapping(function(series) {
-                if (series === brush) {
-                    brush.extent([
-                        [viewScale.domain()[0], navTimeSeries.yDomain()[0]],
-                        [viewScale.domain()[1], navTimeSeries.yDomain()[1]]
-                    ]);
-                }
-                return data;
-            });
 
             navTimeSeries.plotArea(navMulti);
             selection.call(navTimeSeries);
