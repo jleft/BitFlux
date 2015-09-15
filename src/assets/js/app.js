@@ -66,11 +66,8 @@
 
         function resetToLive() {
             var data = dataModel.data;
-            var extent = fc.util.extent(data, 'date');
-            var timeExtent = (extent[1].getTime() - extent[0].getTime()) / 1000;
-            var navTimeExtent = timeExtent / 5;
-            var latest = data[data.length - 1].date;
-            var navTimeDomain = [d3.time.second.offset(latest, -navTimeExtent), latest];
+            var dataDomain = fc.util.extent(data, 'date');
+            var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
             onViewChanged(navTimeDomain);
         }
 
@@ -84,7 +81,7 @@
                     } else if (socketEvent.type === 'message') {
                         dataModel.data = data;
                         if (dataModel.trackingLive) {
-                            var newDomain = sc.util.domain.shiftToLiveData(dataModel.viewDomain, dataModel.data);
+                            var newDomain = sc.util.domain.moveToLatest(dataModel.viewDomain, dataModel.data);
                             onViewChanged(newDomain);
                         }
                     }
