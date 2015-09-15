@@ -136,12 +136,10 @@
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.filter(function(d) { return d === closePrice; })
-                        .each(function(d) {
-                            var selection = d3.select(this);
-                            selection.classed('closeLine', true);
-                            selection.select('path').attr('d', function(d) {
-                                    return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
-                                });
+                        .classed('closeLine', true)
+                        .select('path')
+                        .attr('d', function(d) {
+                            return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
                         });
                 });
 
