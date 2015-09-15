@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.rsiChart = function() {
+    sc.chart.rsi = function() {
         var dispatch = d3.dispatch('viewChange');
 
         var rsiScale = d3.scale.linear()
@@ -9,35 +9,35 @@
 
         var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
-        var rsi = fc.indicator.renderer.relativeStrengthIndex()
+        var rsiRenderer = fc.indicator.renderer.relativeStrengthIndex()
             .yScale(rsiScale);
 
-        function rsiChart(selection) {
+        function rsi(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
-            rsi.xScale()
+            rsiRenderer.xScale()
                 .domain(viewDomain)
                 .range([0, fc.util.innerDimensions(selection.node()).width]);
-            rsi.yScale().range([fc.util.innerDimensions(selection.node()).height, 0]);
+            rsiRenderer.yScale().range([fc.util.innerDimensions(selection.node()).height, 0]);
 
             rsiAlgorithm(data);
 
             var zoom = d3.behavior.zoom();
-            zoom.x(rsi.xScale())
+            zoom.x(rsiRenderer.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection, data, rsi.xScale());
-                    dispatch.viewChange(rsi.xScale().domain());
+                    sc.util.zoomControl(zoom, selection, data, rsiRenderer.xScale());
+                    dispatch.viewChange(rsiRenderer.xScale().domain());
                 });
 
             selection.call(zoom);
             selection.datum(data)
-                .call(rsi);
+                .call(rsiRenderer);
         }
 
-        d3.rebind(rsiChart, dispatch, 'on');
+        d3.rebind(rsi, dispatch, 'on');
 
-        return rsiChart;
+        return rsi;
     };
 
 })(d3, fc, sc);

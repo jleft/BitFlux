@@ -1,14 +1,14 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.macdChart = function() {
+    sc.chart.macd = function() {
         var dispatch = d3.dispatch('viewChange');
 
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
-        var macd = fc.indicator.renderer.macd();
+        var macdRenderer = fc.indicator.renderer.macd();
 
-        function macdChart(selection) {
+        function macd(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
@@ -18,29 +18,29 @@
                 return Math.abs(d.macd.macd);
             });
 
-            macd.xScale()
+            macdRenderer.xScale()
                 .domain(viewDomain)
                 .range([0, fc.util.innerDimensions(selection.node()).width]);
-            macd.yScale()
+            macdRenderer.yScale()
                 .domain([-maxYExtent, maxYExtent])
                 .range([fc.util.innerDimensions(selection.node()).height, 0]);
 
 
             var zoom = d3.behavior.zoom();
-            zoom.x(macd.xScale())
+            zoom.x(macdRenderer.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection, data, macd.xScale());
-                    dispatch.viewChange(macd.xScale().domain());
+                    sc.util.zoomControl(zoom, selection, data, macdRenderer.xScale());
+                    dispatch.viewChange(macdRenderer.xScale().domain());
                 });
 
             selection.call(zoom);
             selection.datum(data)
-                .call(macd);
+                .call(macdRenderer);
         }
 
-        d3.rebind(macdChart, dispatch, 'on');
+        d3.rebind(macd, dispatch, 'on');
 
-        return macdChart;
+        return macd;
     };
 
 })(d3, fc, sc);

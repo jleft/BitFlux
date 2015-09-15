@@ -1,12 +1,12 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.menu.secondaryChart.chart = function() {
+    sc.menu.secondary.chart = function() {
 
         var dispatch = d3.dispatch('secondaryChartChange');
 
-        var rsiChart = sc.menu.option('RSI', 'rsi', sc.chart.rsiChart());
-        var macdChart = sc.menu.option('MACD', 'macd', sc.chart.macdChart());
+        var rsi = sc.menu.option('RSI', 'rsi', sc.chart.rsi());
+        var macd = sc.menu.option('MACD', 'macd', sc.chart.macd());
 
         var toggle = sc.menu.generator.toggleGroup()
             .on('toggleChange', function(chart) {
@@ -16,7 +16,7 @@
         var secondaryChartMenu = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this)
-                    .datum([rsiChart, macdChart]);
+                    .datum([rsi, macd]);
                 selection.call(toggle);
             });
         };

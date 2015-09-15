@@ -18,30 +18,30 @@
             viewDomain: []
         };
 
-        var primaryChart = sc.chart.primaryChart();
-        var secondaryChart = [];
+        var primaryChart = sc.chart.primary();
+        var secondaryCharts = [];
         var xAxis = sc.chart.xAxis();
-        var navChart = sc.chart.navChart();
+        var nav = sc.chart.nav();
 
         function render() {
             svgPrimary.datum(dataModel)
                 .call(primaryChart);
 
             svgSecondary.datum(dataModel)
-                .filter(function(d, i) { return i < secondaryChart.length; })
+                .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
-                    d3.select(this).call(secondaryChart[i]);
+                    d3.select(this).call(secondaryCharts[i]);
                 });
 
             svgXAxis.datum(dataModel)
                 .call(xAxis);
 
             svgNav.datum(dataModel)
-                .call(navChart);
+                .call(nav);
         }
 
         function updateLayout() {
-            sc.util.dimensions.layout(container, secondaryChart);
+            sc.util.dimensions.layout(container, secondaryCharts);
         }
 
         function initialiseResize() {
@@ -59,7 +59,7 @@
 
         function initialiseChartEventHandlers() {
             primaryChart.on('viewChange', onViewChanged);
-            navChart.on('viewChange', onViewChanged);
+            nav.on('viewChange', onViewChanged);
         }
 
         function resetToLive() {
@@ -141,11 +141,11 @@
                     render();
                 })
                 .on('secondaryChartChange', function(toggledChart) {
-                    if (secondaryChart.indexOf(toggledChart.option.option) !== -1 && !toggledChart.toggled) {
-                        secondaryChart.splice(secondaryChart.indexOf(toggledChart.option.option), 1);
+                    if (secondaryCharts.indexOf(toggledChart.option.option) !== -1 && !toggledChart.toggled) {
+                        secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option.option), 1);
                     } else if (toggledChart.toggled) {
                         toggledChart.option.option.on('viewChange', onViewChanged);
-                        secondaryChart.push(toggledChart.option.option);
+                        secondaryCharts.push(toggledChart.option.option);
                     }
                     svgSecondary.selectAll('*').remove();
                     updateLayout();
