@@ -2,7 +2,6 @@
     'use strict';
 
     sc.chart.xAxis = function() {
-        var dispatch = d3.dispatch('viewChange');
 
         var xAxisHeight = 20;
         var xScale = fc.scale.dateTime();
@@ -36,8 +35,6 @@
 
             xAxisContainer.call(xAxis);
         }
-
-        d3.rebind(xAxisChart, dispatch, 'on');
 
         return xAxisChart;
     };
