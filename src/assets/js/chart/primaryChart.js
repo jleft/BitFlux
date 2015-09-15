@@ -77,6 +77,7 @@
             .xAxisHeight(0)
             .yAxisWidth(yAxisWidth)
             .yOrient('right')
+            .yTicks(5)
             .yTickFormat(priceFormat);
 
         var gridlines = fc.annotation.gridline()
@@ -134,13 +135,13 @@
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
-                    s.classed('closeLine', function(d) {
-                            return d === closePrice;
-                        })
-                        .select('path').attr('d', function(d) {
-                            if (d === closePrice) {
-                                return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
-                            }
+                    s.filter(function(d) { return d === closePrice; })
+                        .each(function(d) {
+                            var selection = d3.select(this);
+                            selection.classed('closeLine', true);
+                            selection.select('path').attr('d', function(d) {
+                                    return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
+                                });
                         });
                 });
 
