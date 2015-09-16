@@ -2,9 +2,7 @@
     'use strict';
 
     sc.util.dimensions.layout = function(container, secondaryCharts) {
-        var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
-            parseInt(container.select('.head-row').style('padding-top'), 10) +
-            parseInt(container.select('.head-row').style('padding-bottom'), 10);
+        var headRowHeight = parseInt(container.select('.nav').style('height'), 10) ;
         var navHeight = parseInt(container.select('.nav-row').style('height'), 10);
         var xAxisHeight = parseInt(container.select('.x-axis-row').style('height'), 10);
 

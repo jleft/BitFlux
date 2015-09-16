@@ -9,7 +9,7 @@
                 .data(sel.datum())
                 .enter()
                 .append('label')
-                .classed('btn btn-default', true)
+                .classed('btn btn-primary', true)
                 .text(function(d) { return d.displayString; })
                 .append('input')
                 .attr({

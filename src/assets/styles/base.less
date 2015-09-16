@@ -18,7 +18,22 @@ html, body {
 .chart {
   height: 100%;
   width: 100%;
+
   rect.foreground {
     opacity: 0 !important;
   }
+
+  .background {
+    fill: @gray-darker;
+    stroke: @gray;
+  }
+}
+
+text {
+  fill: @text-color;
+  font-family: @font-family-sans-serif;
+}
+
+.panel-heading {
+  font-weight: bold;
 }

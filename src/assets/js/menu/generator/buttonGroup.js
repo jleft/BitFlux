@@ -14,7 +14,7 @@
                 .data(sel.datum())
                 .enter()
                 .append('label')
-                .classed('btn btn-default', true)
+                .classed('btn btn-primary', true)
                 .classed('active', function(d, i) { return (i === activeValue); })
                 .text(function(d, i) { return d.displayString; })
                 .insert('input')

@@ -1,6 +1,6 @@
 @primary-blue: #1a9af9;
-@primary-green: #6c0;
-@primary-red: #c60;
+@primary-green: @brand-success;
+@primary-red: @brand-danger;
 @primary-white: #f0f8ff;
 @primary-black: #000;
 @offwhite: #fefefe;
@@ -10,10 +10,12 @@
 @toggled-text-colour: #fff;
 
 // Plot Area
-@candlestick-down-stroke: #000;
-@candlestick-up-stroke: #000;
+@candlestick-down-stroke: @primary-red;
+@candlestick-up-stroke: @primary-green;
 @candlestick-down-fill: @primary-red;
 @candlestick-up-fill: @primary-green;
+@ohlc-up-stroke: @primary-green;
+@ohlc-down-stroke: @primary-red;
 @moving-average-line-colour: #f0f;
 @bollinger-upper-colour: @primary-red;
 @bollinger-lower-colour: @primary-green;
@@ -28,7 +30,7 @@
 
 // Navigator
 @navigator-height: 100px;
-@navigator-extent-colour: #d1d1e0;
+@navigator-extent-colour: @gray;
 
 // Seperator
 @head-border-width: 2px solid;
@@ -38,6 +40,3 @@
 @bootstrap-padding-width: 15px;
 @sidebar-width: 33.3%;
 @bootstrap-md-width : 991px;
-
-// Menu
-@option-group-padding: 15px;
