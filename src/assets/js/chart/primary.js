@@ -72,6 +72,7 @@
         var dispatch = d3.dispatch('viewChange');
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var currentPrice = function(d) { return d.close; };
         var currentIndicators = [];
 
         var gridlines = fc.annotation.gridline()
@@ -79,7 +80,7 @@
             .xTicks(0);
         var closeLine = fc.annotation.line()
             .orient('horizontal')
-            .value(function(d) { return d.close; })
+            .value(currentPrice)
             .label('');
 
         var multi = fc.series.multi()
@@ -117,16 +118,32 @@
             multi.series(baseChart.concat(indicators));
         }
 
+        function updatePriceUsed() {
+            movingAverage.value(currentPrice);
+            bollingerAlgorithm.value(currentPrice);
+            closeLine.value(currentPrice);
+            switch (currentSeries.valueString) {
+                case 'line':
+                case 'point':
+                case 'area':
+                    currentSeries.option.yValue(currentPrice);
+                    break;
+                default:
+                    break;
+            }
+        }
+
         function primary(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
             timeSeries.xDomain(viewDomain);
 
+            updatePriceUsed();
+            updateMultiSeries();
+
             movingAverage(data);
             bollingerAlgorithm(data);
-
-            updateMultiSeries();
 
             var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), data);
 
@@ -137,11 +154,11 @@
             timeSeries.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
-            var closePrice = data[data.length - 1].close;
-            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [closePrice]);
+            var latestPrice = currentPrice(data[data.length - 1]);
+            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
-                    s.filter(function(d) { return d === closePrice; })
+                    s.filter(function(d) { return d === latestPrice; })
                         .classed('closeLine', true)
                         .select('path')
                         .attr('d', function(d) {
@@ -168,6 +185,11 @@
 
         primary.changeSeries = function(series) {
             currentSeries = series;
+            return primary;
+        };
+
+        primary.changePrice = function(price) {
+            currentPrice = price.option;
             return primary;
         };
 
