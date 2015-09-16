@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.menu.primaryChart.series = function() {
+    sc.menu.primary.series = function() {
 
         var dispatch = d3.dispatch('primaryChartSeriesChange');
 

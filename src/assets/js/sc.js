@@ -16,8 +16,8 @@
         },
         menu: {
             generator: {},
-            primaryChart: {},
-            secondaryChart: {}
+            primary: {},
+            secondary: {}
         },
         series: {},
         util: {

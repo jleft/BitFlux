@@ -1,7 +1,7 @@
 (function(d3, fc) {
     'use strict';
 
-    sc.util.dimensions.layout = function(container, secondaryChart) {
+    sc.util.dimensions.layout = function(container, secondaryCharts) {
         var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
             parseInt(container.select('.head-row').style('padding-top'), 10) +
             parseInt(container.select('.head-row').style('padding-bottom'), 10);
@@ -11,8 +11,8 @@
         var useableScreenHeight = window.innerHeight - headRowHeight - xAxisHeight - navHeight;
 
         var secondaryChartsShown = 0;
-        for (var j = 0; j < secondaryChart.length; j++) {
-            if (secondaryChart[j]) {
+        for (var j = 0; j < secondaryCharts.length; j++) {
+            if (secondaryCharts[j]) {
                 secondaryChartsShown++;
             }
         }

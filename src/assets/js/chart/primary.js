@@ -66,7 +66,7 @@
         return extent;
     }
 
-    sc.chart.primaryChart = function() {
+    sc.chart.primary = function() {
         var yAxisWidth = 45;
 
         var dispatch = d3.dispatch('viewChange');
@@ -111,7 +111,7 @@
             multi.series(baseChart.concat(indicators));
         }
 
-        function primaryChart(selection) {
+        function primary(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
@@ -167,24 +167,24 @@
             selection.call(zoom);
         }
 
-        d3.rebind(primaryChart, dispatch, 'on');
+        d3.rebind(primary, dispatch, 'on');
 
-        primaryChart.yAxisWidth = function() { return timeSeries.yAxisWidth; };
+        primary.yAxisWidth = function() { return timeSeries.yAxisWidth; };
 
-        primaryChart.changeSeries = function(series) {
+        primary.changeSeries = function(series) {
             currentSeries = series;
-            return primaryChart;
+            return primary;
         };
 
-        primaryChart.toggleIndicator = function(indicator) {
+        primary.toggleIndicator = function(indicator) {
             if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
                 currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
             } else if (indicator.toggled) {
                 currentIndicators.push(indicator.option);
             }
-            return primaryChart;
+            return primary;
         };
 
-        return primaryChart;
+        return primary;
     };
 })(d3, fc, sc);

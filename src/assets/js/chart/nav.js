@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.navChart = function() {
+    sc.chart.nav = function() {
         var dispatch = d3.dispatch('viewChange');
 
         var navTimeSeries = fc.chart.linearTimeSeries()
@@ -20,7 +20,7 @@
 
         var viewScale = fc.scale.dateTime();
 
-        function navChart(selection) {
+        function nav(selection) {
             var data = selection.datum().data;
             var viewDomain = selection.datum().viewDomain;
 
@@ -70,9 +70,9 @@
             selection.call(navTimeSeries);
         }
 
-        d3.rebind(navChart, dispatch, 'on');
+        d3.rebind(nav, dispatch, 'on');
 
-        return navChart;
+        return nav;
     };
 
 })(d3, fc, sc);
