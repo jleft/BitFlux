@@ -2,11 +2,35 @@
     'use strict';
 
     sc.chart.macd = function() {
+        var yAxisWidth = 45;
+
         var dispatch = d3.dispatch('viewChange');
 
-        var macdAlgorithm = fc.indicator.algorithm.macd();
+        var macdTimeSeries = fc.chart.linearTimeSeries()
+            .xAxisHeight(0)
+            .yAxisWidth(yAxisWidth)
+            .yOrient('right');
 
+        var zero = fc.annotation.line()
+            .value(0)
+            .label('');
         var macdRenderer = fc.indicator.renderer.macd();
+        var multi = fc.series.multi()
+            .series([zero, macdRenderer])
+            .mapping(function(series) {
+                if (series === zero) {
+                    return [0];
+                }
+                return this.data;
+            })
+            .decorate(function(g) {
+                g.enter()
+                    .attr('class', function(d, i) {
+                        return ['multi zero', 'multi'][i];
+                    });
+            });
+
+        var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
             var data = selection.datum().data;
@@ -14,33 +38,32 @@
 
             macdAlgorithm(data);
 
+            macdTimeSeries.xDomain(viewDomain);
+
+            // Add percentage padding either side of extreme high/lows
             var maxYExtent = d3.max(data, function(d) {
                 return Math.abs(d.macd.macd);
             });
+            var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
+            macdTimeSeries.yDomain(paddedYExtent);
 
-            macdRenderer.xScale()
-                .domain(viewDomain)
-                .range([0, fc.util.innerDimensions(selection.node()).width]);
-            macdRenderer.yScale()
-                .domain([-maxYExtent, maxYExtent])
-                .range([fc.util.innerDimensions(selection.node()).height, 0]);
+            // Redraw
+            macdTimeSeries.plotArea(multi);
+            selection.call(macdTimeSeries);
 
-
+            // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
-            zoom.x(macdRenderer.xScale())
+            zoom.x(macdTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection, data, macdRenderer.xScale());
-                    dispatch.viewChange(macdRenderer.xScale().domain());
+                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, macdTimeSeries.xScale());
+                    dispatch.viewChange(macdTimeSeries.xDomain());
                 });
 
             selection.call(zoom);
-            selection.datum(data)
-                .call(macdRenderer);
         }
 
         d3.rebind(macd, dispatch, 'on');
 
         return macd;
     };
-
 })(d3, fc, sc);
