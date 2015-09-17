@@ -9,9 +9,8 @@
             'periodChange');
 
         function setPeriodChangeVisibility(visible) {
-            var visibility = visible ? 'visible' : 'hidden';
             d3.select('#period-selection')
-                .style('visibility', visibility);
+                .classed('hidden', !visible);
         }
 
         setPeriodChangeVisibility(false);
