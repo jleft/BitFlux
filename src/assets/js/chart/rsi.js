@@ -11,6 +11,9 @@
             .series([rsiRenderer])
             .mapping(function() { return this.data; });
 
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
+
         var tickValues = [rsiRenderer.lowerValue(), 50, rsiRenderer.upperValue()];
 
         var rsiTimeSeries = fc.chart.linearTimeSeries()
@@ -22,27 +25,29 @@
         var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
         function rsi(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            rsiTimeSeries.xDomain(viewDomain)
+            rsiAlgorithm(dataModel.data);
+
+            rsiTimeSeries.xDomain(dataModel.viewDomain)
                 .yDomain([0, 100]);
-
-            rsiAlgorithm(data);
 
             // Redraw
             rsiTimeSeries.plotArea(multi);
             selection.call(rsiTimeSeries);
 
+            selection.call(createForeground);
+            var foreground = selection.select('rect.foreground');
+
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(rsiTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, rsiTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, foreground, rsiTimeSeries.xScale());
                     dispatch.viewChange(rsiTimeSeries.xDomain());
                 });
 
-            selection.call(zoom);
+            foreground.call(zoom);
         }
 
         d3.rebind(rsi, dispatch, 'on');

@@ -30,18 +30,20 @@
                     });
             });
 
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
+
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            macdAlgorithm(data);
+            macdAlgorithm(dataModel.data);
 
-            macdTimeSeries.xDomain(viewDomain);
+            macdTimeSeries.xDomain(dataModel.viewDomain);
 
             // Add percentage padding either side of extreme high/lows
-            var maxYExtent = d3.max(data, function(d) {
+            var maxYExtent = d3.max(dataModel.data, function(d) {
                 return Math.abs(d.macd.macd);
             });
             var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
@@ -51,15 +53,18 @@
             macdTimeSeries.plotArea(multi);
             selection.call(macdTimeSeries);
 
+            selection.call(createForeground);
+            var foreground = selection.select('rect.foreground');
+
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
             zoom.x(macdTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('.plot-area'), data, macdTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, foreground, macdTimeSeries.xScale());
                     dispatch.viewChange(macdTimeSeries.xDomain());
                 });
 
-            selection.call(zoom);
+            foreground.call(zoom);
         }
 
         d3.rebind(macd, dispatch, 'on');

@@ -27,17 +27,16 @@
             });
 
         function nav(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+            var dataModel = selection.datum();
 
-            viewScale.domain(viewDomain)
+            viewScale.domain(dataModel.viewDomain)
                 .range([0, fc.util.innerDimensions(selection.node()).width]);
 
             var yExtent = fc.util.extent(
-                sc.util.domain.filterDataInDateRange(fc.util.extent(data, 'date'), data),
+                sc.util.domain.filterDataInDateRange(fc.util.extent(dataModel.data, 'date'), dataModel.data),
                 ['low', 'high']);
 
-            navTimeSeries.xDomain(fc.util.extent(data, 'date'))
+            navTimeSeries.xDomain(fc.util.extent(dataModel.data, 'date'))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
@@ -47,22 +46,19 @@
                 }
             });
 
+            navTimeSeries.plotArea(navMulti);
+            selection.call(navTimeSeries);
+
             // Allow to zoom using mouse, but disable panning
             var zoom = d3.behavior.zoom();
             zoom.x(viewScale)
                 .on('zoom', function() {
-                    if (zoom.scale() === 1) {
-                        zoom.translate([0, 0]);
-                    } else {
-                        // Usual behavior
-                        sc.util.zoomControl(zoom, selection, data, viewScale);
+                    if (zoom.scale() !== 1) {
+                        sc.util.zoomControl(zoom, selection, viewScale);
                         dispatch.viewChange(viewScale.domain());
                     }
                 });
             selection.call(zoom);
-
-            navTimeSeries.plotArea(navMulti);
-            selection.call(navTimeSeries);
         }
 
         d3.rebind(nav, dispatch, 'on');
