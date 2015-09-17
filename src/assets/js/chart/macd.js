@@ -30,6 +30,11 @@
                     });
             });
 
+        var createForeground = fc.util.dataJoin()
+            .selector('rect.foreground')
+            .element('rect')
+            .attr('class', 'foreground');
+
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
@@ -50,11 +55,8 @@
             macdTimeSeries.plotArea(multi);
             selection.call(macdTimeSeries);
 
-            selection.selectAll('rect.foreground')
-                .data([dataModel])
-                .enter()
-                .append('rect')
-                .attr('class', 'foreground')
+            var foreground = createForeground(selection, [dataModel])
+                .style('opacity', 0)
                 .layout({
                     position: 'absolute',
                     top: 0,
@@ -69,11 +71,11 @@
             var zoom = d3.behavior.zoom();
             zoom.x(macdTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('rect.foreground'), macdTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, foreground, macdTimeSeries.xScale());
                     dispatch.viewChange(macdTimeSeries.xDomain());
                 });
 
-            selection.select('rect.foreground').call(zoom);
+            foreground.call(zoom);
         }
 
         d3.rebind(macd, dispatch, 'on');

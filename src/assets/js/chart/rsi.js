@@ -11,6 +11,11 @@
             .series([rsiRenderer])
             .mapping(function() { return this.data; });
 
+        var createForeground = fc.util.dataJoin()
+            .selector('rect.foreground')
+            .element('rect')
+            .attr('class', 'foreground');
+
         var tickValues = [rsiRenderer.lowerValue(), 50, rsiRenderer.upperValue()];
 
         var rsiTimeSeries = fc.chart.linearTimeSeries()
@@ -33,11 +38,8 @@
             rsiTimeSeries.plotArea(multi);
             selection.call(rsiTimeSeries);
 
-            selection.selectAll('rect.foreground')
-                .data([dataModel])
-                .enter()
-                .append('rect')
-                .attr('class', 'foreground')
+            var foreground = createForeground(selection, [dataModel])
+                .style('opacity', 0)
                 .layout({
                     position: 'absolute',
                     top: 0,
@@ -52,11 +54,11 @@
             var zoom = d3.behavior.zoom();
             zoom.x(rsiTimeSeries.xScale())
                 .on('zoom', function() {
-                    sc.util.zoomControl(zoom, selection.select('rect.foreground'), rsiTimeSeries.xScale());
+                    sc.util.zoomControl(zoom, foreground, rsiTimeSeries.xScale());
                     dispatch.viewChange(rsiTimeSeries.xDomain());
                 });
 
-            selection.select('rect.foreground').call(zoom);
+            foreground.call(zoom);
         }
 
         d3.rebind(rsi, dispatch, 'on');
