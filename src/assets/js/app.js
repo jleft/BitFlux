@@ -126,29 +126,14 @@
             var sideMenu = sc.menu.side()
                 .on('primaryChartSeriesChange', function(series) {
                     primaryChart.changeSeries(series);
-                    /* Elements are drawn in the order they appear in the HTML - at this minute,
-                    D3FC doesn't maintain the ordering of elements, so it's easiest to just
-                    remove them and re-write them to the DOM in the correct order.*/
-                    svgPrimary.selectAll('.multi')
-                        .remove();
                     render();
                 })
-                .on('primaryChartPriceChange', function(price) {
-                    primaryChart.changePrice(price);
-                    /* Elements are drawn in the order they appear in the HTML - at this minute,
-                    D3FC doesn't maintain the ordering of elements, so it's easiest to just
-                    remove them and re-write them to the DOM in the correct order.*/
-                    svgPrimary.selectAll('.multi')
-                        .remove();
+                .on('primaryChartYValueAccessorChange', function(yValueAccessor) {
+                    primaryChart.changeYValueAccessor(yValueAccessor);
                     render();
                 })
                 .on('primaryChartIndicatorChange', function(toggledIndicator) {
                     primaryChart.toggleIndicator(toggledIndicator);
-                    /* Elements are drawn in the order they appear in the HTML - at this minute,
-                    D3FC doesn't maintain the ordering of elements, so it's easiest to just
-                    remove them and re-write them to the DOM in the correct order.*/
-                    svgPrimary.selectAll('.multi')
-                        .remove();
                     render();
                 })
                 .on('secondaryChartChange', function(toggledChart) {

@@ -4,7 +4,7 @@
     sc.menu.side = function() {
 
         var dispatch = d3.dispatch('primaryChartSeriesChange',
-            'primaryChartPriceChange',
+            'primaryChartYValueAccessorChange',
             'primaryChartIndicatorChange',
             'secondaryChartChange');
 
@@ -13,9 +13,9 @@
                 dispatch.primaryChartSeriesChange(series);
             });
 
-        var primaryChartPriceOptions = sc.menu.primary.price()
-            .on('primaryChartPriceChange', function(price) {
-                dispatch.primaryChartPriceChange(price);
+        var primaryChartYValueAccessorOptions = sc.menu.primary.yValueAccessor()
+            .on('primaryChartYValueAccessorChange', function(yValueAccessor) {
+                dispatch.primaryChartYValueAccessorChange(yValueAccessor);
             });
 
         var primaryChartIndicatorOptions = sc.menu.primary.indicators()
@@ -33,8 +33,8 @@
                 var selection = d3.select(this);
                 selection.select('#series-buttons')
                     .call(primaryChartSeriesOptions);
-                selection.select('#price-buttons')
-                    .call(primaryChartPriceOptions);
+                selection.select('#y-value-accessor-buttons')
+                    .call(primaryChartYValueAccessorOptions);
                 selection.select('#indicator-buttons')
                     .call(primaryChartIndicatorOptions);
                 selection.select('#secondary-chart-buttons')

@@ -72,7 +72,7 @@
         var dispatch = d3.dispatch('viewChange');
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
-        var currentPrice = function(d) { return d.close; };
+        var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
 
         var gridlines = fc.annotation.gridline()
@@ -80,7 +80,7 @@
             .xTicks(0);
         var closeLine = fc.annotation.line()
             .orient('horizontal')
-            .value(currentPrice)
+            .value(currentYValueAccessor)
             .label('');
 
         var multi = fc.series.multi()
@@ -118,15 +118,15 @@
             multi.series(baseChart.concat(indicators));
         }
 
-        function updatePriceUsed() {
-            movingAverage.value(currentPrice);
-            bollingerAlgorithm.value(currentPrice);
-            closeLine.value(currentPrice);
+        function updateYValueAccessorUsed() {
+            movingAverage.value(currentYValueAccessor);
+            bollingerAlgorithm.value(currentYValueAccessor);
+            closeLine.value(currentYValueAccessor);
             switch (currentSeries.valueString) {
                 case 'line':
                 case 'point':
                 case 'area':
-                    currentSeries.option.yValue(currentPrice);
+                    currentSeries.option.yValue(currentYValueAccessor);
                     break;
                 default:
                     break;
@@ -139,7 +139,7 @@
 
             timeSeries.xDomain(viewDomain);
 
-            updatePriceUsed();
+            updateYValueAccessorUsed();
             updateMultiSeries();
 
             movingAverage(data);
@@ -154,7 +154,7 @@
             timeSeries.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
-            var latestPrice = currentPrice(data[data.length - 1]);
+            var latestPrice = currentYValueAccessor(data[data.length - 1]);
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {
@@ -188,8 +188,8 @@
             return primary;
         };
 
-        primary.changePrice = function(price) {
-            currentPrice = price.option;
+        primary.changeYValueAccessor = function(yValueAccessor) {
+            currentYValueAccessor = yValueAccessor.option;
             return primary;
         };
 
