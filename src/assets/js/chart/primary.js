@@ -175,11 +175,9 @@
             var foreground = selection.select('rect.foreground');
 
             // Behaves oddly if not reinitialized every render
-            var zoom = d3.behavior.zoom();
-            zoom.x(timeSeries.xScale())
-                .on('zoom', function() {
-                    sc.util.zoomControl(zoom, foreground, timeSeries.xScale());
-                    dispatch.viewChange(timeSeries.xDomain());
+            var zoom = sc.behaviour.zoom(timeSeries.xScale())
+                .on('zoomed', function(domain) {
+                    dispatch.viewChange(domain);
                 });
 
             foreground.call(zoom);

@@ -18,6 +18,7 @@ module.exports = function(grunt) {
                 'src/assets/js/menu/**/*.js',
                 'src/assets/js/util/**/*.js',
                 'src/assets/js/data/**/*.js',
+                'src/assets/js/behaviour/**/*.js',
                 'src/assets/js/series/**/*.js',
                 'src/assets/js/app.js',
                 'src/assets/js/main.js'

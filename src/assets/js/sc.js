@@ -8,6 +8,7 @@
     /* jshint ignore:end */
 
     global.sc = {
+        behaviour: {},
         chart: {},
         data: {
             feed: {
@@ -22,7 +23,8 @@
         series: {},
         util: {
             dimensions: {},
-            domain: {}
+            domain: {},
+            zoom: {}
         }
     };
 })();
