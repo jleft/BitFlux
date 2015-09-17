@@ -30,10 +30,8 @@
                     });
             });
 
-        var createForeground = fc.util.dataJoin()
-            .selector('rect.foreground')
-            .element('rect')
-            .attr('class', 'foreground');
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
 
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
@@ -55,17 +53,8 @@
             macdTimeSeries.plotArea(multi);
             selection.call(macdTimeSeries);
 
-            var foreground = createForeground(selection, [dataModel])
-                .style('opacity', 0)
-                .layout({
-                    position: 'absolute',
-                    top: 0,
-                    right: yAxisWidth,
-                    bottom: 0,
-                    left: 0
-                });
-
-            selection.layout();
+            selection.call(createForeground);
+            var foreground = selection.select('rect.foreground');
 
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();

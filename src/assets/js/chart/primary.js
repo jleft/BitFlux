@@ -100,10 +100,8 @@
                 }
             });
 
-        var createForeground = fc.util.dataJoin()
-            .selector('rect.foreground')
-            .element('rect')
-            .attr('class', 'foreground');
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
 
         var priceFormat = d3.format('.2f');
 
@@ -149,8 +147,6 @@
             movingAverage(dataModel.data);
             bollingerAlgorithm(dataModel.data);
 
-            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), data);
-
             // Scale y axis
             var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), dataModel.data);
             var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
@@ -175,17 +171,8 @@
             timeSeries.plotArea(multi);
             selection.call(timeSeries);
 
-            var foreground = createForeground(selection, [dataModel])
-                .style('opacity', 0)
-                .layout({
-                    position: 'absolute',
-                    top: 0,
-                    right: yAxisWidth,
-                    bottom: 0,
-                    left: 0
-                });
-
-            selection.layout();
+            selection.call(createForeground);
+            var foreground = selection.select('rect.foreground');
 
             // Behaves oddly if not reinitialized every render
             var zoom = d3.behavior.zoom();
