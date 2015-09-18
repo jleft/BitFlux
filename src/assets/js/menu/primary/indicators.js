@@ -12,8 +12,8 @@
             })
             .yValue(function(d) { return d.movingAverage; });
 
-        var movingAverageIndicator = sc.menu.option('Moving Average', 'movingAverage', movingAverage);
-        var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
+        var movingAverageIndicator = sc.menu.option('SMA', 'movingAverage', movingAverage);
+        var bollingerIndicator = sc.menu.option('BB', 'bollinger', fc.indicator.renderer.bollingerBands());
 
         var toggle = sc.menu.generator.toggleGroup()
             .on('toggleChange', function(indicator) {
