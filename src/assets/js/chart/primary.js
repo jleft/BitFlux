@@ -51,13 +51,13 @@
             if (bollingerBandsShown) {
                 var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
                 var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
-                extent[0] = Math.min(bollingerBandsExtent[0], extent[0]);
-                extent[1] = Math.max(bollingerBandsExtent[1], extent[1]);
+                extent[0] = d3.min([bollingerBandsExtent[0], extent[0]]);
+                extent[1] = d3.max([bollingerBandsExtent[1], extent[1]]);
             }
             if (movingAverageShown) {
                 var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
-                extent[0] = Math.min(movingAverageExtent[0], extent[0]);
-                extent[1] = Math.max(movingAverageExtent[1], extent[1]);
+                extent[0] = d3.min([movingAverageExtent[0], extent[0]]);
+                extent[1] = d3.max([movingAverageExtent[1], extent[1]]);
             }
             if (!(movingAverageShown || bollingerBandsShown)) {
                 throw new Error('Unexpected indicator type');
