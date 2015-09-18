@@ -8,7 +8,7 @@
     /* jshint ignore:end */
 
     global.sc = {
-        behaviour: {},
+        behavior: {},
         chart: {},
         data: {
             feed: {

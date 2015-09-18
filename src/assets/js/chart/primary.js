@@ -175,8 +175,8 @@
             var foreground = selection.select('rect.foreground');
 
             // Behaves oddly if not reinitialized every render
-            var zoom = sc.behaviour.zoom(timeSeries.xScale())
-                .on('zoomed', function(domain) {
+            var zoom = sc.behavior.zoom(timeSeries.xScale())
+                .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
                 });
 

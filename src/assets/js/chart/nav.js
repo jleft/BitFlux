@@ -51,9 +51,9 @@
 
             // Behaves oddly if not reinitialized every render
             // Allow to zoom using mouse, but disable panning
-            var zoom = sc.behaviour.zoom(viewScale)
+            var zoom = sc.behavior.zoom(viewScale)
                 .allowPan(false)
-                .on('zoomed', function(domain) {
+                .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
                 });
 
