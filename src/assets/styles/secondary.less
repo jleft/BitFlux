@@ -1,7 +1,16 @@
-#secondary-row {
-  width: 100%;
+.secondary {
+  .x-axis {
+    path {
+      stroke: @offwhite;
+    }
+  }
+
+  &.secondary-rsi {
+    .right-handle {
+      text {
+        display: none;
+      }
+    }
+  }
 }
 
-#secondary-row > [class*="col-"] {
-  width: calc(100% - @y-axis-width);
-}

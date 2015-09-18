@@ -8,6 +8,7 @@
     /* jshint ignore:end */
 
     global.sc = {
+        behavior: {},
         chart: {},
         data: {
             feed: {
@@ -16,10 +17,14 @@
         },
         menu: {
             generator: {},
-            primaryChart: {},
-            secondaryChart: {}
+            primary: {},
+            secondary: {}
         },
         series: {},
-        util: {}
+        util: {
+            dimensions: {},
+            domain: {},
+            zoom: {}
+        }
     };
 })();

@@ -2,6 +2,9 @@
 
 module.exports = function(grunt) {
     'use strict';
+
+    require('time-grunt')(grunt);
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
@@ -15,7 +18,9 @@ module.exports = function(grunt) {
                 'src/assets/js/menu/**/*.js',
                 'src/assets/js/util/**/*.js',
                 'src/assets/js/data/**/*.js',
+                'src/assets/js/behavior/**/*.js',
                 'src/assets/js/series/**/*.js',
+                'src/assets/js/app.js',
                 'src/assets/js/main.js'
             ],
             testJsFiles: [
@@ -25,7 +30,8 @@ module.exports = function(grunt) {
                 'Gruntfile.js',
                 '<%= meta.srcJsFiles %>',
                 '<%= meta.testJsFiles %>'
-            ]
+            ],
+            coverageDir: 'coverage'
         },
 
         jscs: {
@@ -269,24 +275,54 @@ module.exports = function(grunt) {
         jasmine: {
             options: {
                 specs: '<%= meta.testJsFiles %>',
-                vendor: ['node_modules/d3fc/node_modules/d3/d3.js',
+                vendor: [
+                    'node_modules/d3fc/node_modules/d3/d3.js',
                     'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
                     'node_modules/d3fc/dist/d3fc.js',
                     'node_modules/jquery/dist/jquery.min.js',
                     'node_modules/bootstrap/dist/js/bootstrap.min.js'
-                ]
+                ],
+                keepRunner: true
             },
             test: {
-                src: ['<%= meta.srcJsFiles %>'],
+                src: [
+                    '<%= meta.srcJsFiles %>',
+                    '!src/assets/js/main.js'
+                ]
+            },
+            coverage: {
+                src: [
+                    '<%= meta.srcJsFiles %>',
+                    '!src/assets/js/main.js'
+                ],
                 options: {
-                    keepRunner: true
+                    template: require('grunt-template-jasmine-istanbul'),
+                    templateOptions: {
+                        coverage: '<%= meta.coverageDir %>/coverage.json',
+                        report: [
+                            {
+                                type: 'html',
+                                options: {
+                                    dir: '<%= meta.coverageDir %>/html'
+                                }
+                            },
+                            {
+                                type: 'text-summary'
+                            },
+                            {
+                                type: 'text'
+                            }
+                        ]
+                    }
                 }
             }
         }
 
     });
 
-    require('load-grunt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt, {
+        pattern: ['grunt-*', '!grunt-template-jasmine-istanbul']
+    });
 
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
@@ -300,8 +336,9 @@ module.exports = function(grunt) {
     grunt.registerTask('check', ['check:failOnError']);
 
     grunt.registerTask('test', ['jasmine:test']);
+    grunt.registerTask('test:coverage', ['jasmine:coverage']);
 
-    grunt.registerTask('build', ['check', 'test', 'clean',
+    grunt.registerTask('build', ['check', 'test:coverage', 'clean',
         'concat:production', 'less:production', 'copy']);
     grunt.registerTask('build:development', ['check', 'test', 'clean',
         'concat:development', 'less:development', 'copy']);

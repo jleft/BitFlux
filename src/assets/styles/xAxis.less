@@ -1,5 +1,9 @@
-#x-axis-row {
+.x-axis-row {
 
   height: @x-axis-height;
-  width: calc(100% - @y-axis-width);
+
+  .chart {
+    padding-right: @y-axis-width;
+  }
+
 }
