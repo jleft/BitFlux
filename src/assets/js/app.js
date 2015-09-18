@@ -71,6 +71,13 @@
             onViewChanged(navTimeDomain);
         }
 
+        function loading(isLoading) {
+            container.select('.loading-text')
+                .classed('hidden', !isLoading);
+            container.selectAll('.chart')
+                .classed('hidden', isLoading);
+        }
+
         function initialiseDataInterface() {
             var dataInterface = sc.data.dataInterface()
                 .on('messageReceived', function(socketEvent, data) {
@@ -91,6 +98,7 @@
                         console.log('Error getting historic data: ' + err);
                     } else {
                         dataModel.data = data;
+                        loading(false);
                         resetToLive();
                     }
                 });
@@ -100,6 +108,7 @@
         function initialiseHeadMenu(dataInterface) {
             var headMenu = sc.menu.head()
                 .on('dataTypeChange', function(type) {
+                    loading(true);
                     if (type === 'bitcoin') {
                         dataModel.period = container.select('#period-selection').property('value');
                         dataInterface(dataModel.period);
@@ -109,6 +118,7 @@
                     }
                 })
                 .on('periodChange', function(period) {
+                    loading(true);
                     dataModel.period = period;
                     dataInterface(dataModel.period);
                 })
