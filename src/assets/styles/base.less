@@ -41,3 +41,12 @@ text {
 .hidden {
   display: none !important;
 }
+
+.navbar-default {
+  .navbar-brand {
+    &:hover,
+    &:focus {
+      color: lighten(@brand-primary, 50%);
+    }
+  }
+}
