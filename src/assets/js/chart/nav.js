@@ -49,15 +49,14 @@
             navTimeSeries.plotArea(navMulti);
             selection.call(navTimeSeries);
 
+            // Behaves oddly if not reinitialized every render
             // Allow to zoom using mouse, but disable panning
-            var zoom = d3.behavior.zoom();
-            zoom.x(viewScale)
-                .on('zoom', function() {
-                    if (zoom.scale() !== 1) {
-                        sc.util.zoomControl(zoom, selection, viewScale);
-                        dispatch.viewChange(viewScale.domain());
-                    }
+            var zoom = sc.behavior.zoom(viewScale)
+                .allowPan(false)
+                .on('zoom', function(domain) {
+                    dispatch.viewChange(domain);
                 });
+
             selection.call(zoom);
         }
 
