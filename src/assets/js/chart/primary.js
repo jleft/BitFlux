@@ -100,9 +100,6 @@
                 }
             });
 
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
-
         var priceFormat = d3.format('.2f');
 
         var timeSeries = fc.chart.linearTimeSeries()
@@ -110,6 +107,9 @@
             .yAxisWidth(yAxisWidth)
             .yOrient('right')
             .yTickFormat(priceFormat);
+
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
@@ -173,9 +173,9 @@
 
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
-
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom(timeSeries.xScale())
+            var zoom = sc.behavior.zoom()
+                .scale(timeSeries.xScale())
+                .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
                 });

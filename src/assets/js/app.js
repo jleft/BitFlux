@@ -14,7 +14,7 @@
         var model = {
             data: [],
             period: 60 * 60 * 24,
-            trackingLive: true,
+            trackingLatest: true,
             viewDomain: []
         };
 
@@ -55,7 +55,7 @@
 
         function onViewChanged(domain) {
             model.viewDomain = [domain[0], domain[1]];
-            model.trackingLive = sc.util.domain.trackingLiveData(model.viewDomain, model.data);
+            model.trackingLatest = sc.util.domain.trackingLatestData(model.viewDomain, model.data);
             render();
         }
 
@@ -80,7 +80,7 @@
                         socketEvent.type + ' ' + socketEvent.code);
                     } else if (socketEvent.type === 'message') {
                         model.data = data;
-                        if (model.trackingLive) {
+                        if (model.trackingLatest) {
                             var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
                             onViewChanged(newDomain);
                         }

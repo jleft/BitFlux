@@ -6,11 +6,6 @@
 
         var dispatch = d3.dispatch('viewChange');
 
-        var macdTimeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
-            .yOrient('right');
-
         var zero = fc.annotation.line()
             .value(0)
             .label('');
@@ -29,6 +24,11 @@
                         return ['multi zero', 'multi'][i];
                     });
             });
+
+        var macdTimeSeries = fc.chart.linearTimeSeries()
+            .xAxisHeight(0)
+            .yAxisWidth(yAxisWidth)
+            .yOrient('right');
 
         var createForeground = sc.chart.foreground()
             .rightMargin(yAxisWidth);
@@ -56,12 +56,13 @@
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
 
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom(macdTimeSeries.xScale())
+
+            var zoom = sc.behavior.zoom()
+                .scale(macdTimeSeries.xScale())
+                .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
                 });
-
             foreground.call(zoom);
         }
 

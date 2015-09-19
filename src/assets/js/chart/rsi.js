@@ -11,9 +11,6 @@
             .series([rsiRenderer])
             .mapping(function() { return this.data; });
 
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
-
         var tickValues = [rsiRenderer.lowerValue(), 50, rsiRenderer.upperValue()];
 
         var rsiTimeSeries = fc.chart.linearTimeSeries()
@@ -21,6 +18,9 @@
             .yAxisWidth(yAxisWidth)
             .yOrient('right')
             .yTickValues(tickValues);
+
+        var createForeground = sc.chart.foreground()
+            .rightMargin(yAxisWidth);
 
         var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
@@ -39,12 +39,13 @@
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
 
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom(rsiTimeSeries.xScale())
+
+            var zoom = sc.behavior.zoom()
+                .scale(rsiTimeSeries.xScale())
+                .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
                 });
-
             foreground.call(zoom);
         }
 
