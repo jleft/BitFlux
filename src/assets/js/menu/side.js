@@ -53,9 +53,10 @@
 
         var rsi = sc.menu.option('RSI', 'secondary-rsi', sc.chart.rsi());
         var macd = sc.menu.option('MACD', 'secondary-macd', sc.chart.macd());
+        var volume = sc.menu.option('Volume', 'secondary-volume', sc.chart.volume());
 
         var secondaryChartToggle = sc.menu.group()
-            .option(rsi, macd)
+            .option(rsi, macd, volume)
             .generator(sc.menu.generator.toggleGroup())
             .on('optionChange', function(chart) {
                 dispatch.secondaryChartChange(chart);
