@@ -3,7 +3,7 @@
 
     sc.data.dataInterface = function() {
         var historicFeed = fc.data.feed.coinbase();
-        var callbackGenerator = sc.util.callbackInvalidator();
+        var callbackGenerator = sc.data.callbackInvalidator();
         var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
         var dataGenerator = fc.data.random.financial();
         var dispatch = d3.dispatch('messageReceived', 'dataLoaded');
