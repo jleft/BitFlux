@@ -1,4 +1,4 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.chart.xAxis = function() {
@@ -38,4 +38,4 @@
 
         return xAxisChart;
     };
-})(sc);
+})(d3, fc, sc);

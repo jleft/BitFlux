@@ -13,5 +13,4 @@
             [d3.time.second.offset(latest, -domainTimeExtent), latest] : dataExtent;
         return scaledLiveDataDomain;
     };
-
 })(d3, fc, sc);

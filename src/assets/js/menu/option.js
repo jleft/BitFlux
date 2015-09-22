@@ -1,4 +1,4 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
     sc.menu.option = function(displayString, valueString, option) {
         return {
@@ -7,5 +7,4 @@
             option: option
         };
     };
-
-})(d3, fc);
+})(d3, fc, sc);

@@ -7,5 +7,4 @@
         paddedDomain[1] = domain[1] + variance * paddingPercentage;
         return paddedDomain;
     };
-
 })(d3, fc, sc);

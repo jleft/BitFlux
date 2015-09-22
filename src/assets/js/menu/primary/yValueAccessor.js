@@ -25,5 +25,4 @@
 
         return d3.rebind(primaryChartYValueAccessorMenu, dispatch, 'on');
     };
-
 })(d3, fc, sc);

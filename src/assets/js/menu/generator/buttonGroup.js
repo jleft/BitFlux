@@ -41,5 +41,4 @@
 
         return optionGenerator;
     };
-
 })(d3, fc, sc);

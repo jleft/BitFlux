@@ -27,5 +27,4 @@
 
         return d3.rebind(primaryChartSeriesMenu, dispatch, 'on');
     };
-
 })(d3, fc, sc);

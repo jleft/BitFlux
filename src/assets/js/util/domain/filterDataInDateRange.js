@@ -11,5 +11,4 @@
         );
         return filteredData;
     };
-
 })(d3, fc, sc);
