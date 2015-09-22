@@ -137,25 +137,25 @@
         }
 
         function primary(selection) {
-            var dataModel = selection.datum();
+            var model = selection.datum();
 
-            timeSeries.xDomain(dataModel.viewDomain);
+            timeSeries.xDomain(model.viewDomain);
 
             updateYValueAccessorUsed();
             updateMultiSeries();
 
-            movingAverage(dataModel.data);
-            bollingerAlgorithm(dataModel.data);
+            movingAverage(model.data);
+            bollingerAlgorithm(model.data);
 
             // Scale y axis
-            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), dataModel.data);
+            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), model.data);
             var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
             // Add percentage padding either side of extreme high/lows
             var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
             timeSeries.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
-            var latestPrice = currentYValueAccessor(dataModel.data[dataModel.data.length - 1]);
+            var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
             var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
             timeSeries.yTickValues(tickValues)
                 .yDecorate(function(s) {

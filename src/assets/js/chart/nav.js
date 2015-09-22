@@ -27,16 +27,16 @@
             });
 
         function nav(selection) {
-            var dataModel = selection.datum();
+            var model = selection.datum();
 
-            viewScale.domain(dataModel.viewDomain)
+            viewScale.domain(model.viewDomain)
                 .range([0, fc.util.innerDimensions(selection.node()).width]);
 
             var yExtent = fc.util.extent(
-                sc.util.domain.filterDataInDateRange(fc.util.extent(dataModel.data, 'date'), dataModel.data),
+                sc.util.domain.filterDataInDateRange(fc.util.extent(model.data, 'date'), model.data),
                 ['low', 'high']);
 
-            navTimeSeries.xDomain(fc.util.extent(dataModel.data, 'date'))
+            navTimeSeries.xDomain(fc.util.extent(model.data, 'date'))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {

@@ -25,11 +25,11 @@
         var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
         function rsi(selection) {
-            var dataModel = selection.datum();
+            var model = selection.datum();
 
-            rsiAlgorithm(dataModel.data);
+            rsiAlgorithm(model.data);
 
-            rsiTimeSeries.xDomain(dataModel.viewDomain)
+            rsiTimeSeries.xDomain(model.viewDomain)
                 .yDomain([0, 100]);
 
             // Redraw
