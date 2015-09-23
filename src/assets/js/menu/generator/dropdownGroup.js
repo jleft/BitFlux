@@ -4,14 +4,16 @@
     sc.menu.generator.dropdownGroup = function() {
         var dispatch = d3.dispatch('optionChange');
 
+        var dataJoin = fc.util.dataJoin()
+            .selector('option')
+            .element('option');
+
         function layoutDropdown(sel) {
-            sel.selectAll('option')
-                .data(sel.datum())
-                .enter()
-                .append('option')
-                .text(function(d, i) { return d.displayString; })
+
+            dataJoin(sel, sel.datum())
+                .text(function(d) { return d.displayString; })
                 .attr({
-                    value: function(d, i) { return d.valueString; }
+                    value: function(d) { return d.valueString; }
                 })
                 .property('selected', function(d, i) { return (i === 0); });
         }
