@@ -13,11 +13,18 @@
 
         var tickValues = [rsiRenderer.lowerValue(), 50, rsiRenderer.upperValue()];
 
-        var rsiTimeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
+        var xScale = fc.scale.dateTime();
+
+        var rsiChart = fc.chart.cartesianChart(xScale, d3.scale.linear())
+            .xTicks(0)
             .yOrient('right')
-            .yTickValues(tickValues);
+            .yTickValues(tickValues)
+            .margin({
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: yAxisWidth
+            });
 
         var createForeground = sc.chart.foreground()
             .rightMargin(yAxisWidth);
@@ -29,19 +36,18 @@
 
             rsiAlgorithm(model.data);
 
-            rsiTimeSeries.xDomain(model.viewDomain)
+            rsiChart.xDomain(model.viewDomain)
                 .yDomain([0, 100]);
 
             // Redraw
-            rsiTimeSeries.plotArea(multi);
-            selection.call(rsiTimeSeries);
+            rsiChart.plotArea(multi);
+            selection.call(rsiChart);
 
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
 
-
             var zoom = sc.behavior.zoom()
-                .scale(rsiTimeSeries.xScale())
+                .scale(xScale)
                 .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);

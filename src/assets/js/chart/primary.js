@@ -102,11 +102,19 @@
 
         var priceFormat = d3.format('.2f');
 
-        var timeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
+        var xScale = fc.scale.dateTime();
+        var yScale = d3.scale.linear();
+
+        var primaryChart = fc.chart.cartesianChart(xScale, yScale)
+            .xTicks(0)
             .yOrient('right')
-            .yTickFormat(priceFormat);
+            .yTickFormat(priceFormat)
+            .margin({
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: yAxisWidth
+            });
 
         var createForeground = sc.chart.foreground()
             .rightMargin(yAxisWidth);
@@ -139,7 +147,7 @@
         function primary(selection) {
             var model = selection.datum();
 
-            timeSeries.xDomain(model.viewDomain);
+            primaryChart.xDomain(model.viewDomain);
 
             updateYValueAccessorUsed();
             updateMultiSeries();
@@ -148,16 +156,16 @@
             bollingerAlgorithm(model.data);
 
             // Scale y axis
-            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), model.data);
+            var visibleData = sc.util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
             var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
             // Add percentage padding either side of extreme high/lows
             var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
-            timeSeries.yDomain(paddedYExtent);
+            primaryChart.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
             var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
-            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
-            timeSeries.yTickValues(tickValues)
+            var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
+            primaryChart.yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.filter(function(d) { return d === latestPrice; })
                         .classed('closeLine', true)
@@ -168,13 +176,14 @@
                 });
 
             // Redraw
-            timeSeries.plotArea(multi);
-            selection.call(timeSeries);
+            primaryChart.plotArea(multi);
+            selection.call(primaryChart);
 
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
+
             var zoom = sc.behavior.zoom()
-                .scale(timeSeries.xScale())
+                .scale(xScale)
                 .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);

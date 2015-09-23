@@ -6,6 +6,18 @@
 
         var dispatch = d3.dispatch('viewChange');
 
+        var xScale = fc.scale.dateTime();
+
+        var macdChart = fc.chart.cartesianChart(xScale, d3.scale.linear())
+            .xTicks(0)
+            .yOrient('right')
+            .margin({
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: yAxisWidth
+            });
+
         var zero = fc.annotation.line()
             .value(0)
             .label('');
@@ -25,11 +37,6 @@
                     });
             });
 
-        var macdTimeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
-            .yOrient('right');
-
         var createForeground = sc.chart.foreground()
             .rightMargin(yAxisWidth);
 
@@ -40,25 +47,24 @@
 
             macdAlgorithm(model.data);
 
-            macdTimeSeries.xDomain(model.viewDomain);
+            macdChart.xDomain(model.viewDomain);
 
             // Add percentage padding either side of extreme high/lows
             var maxYExtent = d3.max(model.data, function(d) {
                 return Math.abs(d.macd.macd);
             });
             var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
-            macdTimeSeries.yDomain(paddedYExtent);
+            macdChart.yDomain(paddedYExtent);
 
             // Redraw
-            macdTimeSeries.plotArea(multi);
-            selection.call(macdTimeSeries);
+            macdChart.plotArea(multi);
+            selection.call(macdChart);
 
             selection.call(createForeground);
             var foreground = selection.select('rect.foreground');
 
-
             var zoom = sc.behavior.zoom()
-                .scale(macdTimeSeries.xScale())
+                .scale(xScale)
                 .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
