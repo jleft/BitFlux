@@ -4,14 +4,15 @@
     sc.menu.generator.toggleGroup = function() {
         var dispatch = d3.dispatch('toggleChange');
 
+        var dataJoin = fc.util.dataJoin()
+            .selector('label.btn btn-default')
+            .element('label')
+            .attr('class', 'btn btn-default');
+
         function layoutButtons(sel) {
-            sel.selectAll('label')
-                .data(sel.datum())
-                .enter()
-                .append('label')
-                .classed('btn btn-default', true)
+            dataJoin(sel, sel.datum())
                 .text(function(d) { return d.displayString; })
-                .append('input')
+                .insert('input')
                 .attr({
                     type: 'checkbox',
                     name: 'toggle',
