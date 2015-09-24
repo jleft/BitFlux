@@ -10,16 +10,13 @@
             .orient('bottom')
             .ticks(6);
 
-        function xAxisChart(selection) {
-            var data = selection.datum().data;
-            var viewDomain = selection.datum().viewDomain;
+        var dataJoin = fc.util.dataJoin()
+            .selector('g.x-axis')
+            .element('g')
+            .attr('class', 'x-axis');
 
-            // Redraw
-            var xAxisContainer = selection.selectAll('g.x-axis')
-                .data([data]);
-            xAxisContainer.enter()
-                .append('g')
-                .attr('class', 'axis x-axis')
+        function xAxisChart(selection) {
+            var xAxisContainer = dataJoin(selection, [selection.datum()])
                 .layout({
                     position: 'absolute',
                     left: 0,
@@ -31,7 +28,7 @@
             selection.layout();
 
             xScale.range([0, xAxisContainer.layout('width')])
-                .domain(viewDomain);
+                .domain(selection.datum().viewDomain);
 
             xAxisContainer.call(xAxis);
         }

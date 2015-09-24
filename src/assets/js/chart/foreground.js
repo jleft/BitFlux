@@ -7,13 +7,13 @@
             bottomMargin = 0,
             leftMargin = 0;
 
-        var createForeground = fc.util.dataJoin()
+        var dataJoin = fc.util.dataJoin()
             .selector('rect.foreground')
             .element('rect')
             .attr('class', 'foreground');
 
         function foreground(selection) {
-            createForeground(selection, [selection.datum()])
+            dataJoin(selection, [selection.datum()])
                 .layout({
                     position: 'absolute',
                     top: topMargin,
