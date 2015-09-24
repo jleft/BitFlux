@@ -41,8 +41,13 @@
 
             brush.on('brush', function() {
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
-                    // Control the shared view scale's domain
                     dispatch.viewChange([brush.extent()[0][0], brush.extent()[1][0]]);
+                }
+            })
+            .on('brushend', function() {
+                if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
+                    dispatch.viewChange(sc.util.domain.centerOnDate(viewScale.domain(),
+                        model.data, brush.extent()[0][0]));
                 }
             });
 
