@@ -43,7 +43,7 @@
         }
 
         function updateLayout() {
-            sc.util.dimensions.layout(container, secondaryCharts);
+            sc.util.layout(container, secondaryCharts);
         }
 
         function initialiseResize() {

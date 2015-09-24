@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.util.callbackInvalidator = function() {
+    sc.data.callbackInvalidator = function() {
         var n = 0;
 
         function callbackInvalidator(callback) {
