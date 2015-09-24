@@ -1,4 +1,4 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.util.callbackInvalidator = function() {
@@ -19,5 +19,4 @@
 
         return callbackInvalidator;
     };
-
-})(sc);
+})(d3, fc, sc);

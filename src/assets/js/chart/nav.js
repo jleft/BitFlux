@@ -64,5 +64,4 @@
 
         return nav;
     };
-
 })(d3, fc, sc);

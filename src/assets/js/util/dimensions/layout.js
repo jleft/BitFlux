@@ -1,4 +1,4 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
 
     sc.util.dimensions.layout = function(container, secondaryCharts) {
@@ -30,5 +30,4 @@
             .filter(function(d, i) { return i >= secondaryChartsShown; })
             .style('height', '0px');
     };
-
-})(d3, fc);
+})(d3, fc, sc);

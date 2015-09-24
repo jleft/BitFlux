@@ -64,5 +64,4 @@
 
         return dataInterface;
     };
-
 })(d3, fc, sc);

@@ -39,5 +39,4 @@
 
         return toggleGenerator;
     };
-
 })(d3, fc, sc);
