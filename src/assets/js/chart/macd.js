@@ -36,14 +36,14 @@
         var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
-            var dataModel = selection.datum();
+            var model = selection.datum();
 
-            macdAlgorithm(dataModel.data);
+            macdAlgorithm(model.data);
 
-            macdTimeSeries.xDomain(dataModel.viewDomain);
+            macdTimeSeries.xDomain(model.viewDomain);
 
             // Add percentage padding either side of extreme high/lows
-            var maxYExtent = d3.max(dataModel.data, function(d) {
+            var maxYExtent = d3.max(model.data, function(d) {
                 return Math.abs(d.macd.macd);
             });
             var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);

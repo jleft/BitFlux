@@ -11,7 +11,7 @@
         var svgXAxis = container.select('svg.x-axis');
         var svgNav = container.select('svg.nav');
 
-        var dataModel = {
+        var model = {
             data: [],
             period: 60 * 60 * 24,
             trackingLive: true,
@@ -24,10 +24,10 @@
         var nav = sc.chart.nav();
 
         function render() {
-            svgPrimary.datum(dataModel)
+            svgPrimary.datum(model)
                 .call(primaryChart);
 
-            svgSecondary.datum(dataModel)
+            svgSecondary.datum(model)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
@@ -35,10 +35,10 @@
                         .call(secondaryCharts[i].option);
                 });
 
-            svgXAxis.datum(dataModel)
+            svgXAxis.datum(model)
                 .call(xAxis);
 
-            svgNav.datum(dataModel)
+            svgNav.datum(model)
                 .call(nav);
         }
 
@@ -54,8 +54,8 @@
         }
 
         function onViewChanged(domain) {
-            dataModel.viewDomain = [domain[0], domain[1]];
-            dataModel.trackingLive = sc.util.domain.trackingLiveData(dataModel.viewDomain, dataModel.data);
+            model.viewDomain = [domain[0], domain[1]];
+            model.trackingLive = sc.util.domain.trackingLiveData(model.viewDomain, model.data);
             render();
         }
 
@@ -65,7 +65,7 @@
         }
 
         function resetToLive() {
-            var data = dataModel.data;
+            var data = model.data;
             var dataDomain = fc.util.extent(data, 'date');
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
             onViewChanged(navTimeDomain);
@@ -79,9 +79,9 @@
                         console.log('Error loading data from coinbase websocket: ' +
                         socketEvent.type + ' ' + socketEvent.code);
                     } else if (socketEvent.type === 'message') {
-                        dataModel.data = data;
-                        if (dataModel.trackingLive) {
-                            var newDomain = sc.util.domain.moveToLatest(dataModel.viewDomain, dataModel.data);
+                        model.data = data;
+                        if (model.trackingLive) {
+                            var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
                             onViewChanged(newDomain);
                         }
                     }
@@ -90,7 +90,7 @@
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
-                        dataModel.data = data;
+                        model.data = data;
                         resetToLive();
                     }
                 });
@@ -101,16 +101,16 @@
             var headMenu = sc.menu.head()
                 .on('dataTypeChange', function(type) {
                     if (type === 'bitcoin') {
-                        dataModel.period = container.select('#period-selection').property('value');
-                        dataInterface(dataModel.period);
+                        model.period = container.select('#period-selection').property('value');
+                        dataInterface(model.period);
                     } else if (type === 'generated') {
                         dataInterface.generateData();
-                        dataModel.period = 60 * 60 * 24;
+                        model.period = 60 * 60 * 24;
                     }
                 })
                 .on('periodChange', function(period) {
-                    dataModel.period = period;
-                    dataInterface(dataModel.period);
+                    model.period = period;
+                    dataInterface(model.period);
                 })
                 .on('resetToLive', resetToLive)
                 .on('toggleSlideout', function() {
