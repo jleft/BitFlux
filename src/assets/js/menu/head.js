@@ -5,41 +5,39 @@
 
         var dispatch = d3.dispatch('resetToLive',
             'toggleSlideout',
-            'dataTypeChange',
-            'periodChange');
+            'dataProductChange',
+            'dataPeriodChange');
 
         function setPeriodChangeVisibility(visible) {
             var visibility = visible ? 'visible' : 'hidden';
-            d3.select('#period-selection')
+            d3.select('#period-dropdown')
                 .style('visibility', visibility);
         }
 
         setPeriodChangeVisibility(false);
 
-        var dataTypeChangeOptions = function(selection) {
-            selection.on('change', function() {
-                if (this.value === 'bitcoin') {
+        var dataTypeChangeOptions = sc.menu.data.product()
+            .on('dataProductChange', function(product) {
+                if (product.option === 'bitcoin') {
                     setPeriodChangeVisibility(true);
                 } else {
                     setPeriodChangeVisibility(false);
                 }
-                dispatch.dataTypeChange(this.value);
+                dispatch.dataProductChange(product);
             });
-        };
 
-        var periodChangeOptions = function(selection) {
-            selection.on('change', function() {
-                dispatch.periodChange(this.value);
+        var dataPeriodChangeOptions = sc.menu.data.period()
+            .on('dataPeriodChange', function(period) {
+                dispatch.dataPeriodChange(period);
             });
-        };
 
         var head = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this);
-                selection.select('#type-selection')
+                selection.select('#product-dropdown')
                     .call(dataTypeChangeOptions);
-                selection.select('#period-selection')
-                    .call(periodChangeOptions);
+                selection.select('#period-dropdown')
+                    .call(dataPeriodChangeOptions);
                 selection.select('#reset-button')
                     .on('click', function() {
                         dispatch.resetToLive();

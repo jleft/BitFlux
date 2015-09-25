@@ -99,17 +99,19 @@
 
         function initialiseHeadMenu(dataInterface) {
             var headMenu = sc.menu.head()
-                .on('dataTypeChange', function(type) {
-                    if (type === 'bitcoin') {
-                        model.period = container.select('#period-selection').property('value');
+                .on('dataProductChange', function(product) {
+                    if (product.option === 'bitcoin') {
+                        var periodDropdown = container.select('#period-dropdown');
+                        model.period = periodDropdown.selectAll('option')[0]
+                            [periodDropdown.node().selectedIndex].__data__.option;
                         dataInterface(model.period);
-                    } else if (type === 'generated') {
+                    } else if (product.option === 'generated') {
                         dataInterface.generateData();
                         model.period = 60 * 60 * 24;
                     }
                 })
-                .on('periodChange', function(period) {
-                    model.period = period;
+                .on('dataPeriodChange', function(period) {
+                    model.period = period.option;
                     dataInterface(model.period);
                 })
                 .on('resetToLive', resetToLive)

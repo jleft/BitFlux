@@ -16,6 +16,7 @@
             }
         },
         menu: {
+            data: {},
             generator: {},
             primary: {},
             secondary: {}
