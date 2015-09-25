@@ -5,7 +5,7 @@
 
         var dispatch = d3.dispatch('resetToLive',
             'toggleSlideout',
-            'dataTypeChange',
+            'dataProductChange',
             'dataPeriodChange');
 
         function setPeriodChangeVisibility(visible) {
@@ -16,14 +16,14 @@
 
         setPeriodChangeVisibility(false);
 
-        var dataTypeChangeOptions = sc.menu.data.type()
-            .on('dataTypeChange', function(type) {
-                if (type.option === 'bitcoin') {
+        var dataTypeChangeOptions = sc.menu.data.product()
+            .on('dataProductChange', function(product) {
+                if (product.option === 'bitcoin') {
                     setPeriodChangeVisibility(true);
                 } else {
                     setPeriodChangeVisibility(false);
                 }
-                dispatch.dataTypeChange(type);
+                dispatch.dataProductChange(product);
             });
 
         var dataPeriodChangeOptions = sc.menu.data.period()
@@ -34,7 +34,7 @@
         var head = function(selection) {
             selection.each(function() {
                 var selection = d3.select(this);
-                selection.select('#type-dropdown')
+                selection.select('#product-dropdown')
                     .call(dataTypeChangeOptions);
                 selection.select('#period-dropdown')
                     .call(dataPeriodChangeOptions);
