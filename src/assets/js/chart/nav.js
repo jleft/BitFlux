@@ -4,10 +4,6 @@
     sc.chart.nav = function() {
         var dispatch = d3.dispatch('viewChange');
 
-        var navTimeSeries = fc.chart.linearTimeSeries()
-            .yTicks(0)
-            .yOrient('right');
-
         var viewScale = fc.scale.dateTime();
 
         var area = fc.series.area()
@@ -25,6 +21,10 @@
                 }
                 return this.data;
             });
+
+        var navTimeSeries = fc.chart.linearTimeSeries()
+            .yTicks(0)
+            .yOrient('right');
 
         function nav(selection) {
             var model = selection.datum();
@@ -49,9 +49,10 @@
             navTimeSeries.plotArea(navMulti);
             selection.call(navTimeSeries);
 
-            // Behaves oddly if not reinitialized every render
             // Allow to zoom using mouse, but disable panning
-            var zoom = sc.behavior.zoom(viewScale)
+            var zoom = sc.behavior.zoom()
+                .scale(viewScale)
+                .trackingLatest(selection.datum().trackingLatest)
                 .allowPan(false)
                 .on('zoom', function(domain) {
                     dispatch.viewChange(domain);
