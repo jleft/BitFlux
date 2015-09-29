@@ -16,7 +16,7 @@
 
         setPeriodChangeVisibility(false);
 
-        var dataTypeChangeOptions = sc.menu.data.product()
+        var dataProductChangeOptions = sc.menu.data.product()
             .on('dataProductChange', function(product) {
                 if (product.option === 'bitcoin') {
                     setPeriodChangeVisibility(true);
@@ -35,7 +35,7 @@
             selection.each(function() {
                 var selection = d3.select(this);
                 selection.select('#product-dropdown')
-                    .call(dataTypeChangeOptions);
+                    .call(dataProductChangeOptions);
                 selection.select('#period-dropdown')
                     .call(dataPeriodChangeOptions);
                 selection.select('#reset-button')
