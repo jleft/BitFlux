@@ -16,8 +16,13 @@
 
         setPeriodChangeVisibility(false);
 
-        var dataProductChangeOptions = sc.menu.data.product()
-            .on('dataProductChange', function(product) {
+        var generated = sc.menu.option('Data Generator', 'generated', 'generated');
+        var bitcoin = sc.menu.option('Bitcoin Data', 'bitcoin', 'bitcoin');
+
+        var dataProductDropdown = sc.menu.group()
+            .option(generated, bitcoin)
+            .generator(sc.menu.generator.dropdownGroup())
+            .on('optionChange', function(product) {
                 if (product.option === 'bitcoin') {
                     setPeriodChangeVisibility(true);
                 } else {
@@ -26,8 +31,14 @@
                 dispatch.dataProductChange(product);
             });
 
-        var dataPeriodChangeOptions = sc.menu.data.period()
-            .on('dataPeriodChange', function(period) {
+        var hourPeriod = sc.menu.option('1 hr', '3600', 3600);
+        var fiveMinutePeriod = sc.menu.option('5 min', '300', 300);
+        var oneMinutePeriod = sc.menu.option('1 min', '60', 60);
+
+        var dataPeriodDropdown = sc.menu.group()
+            .option(hourPeriod, fiveMinutePeriod, oneMinutePeriod)
+            .generator(sc.menu.generator.dropdownGroup())
+            .on('optionChange', function(period) {
                 dispatch.dataPeriodChange(period);
             });
 
@@ -35,9 +46,9 @@
             selection.each(function() {
                 var selection = d3.select(this);
                 selection.select('#product-dropdown')
-                    .call(dataProductChangeOptions);
+                    .call(dataProductDropdown);
                 selection.select('#period-dropdown')
-                    .call(dataPeriodChangeOptions);
+                    .call(dataPeriodDropdown);
                 selection.select('#reset-button')
                     .on('click', function() {
                         dispatch.resetToLive();
