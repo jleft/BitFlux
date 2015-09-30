@@ -2,7 +2,7 @@
     'use strict';
 
     sc.menu.generator.toggleGroup = function() {
-        var dispatch = d3.dispatch('toggleChange');
+        var dispatch = d3.dispatch('optionChange');
 
         var dataJoin = fc.util.dataJoin()
             .selector('label.btn btn-default')
@@ -31,7 +31,7 @@
                             option: self.datum(),
                             toggled: self.select('input').property('checked')
                         };
-                        dispatch.toggleChange(toggledOption);
+                        dispatch.optionChange(toggledOption);
                     }, 0);
                 });
         }

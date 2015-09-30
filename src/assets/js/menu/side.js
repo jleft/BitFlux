@@ -8,24 +8,57 @@
             'primaryChartIndicatorChange',
             'secondaryChartChange');
 
-        var primaryChartSeriesOptions = sc.menu.primary.series()
-            .on('primaryChartSeriesChange', function(series) {
+        var candlestick = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var ohlc = sc.menu.option('OHLC', 'ohlc', fc.series.ohlc());
+        var line = sc.menu.option('Line', 'line', fc.series.line());
+        line.option.isLine = true;
+        var point = sc.menu.option('Point', 'point', fc.series.point());
+        var area = sc.menu.option('Area', 'area', fc.series.area());
+
+        var primaryChartSeriesOptions = sc.menu.group()
+            .option(candlestick, ohlc, line, point, area)
+            .generator(sc.menu.generator.buttonGroup())
+            .on('optionChange', function(series) {
                 dispatch.primaryChartSeriesChange(series);
             });
 
-        var primaryChartYValueAccessorOptions = sc.menu.primary.yValueAccessor()
-            .on('primaryChartYValueAccessorChange', function(yValueAccessor) {
+        var open = sc.menu.option('Open', 'open', function(d) { return d.open; });
+        var high = sc.menu.option('High', 'high', function(d) { return d.high; });
+        var low = sc.menu.option('Low', 'low', function(d) { return d.low; });
+        var close = sc.menu.option('Close', 'close', function(d) { return d.close; });
+
+        var primaryChartYValueAccessorOptions = sc.menu.group()
+            .option(open, high, low, close)
+            .generator(sc.menu.generator.buttonGroup(3))
+            .on('optionChange', function(yValueAccessor) {
                 dispatch.primaryChartYValueAccessorChange(yValueAccessor);
             });
 
-        var primaryChartIndicatorOptions = sc.menu.primary.indicators()
-            .on('primaryChartIndicatorChange', function(toggledIndicator) {
-                dispatch.primaryChartIndicatorChange(toggledIndicator);
+        var movingAverage = fc.series.line()
+            .decorate(function(select) {
+                select.enter()
+                    .classed('movingAverage', true);
+            })
+            .yValue(function(d) { return d.movingAverage; });
+
+        var movingAverageIndicator = sc.menu.option('Moving Average', 'movingAverage', movingAverage);
+        var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
+
+        var primaryChartIndicatorToggle = sc.menu.group()
+            .option(movingAverageIndicator, bollingerIndicator)
+            .generator(sc.menu.generator.toggleGroup())
+            .on('optionChange', function(indicator) {
+                dispatch.primaryChartIndicatorChange(indicator);
             });
 
-        var secondaryChartOptions = sc.menu.secondary.chart()
-            .on('secondaryChartChange', function(toggledChart) {
-                dispatch.secondaryChartChange(toggledChart);
+        var rsi = sc.menu.option('RSI', 'secondary-rsi', sc.chart.rsi());
+        var macd = sc.menu.option('MACD', 'secondary-macd', sc.chart.macd());
+
+        var secondaryChartToggle = sc.menu.group()
+            .option(rsi, macd)
+            .generator(sc.menu.generator.toggleGroup())
+            .on('optionChange', function(chart) {
+                dispatch.secondaryChartChange(chart);
             });
 
         var side = function(selection) {
@@ -36,9 +69,9 @@
                 selection.select('#y-value-accessor-buttons')
                     .call(primaryChartYValueAccessorOptions);
                 selection.select('#indicator-buttons')
-                    .call(primaryChartIndicatorOptions);
+                    .call(primaryChartIndicatorToggle);
                 selection.select('#secondary-chart-buttons')
-                    .call(secondaryChartOptions);
+                    .call(secondaryChartToggle);
             });
         };
 
