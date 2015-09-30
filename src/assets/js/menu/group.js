@@ -9,8 +9,7 @@
         var generator;
 
         function group(selection) {
-            var optionGenerator = generator
-                .on('optionChange', function(option) {
+            var optionGenerator = generator.on('optionChange', function(option) {
                     dispatch.optionChange(option);
                 });
 
