@@ -167,7 +167,8 @@
             var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
             primaryChart.yTickValues(tickValues)
                 .yDecorate(function(s) {
-                    s.filter(function(d) { return d === latestPrice; })
+                    s.selectAll('.tick')
+                        .filter(function(d) { return d === latestPrice; })
                         .classed('closeLine', true)
                         .select('path')
                         .attr('d', function(d) {
