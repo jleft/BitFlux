@@ -22,7 +22,7 @@
 
 
         it('should return all data (without padding) when date range covers the data\'s date extent', function() {
-            var filteredData = sc.util.domain.filterDataInDateRange([data[0].date, data[data.length - 1].date], data);
+            var filteredData = sc.util.domain.filterDataInDateRange(fc.util.extent(data, 'date'), data);
 
             expect(filteredData.length).toEqual(data.length);
             expect(filteredData[0].date).toEqual(monday);
