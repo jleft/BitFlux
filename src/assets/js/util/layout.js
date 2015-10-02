@@ -25,9 +25,11 @@
             .style('height', primaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
         container.selectAll('.secondary-row')
             .filter(function(d, i) { return i < secondaryChartsShown; })
+            .style('display', 'block')
             .style('height', secondaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
         container.selectAll('.secondary-row')
             .filter(function(d, i) { return i >= secondaryChartsShown; })
+            .style('display', 'none')
             .style('height', '0px');
     };
 })(d3, fc, sc);
