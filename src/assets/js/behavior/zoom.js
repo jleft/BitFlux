@@ -50,14 +50,18 @@
                     var panned = (zoomBehavior.scale() === 1);
                     var zoomed = (zoomBehavior.scale() !== 1);
 
-                    var domain = scale.domain();
-                    if (maxDomainViewed) {
-                        domain = xExtent;
-                    } else if (zoomed && trackingLatest) {
-                        domain = sc.util.domain.moveToLatest(scale.domain(), selection.datum().data);
-                    }
                     if ((panned && allowPan) || (zoomed && allowZoom)) {
+                        var domain = scale.domain();
+                        if (maxDomainViewed) {
+                            domain = xExtent;
+                        } else if (zoomed && trackingLatest) {
+                            domain = sc.util.domain.moveToLatest(domain, selection.datum().data);
+                        }
                         dispatch.zoom(domain);
+                    } else {
+                        // Resets zoomBehaviour
+                        zoomBehavior.translate([0, 0]);
+                        zoomBehavior.scale(1);
                     }
                 });
 
