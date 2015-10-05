@@ -10,7 +10,8 @@
         }
 
         var data;
-        var mixedData;
+        var shuffledData;
+
         var monday = new Date(2015, 7, 17);
         var tuesday = new Date(2015, 7, 18);
         var wednesday = new Date(2015, 7, 19);
@@ -19,39 +20,39 @@
 
         beforeEach(function() {
             data = [obj(monday), obj(tuesday), obj(wednesday), obj(thursday), obj(friday)];
-            mixedData = [obj(wednesday), obj(monday), obj(friday), obj(thursday), obj(tuesday)];
+            shuffledData = [obj(thursday), obj(wednesday), obj(monday), obj(friday), obj(tuesday)];
         });
 
         it('should return true if latest domain time is equal to latest data time', function() {
             var domain = [tuesday, friday];
+            var reversedDomain = [domain[1], domain[0]];
+
             expect(sc.util.domain.trackingLatestData(domain, data)).toBe(true);
+            expect(sc.util.domain.trackingLatestData(reversedDomain, shuffledData)).toBe(true);
         });
 
         it('should return false if latest domain time is less than latest data time', function() {
             var domain = [tuesday, thursday];
+            var reversedDomain = [domain[1], domain[0]];
+
             expect(sc.util.domain.trackingLatestData(domain, data)).toBe(false);
+            expect(sc.util.domain.trackingLatestData(reversedDomain, shuffledData)).toBe(false);
         });
 
         it('should return false if latest domain time is more than latest data time', function() {
             var domain = [tuesday, d3.time.day.offset(friday, 1)];
+            var reversedDomain = [domain[1], domain[0]];
+
             expect(sc.util.domain.trackingLatestData(domain, data)).toBe(false);
+            expect(sc.util.domain.trackingLatestData(reversedDomain, shuffledData)).toBe(false);
         });
 
         it('should return false if domain time does not coincide with data times', function() {
             var domain = [d3.time.day.offset(friday, 1), d3.time.day.offset(friday, 2)];
+            var reversedDomain = [domain[1], domain[0]];
+
             expect(sc.util.domain.trackingLatestData(domain, data)).toBe(false);
-        });
-
-        it('should return expected values when called with unordered data and domain', function() {
-            var domains = [[friday, tuesday],
-                [thursday, tuesday],
-                [d3.time.day.offset(friday, 1), tuesday],
-                [d3.time.day.offset(friday, 2), d3.time.day.offset(friday, 1)]];
-
-            expect(sc.util.domain.trackingLatestData(domains[0], mixedData)).toBe(true);
-            expect(sc.util.domain.trackingLatestData(domains[1], mixedData)).toBe(false);
-            expect(sc.util.domain.trackingLatestData(domains[2], mixedData)).toBe(false);
-            expect(sc.util.domain.trackingLatestData(domains[3], mixedData)).toBe(false);
+            expect(sc.util.domain.trackingLatestData(reversedDomain, shuffledData)).toBe(false);
         });
 
     });
