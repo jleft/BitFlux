@@ -2,9 +2,8 @@
     'use strict';
 
     sc.util.domain.trackingLatestData = function(domain, data) {
-        var dataExtent = fc.util.extent(data, 'date');
-        var latestViewedTime = domain[1].getTime();
-        var latestDatumTime = dataExtent[1].getTime();
+        var latestViewedTime = d3.max(domain, function(d) { return d.getTime(); });
+        var latestDatumTime = d3.max(data, function(d) { return d.date.getTime(); });
         return latestViewedTime === latestDatumTime;
     };
 })(d3, fc, sc);

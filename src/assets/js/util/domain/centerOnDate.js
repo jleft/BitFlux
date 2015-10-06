@@ -3,10 +3,15 @@
 
     sc.util.domain.centerOnDate = function(domain, data, centerDate) {
         var dataExtent = fc.util.extent(data, 'date');
-        var domainTimeExtent = (domain[1].getTime() - domain[0].getTime()) / 1000;
+        var domainTimes = domain.map(function(d) { return d.getTime(); });
+        var domainTimeDifference = (d3.max(domainTimes) - d3.min(domainTimes)) / 1000;
 
-        var centeredDataDomain = [d3.time.second.offset(centerDate, -domainTimeExtent / 2),
-            d3.time.second.offset(centerDate, domainTimeExtent / 2)];
+        if (centerDate.getTime() < dataExtent[0] || centerDate.getTime() > dataExtent[1]) {
+            return [new Date(d3.min(domainTimes)), new Date(d3.max(domainTimes))];
+        }
+
+        var centeredDataDomain = [d3.time.second.offset(centerDate, -domainTimeDifference / 2),
+            d3.time.second.offset(centerDate, domainTimeDifference / 2)];
         var timeShift = 0;
         if (centeredDataDomain[1].getTime() > dataExtent[1].getTime()) {
             timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime()) / 1000;
