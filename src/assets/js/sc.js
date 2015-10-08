@@ -23,9 +23,7 @@
         },
         series: {},
         util: {
-            dimensions: {},
-            domain: {},
-            zoom: {}
+            domain: {}
         }
     };
 })();
