@@ -9,13 +9,14 @@
             .element('option');
 
         function layoutDropdown(sel) {
+            var selectedIndex = sel.datum().selectedIndex || 0;
 
-            dataJoin(sel, sel.datum())
+            dataJoin(sel, sel.datum().optionList)
                 .text(function(d) { return d.displayString; })
                 .attr({
                     value: function(d) { return d.valueString; }
                 })
-                .property('selected', function(d, i) { return (i === 0); });
+                .property('selected', function(d, i) { return (i === selectedIndex); });
         }
 
         function optionGenerator(selection) {

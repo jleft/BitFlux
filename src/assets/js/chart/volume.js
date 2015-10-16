@@ -1,6 +1,8 @@
 (function(d3, fc, sc) {
     'use strict';
 
+    function formatVolume(x) { return sc.model.selectedProduct.volumeFormat(x); }
+
     sc.chart.volume = function() {
         var yAxisWidth = 45;
 
@@ -11,6 +13,7 @@
         var volumeChart = fc.chart.cartesianChart(xScale, d3.scale.linear())
             .xTicks(0)
             .yOrient('right')
+            .yTickFormat(formatVolume)
             .margin({
                 top: 0,
                 left: 0,

@@ -48,10 +48,16 @@
             }));
         }
 
-        dataInterface.generateData = function() {
+        dataInterface.generateDailyData = function() {
             dataInterface.invalidate();
-            dispatch.dataLoaded(null, dataGenerator(candlesOfData));
-            return dataInterface;
+
+            var now = new Date();
+            now.setHours(0, 0, 0, 0);
+            var millisecondsPerDay = 24 * 60 * 60 * 1000;
+            dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
+
+            var dataGenerated = dataGenerator(candlesOfData);
+            dispatch.dataLoaded(null, dataGenerated);
         };
 
         dataInterface.invalidate = function() {

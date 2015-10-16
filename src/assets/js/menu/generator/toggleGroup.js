@@ -10,7 +10,7 @@
             .attr('class', 'btn btn-default');
 
         function layoutButtons(sel) {
-            dataJoin(sel, sel.datum())
+            dataJoin(sel, sel.datum().optionList)
                 .text(function(d) { return d.displayString; })
                 .insert('input')
                 .attr({

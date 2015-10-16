@@ -21,6 +21,13 @@
             primary: {},
             secondary: {}
         },
+        model: {
+            period: {},
+            product: {},
+            selectedPeriod: {},
+            selectedProduct: {},
+            legendData: undefined
+        },
         series: {},
         util: {
             domain: {}

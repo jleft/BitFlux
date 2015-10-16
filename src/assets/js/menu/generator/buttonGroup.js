@@ -14,9 +14,9 @@
             .attr('class', 'btn btn-default');
 
         function layoutButtons(sel) {
-            var activeValue = defaultValue < sel.datum().length ? defaultValue : 0;
+            var activeValue = defaultValue < sel.datum().optionList.length ? defaultValue : 0;
 
-            dataJoin(sel, sel.datum())
+            dataJoin(sel, sel.datum().optionList)
                 .classed('active', function(d, i) { return (i === activeValue); })
                 .text(function(d) { return d.displayString; })
                 .insert('input')

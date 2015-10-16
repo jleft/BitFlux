@@ -14,38 +14,33 @@
                 .style('visibility', visibility);
         }
 
-        setPeriodChangeVisibility(false);
-
-        var generated = sc.menu.option('Data Generator', 'generated', 'generated');
-        var bitcoin = sc.menu.option('Bitcoin Data', 'bitcoin', 'bitcoin');
-
         var dataProductDropdown = sc.menu.group()
-            .option(generated, bitcoin)
             .generator(sc.menu.generator.dropdownGroup())
             .on('optionChange', function(product) {
-                if (product.option === 'bitcoin') {
-                    setPeriodChangeVisibility(true);
-                } else {
-                    setPeriodChangeVisibility(false);
-                }
                 dispatch.dataProductChange(product);
             });
 
-        var hourPeriod = sc.menu.option('1 hr', '3600', 3600);
-        var fiveMinutePeriod = sc.menu.option('5 min', '300', 300);
-        var oneMinutePeriod = sc.menu.option('1 min', '60', 60);
-
         var dataPeriodDropdown = sc.menu.group()
-            .option(hourPeriod, fiveMinutePeriod, oneMinutePeriod)
             .generator(sc.menu.generator.dropdownGroup())
             .on('optionChange', function(period) {
                 dispatch.dataPeriodChange(period);
             });
 
+        function configureDropdown() {
+            dataProductDropdown.formOptionListFromCollection(sc.model.products, sc.menu.productAdaptor);
+            var periods = sc.model.selectedProduct.getPeriods();
+            dataPeriodDropdown.formOptionListFromCollection(
+                periods,
+                sc.menu.periodAdaptor);
+            setPeriodChangeVisibility(periods.length > 1);
+        }
+
         var head = function(selection) {
+            configureDropdown();
             selection.each(function() {
                 var selection = d3.select(this);
                 selection.select('#product-dropdown')
+                    .datum({selectedIndex: sc.model.products.indexOf(sc.model.selectedProduct)})
                     .call(dataProductDropdown);
                 selection.select('#period-dropdown')
                     .call(dataPeriodDropdown);
