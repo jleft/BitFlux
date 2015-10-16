@@ -11,6 +11,7 @@
         var xValueScaled = function(d, i) { return xScale(xValue(d, i)); };
         var yLowValue = function(d) { return d.low; };
         var yHighValue = function(d) { return d.high; };
+        var yCloseValue = function(d, i) { return d.close; };
 
         var candlestickSvg = fc.svg.candlestick()
             .x(function(d) { return xScale(d.date); })
@@ -59,7 +60,13 @@
             yScale = x;
             return candlestick;
         };
-
+        candlestick.xValue = function(x) {
+            if (!arguments.length) {
+                return xValue;
+            }
+            xValue = x;
+            return candlestick;
+        };
         candlestick.yLowValue = function(x) {
             if (!arguments.length) {
                 return yLowValue;
@@ -73,6 +80,13 @@
                 return yHighValue;
             }
             yHighValue = x;
+            return candlestick;
+        };
+        candlestick.yCloseValue = function(x) {
+            if (!arguments.length) {
+                return yCloseValue;
+            }
+            yCloseValue = x;
             return candlestick;
         };
 

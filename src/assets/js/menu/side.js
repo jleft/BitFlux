@@ -16,7 +16,7 @@
         var area = sc.menu.option('Area', 'area', fc.series.area());
 
         var primaryChartSeriesOptions = sc.menu.group()
-            .option(candlestick, ohlc, line, point, area)
+            .formOptionListFromCollection([candlestick, ohlc, line, point, area], fc.util.fn.identity)
             .generator(sc.menu.generator.buttonGroup())
             .on('optionChange', function(series) {
                 dispatch.primaryChartSeriesChange(series);
@@ -28,7 +28,7 @@
         var close = sc.menu.option('Close', 'close', function(d) { return d.close; });
 
         var primaryChartYValueAccessorOptions = sc.menu.group()
-            .option(open, high, low, close)
+            .formOptionListFromCollection([open, high, low, close], fc.util.fn.identity)
             .generator(sc.menu.generator.buttonGroup(3))
             .on('optionChange', function(yValueAccessor) {
                 dispatch.primaryChartYValueAccessorChange(yValueAccessor);
@@ -45,7 +45,7 @@
         var bollingerIndicator = sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands());
 
         var primaryChartIndicatorToggle = sc.menu.group()
-            .option(movingAverageIndicator, bollingerIndicator)
+            .formOptionListFromCollection([movingAverageIndicator, bollingerIndicator], fc.util.fn.identity)
             .generator(sc.menu.generator.toggleGroup())
             .on('optionChange', function(indicator) {
                 dispatch.primaryChartIndicatorChange(indicator);
@@ -56,7 +56,7 @@
         var volume = sc.menu.option('Volume', 'secondary-volume', sc.chart.volume());
 
         var secondaryChartToggle = sc.menu.group()
-            .option(rsi, macd, volume)
+            .formOptionListFromCollection([rsi, macd, volume], fc.util.fn.identity)
             .generator(sc.menu.generator.toggleGroup())
             .on('optionChange', function(chart) {
                 dispatch.secondaryChartChange(chart);

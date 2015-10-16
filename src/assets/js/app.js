@@ -10,10 +10,10 @@
         var svgSecondary = container.selectAll('svg.secondary');
         var svgXAxis = container.select('svg.x-axis');
         var svgNav = container.select('svg.nav');
+        var divLegend = container.select('#legend');
 
         var model = {
             data: [],
-            period: 60 * 60 * 24,
             trackingLatest: true,
             viewDomain: []
         };
@@ -22,10 +22,14 @@
         var secondaryCharts = [];
         var xAxis = sc.chart.xAxis();
         var nav = sc.chart.nav();
+        var headMenu = sc.menu.head();
+        var legend = sc.chart.legend();
 
         function render() {
             svgPrimary.datum(model)
                 .call(primaryChart);
+
+            renderLegend();
 
             svgSecondary.datum(model)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
@@ -40,6 +44,11 @@
 
             svgNav.datum(model)
                 .call(nav);
+        }
+
+        function renderHeadMenu() {
+            container.select('.head-menu')
+                .call(headMenu);
         }
 
         function updateLayout() {
@@ -59,7 +68,18 @@
             render();
         }
 
+        function renderLegend() {
+            divLegend.datum(sc.model.legendData)
+                .call(legend);
+        }
+
+        function onCrosshairChanged(dataPoint) {
+            sc.model.legendData = dataPoint;
+            render();
+        }
+
         function initialiseChartEventHandlers() {
+            primaryChart.on('crosshairChange', onCrosshairChanged);
             primaryChart.on('viewChange', onViewChanged);
             nav.on('viewChange', onViewChanged);
         }
@@ -71,6 +91,11 @@
             onViewChanged(navTimeDomain);
         }
 
+        function updateModelData(data) {
+            model.data = data;
+            sc.model.latestDataPoint = data[data.length - 1];
+        }
+
         function initialiseDataInterface() {
             var dataInterface = sc.data.dataInterface()
                 .on('messageReceived', function(socketEvent, data) {
@@ -79,7 +104,7 @@
                         console.log('Error loading data from coinbase websocket: ' +
                         socketEvent.type + ' ' + socketEvent.code);
                     } else if (socketEvent.type === 'message') {
-                        model.data = data;
+                        updateModelData(data);
                         if (model.trackingLatest) {
                             var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
                             onViewChanged(newDomain);
@@ -90,7 +115,7 @@
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
-                        model.data = data;
+                        updateModelData(data);
                         resetToLive();
                     }
                 });
@@ -98,21 +123,19 @@
         }
 
         function initialiseHeadMenu(dataInterface) {
-            var headMenu = sc.menu.head()
-                .on('dataProductChange', function(product) {
-                    if (product.option === 'bitcoin') {
-                        var periodDropdown = container.select('#period-dropdown');
-                        model.period = periodDropdown.selectAll('option')[0]
-                            [periodDropdown.node().selectedIndex].__data__.option;
-                        dataInterface(model.period);
-                    } else if (product.option === 'generated') {
-                        dataInterface.generateData();
-                        model.period = 60 * 60 * 24;
+            headMenu.on('dataProductChange', function(product) {
+                    sc.model.selectedProduct = product.option;
+                    sc.model.selectedPeriod = product.option.getPeriods()[0];
+                    if (product.option === sc.model.product.bitcoin) {
+                        dataInterface(sc.model.selectedPeriod.seconds);
+                    } else if (product.option === sc.model.product.generated) {
+                        dataInterface.generateDailyData();
                     }
+                    renderHeadMenu();
                 })
                 .on('dataPeriodChange', function(period) {
-                    model.period = period.option;
-                    dataInterface(model.period);
+                    sc.model.selectedPeriod = period.option;
+                    dataInterface(sc.model.selectedPeriod.seconds);
                 })
                 .on('resetToLive', resetToLive)
                 .on('toggleSlideout', function() {
@@ -120,8 +143,7 @@
                         !container.selectAll('.row-offcanvas-right').classed('active'));
                 });
 
-            container.select('.head-menu')
-                .call(headMenu);
+            renderHeadMenu();
         }
 
         function initialiseSideMenu() {
@@ -165,7 +187,7 @@
 
             updateLayout();
 
-            dataInterface.generateData();
+            dataInterface.generateDailyData();
         };
 
         return app;
