@@ -161,8 +161,29 @@
                 });
         }
 
+        function changeSeries(series) {
+            currentSeries = series;
+        }
+
+        function changeYValueAccessor(yValueAccessor) {
+            currentYValueAccessor = yValueAccessor.option;
+        }
+
+        function toggleIndicator(indicator) {
+            if (indicator) {
+                if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
+                    currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
+                } else if (indicator.toggled) {
+                    currentIndicators.push(indicator.option);
+                }
+            }
+        }
+
         function primary(selection) {
             var model = selection.datum();
+            changeSeries(model.series);
+            changeYValueAccessor(model.yValueAccessor);
+            toggleIndicator(model.toggledIndicator);
 
             primaryChart.xDomain(model.viewDomain);
 
@@ -209,25 +230,6 @@
         }
 
         d3.rebind(primary, dispatch, 'on');
-
-        primary.changeSeries = function(series) {
-            currentSeries = series;
-            return primary;
-        };
-
-        primary.changeYValueAccessor = function(yValueAccessor) {
-            currentYValueAccessor = yValueAccessor.option;
-            return primary;
-        };
-
-        primary.toggleIndicator = function(indicator) {
-            if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
-                currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
-            } else if (indicator.toggled) {
-                currentIndicators.push(indicator.option);
-            }
-            return primary;
-        };
 
         return primary;
     };
