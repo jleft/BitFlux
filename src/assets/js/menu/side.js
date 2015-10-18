@@ -3,10 +3,11 @@
 
     sc.menu.side = function() {
 
-        var dispatch = d3.dispatch('primaryChartSeriesChange',
-            'primaryChartYValueAccessorChange',
-            'primaryChartIndicatorChange',
-            'secondaryChartChange');
+        var dispatch = d3.dispatch(
+            sc.event.primaryChartSeriesChange,
+            sc.event.primaryChartYValueAccessorChange,
+            sc.event.primaryChartIndicatorChange,
+            sc.event.secondaryChartChange);
 
         var candlestick = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var ohlc = sc.menu.option('OHLC', 'ohlc', fc.series.ohlc());
@@ -19,7 +20,7 @@
             .formOptionListFromCollection([candlestick, ohlc, line, point, area], fc.util.fn.identity)
             .generator(sc.menu.generator.buttonGroup())
             .on('optionChange', function(series) {
-                dispatch.primaryChartSeriesChange(series);
+                dispatch[sc.event.primaryChartSeriesChange](series);
             });
 
         var open = sc.menu.option('Open', 'open', function(d) { return d.open; });
@@ -31,7 +32,7 @@
             .formOptionListFromCollection([open, high, low, close], fc.util.fn.identity)
             .generator(sc.menu.generator.buttonGroup(3))
             .on('optionChange', function(yValueAccessor) {
-                dispatch.primaryChartYValueAccessorChange(yValueAccessor);
+                dispatch[sc.event.primaryChartYValueAccessorChange](yValueAccessor);
             });
 
         var movingAverage = fc.series.line()
@@ -48,7 +49,7 @@
             .formOptionListFromCollection([movingAverageIndicator, bollingerIndicator], fc.util.fn.identity)
             .generator(sc.menu.generator.toggleGroup())
             .on('optionChange', function(indicator) {
-                dispatch.primaryChartIndicatorChange(indicator);
+                dispatch[sc.event.primaryChartIndicatorChange](indicator);
             });
 
         var rsi = sc.menu.option('RSI', 'secondary-rsi', sc.chart.rsi());
@@ -59,7 +60,7 @@
             .formOptionListFromCollection([rsi, macd, volume], fc.util.fn.identity)
             .generator(sc.menu.generator.toggleGroup())
             .on('optionChange', function(chart) {
-                dispatch.secondaryChartChange(chart);
+                dispatch[sc.event.secondaryChartChange](chart);
             });
 
         var side = function(selection) {

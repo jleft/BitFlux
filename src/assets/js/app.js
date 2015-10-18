@@ -73,7 +73,7 @@
             });
         }
 
-        function onViewChanged(domain) {
+        function onViewChange(domain) {
             model.viewDomain = [domain[0], domain[1]];
             xAxisModel.viewDomain = [domain[0], domain[1]];
             navModel.viewDomain = [domain[0], domain[1]];
@@ -81,16 +81,16 @@
             render();
         }
 
-        function onCrosshairChanged(dataPoint) {
+        function onCrosshairChange(dataPoint) {
             sc.model.legendData = dataPoint;
             render();
         }
 
-        function resetToLive() {
+        function resetToLatest() {
             var data = model.data;
             var dataDomain = fc.util.extent(data, 'date');
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
-            onViewChanged(navTimeDomain);
+            onViewChange(navTimeDomain);
         }
 
         function updateModelData(data) {
@@ -101,18 +101,18 @@
 
         function initialisePrimaryChart() {
             return sc.chart.primary()
-                .on('crosshairChange', onCrosshairChanged)
-                .on('viewChange', onViewChanged);
+                .on(sc.event.crosshairChange, onCrosshairChange)
+                .on(sc.event.viewChange, onViewChange);
         }
 
         function initialiseNav() {
             return sc.chart.nav()
-                .on('viewChange', onViewChanged);
+                .on(sc.event.viewChange, onViewChange);
         }
 
         function initialiseDataInterface() {
             return sc.data.dataInterface()
-                .on('messageReceived', function(socketEvent, data) {
+                .on(sc.event.messageReceived, function(socketEvent, data) {
                     if (socketEvent.type === 'error' ||
                         (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
                         console.log('Error loading data from coinbase websocket: ' +
@@ -121,23 +121,23 @@
                         updateModelData(data);
                         if (model.trackingLatest) {
                             var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
-                            onViewChanged(newDomain);
+                            onViewChange(newDomain);
                         }
                     }
                 })
-                .on('dataLoaded', function(err, data) {
+                .on(sc.event.dataLoaded, function(err, data) {
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
                         updateModelData(data);
-                        resetToLive();
+                        resetToLatest();
                     }
                 });
         }
 
         function initialiseHeadMenu(dataInterface) {
             return sc.menu.head()
-                .on('dataProductChange', function(product) {
+                .on(sc.event.dataProductChange, function(product) {
                     sc.model.selectedProduct = product.option;
                     sc.model.selectedPeriod = product.option.getPeriods()[0];
                     if (product.option === sc.model.product.bitcoin) {
@@ -147,12 +147,12 @@
                     }
                     render();
                 })
-                .on('dataPeriodChange', function(period) {
+                .on(sc.event.dataPeriodChange, function(period) {
                     sc.model.selectedPeriod = period.option;
                     dataInterface(sc.model.selectedPeriod.seconds);
                 })
-                .on('resetToLive', resetToLive)
-                .on('toggleSlideout', function() {
+                .on(sc.event.resetToLatest, resetToLatest)
+                .on(sc.event.toggleSlideout, function() {
                     container.selectAll('.row-offcanvas-right').classed('active',
                         !container.selectAll('.row-offcanvas-right').classed('active'));
                 });
@@ -160,23 +160,23 @@
 
         function initialiseSideMenu() {
             var sideMenu = sc.menu.side()
-                .on('primaryChartSeriesChange', function(series) {
+                .on(sc.event.primaryChartSeriesChange, function(series) {
                     model.series = series;
                     render();
                 })
-                .on('primaryChartYValueAccessorChange', function(yValueAccessor) {
+                .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
                     model.yValueAccessor = yValueAccessor;
                     render();
                 })
-                .on('primaryChartIndicatorChange', function(toggledIndicator) {
+                .on(sc.event.primaryChartIndicatorChange, function(toggledIndicator) {
                     model.toggledIndicator = toggledIndicator;
                     render();
                 })
-                .on('secondaryChartChange', function(toggledChart) {
+                .on(sc.event.secondaryChartChange, function(toggledChart) {
                     if (secondaryCharts.indexOf(toggledChart.option) !== -1 && !toggledChart.toggled) {
                         secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option), 1);
                     } else if (toggledChart.toggled) {
-                        toggledChart.option.option.on('viewChange', onViewChanged);
+                        toggledChart.option.option.on(sc.event.viewChange, onViewChange);
                         secondaryCharts.push(toggledChart.option);
                     }
                     svgSecondary.selectAll('*').remove();

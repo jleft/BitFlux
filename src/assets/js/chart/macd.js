@@ -4,7 +4,7 @@
     sc.chart.macd = function() {
         var yAxisWidth = 45;
 
-        var dispatch = d3.dispatch('viewChange');
+        var dispatch = d3.dispatch(sc.event.viewChange);
 
         var xScale = fc.scale.dateTime();
 
@@ -67,7 +67,7 @@
                 .scale(xScale)
                 .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
+                    dispatch[sc.event.viewChange](domain);
                 });
             foreground.call(zoom);
         }

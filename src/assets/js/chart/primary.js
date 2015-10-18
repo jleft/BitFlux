@@ -71,7 +71,7 @@
     sc.chart.primary = function() {
 
         var yAxisWidth = 45;
-        var dispatch = d3.dispatch('viewChange', 'crosshairChange');
+        var dispatch = d3.dispatch(sc.event.viewChange, sc.event.crosshairChange);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var currentYValueAccessor = function(d) { return d.close; };
@@ -154,10 +154,10 @@
         function setCrosshairSnap(series, data) {
             crosshair.snap(fc.util.seriesPointSnapXOnly(series, data))
                 .on('trackingmove', function(crosshairData) {
-                    dispatch.crosshairChange(crosshairData[0].datum);
+                    dispatch[sc.event.crosshairChange](crosshairData[0].datum);
                 })
                 .on('trackingend', function() {
-                    dispatch.crosshairChange(undefined);
+                    dispatch[sc.event.crosshairChange](undefined);
                 });
         }
 
@@ -223,7 +223,7 @@
                 .scale(xScale)
                 .trackingLatest(selection.datum().trackingLatest)
                 .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
+                    dispatch[sc.event.viewChange](domain);
                 });
             selection.select('.plot-area')
                 .call(zoom);
