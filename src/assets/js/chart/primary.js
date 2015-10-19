@@ -169,21 +169,11 @@
             currentYValueAccessor = yValueAccessor.option;
         }
 
-        function toggleIndicator(indicator) {
-            if (indicator) {
-                if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
-                    currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
-                } else if (indicator.toggled) {
-                    currentIndicators.push(indicator.option);
-                }
-            }
-        }
-
         function primary(selection) {
             var model = selection.datum();
             changeSeries(model.series);
             changeYValueAccessor(model.yValueAccessor);
-            toggleIndicator(model.toggledIndicator);
+            currentIndicators = model.indicators;
 
             primaryChart.xDomain(model.viewDomain);
 

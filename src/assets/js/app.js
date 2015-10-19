@@ -162,7 +162,7 @@
                     render();
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(toggledIndicator) {
-                    primaryChartModel.toggledIndicator = toggledIndicator;
+                    primaryChartModel.toggleIndicator(toggledIndicator);
                     render();
                 })
                 .on(sc.event.secondaryChartChange, function(toggledChart) {
