@@ -2,57 +2,28 @@
     'use strict';
 
     sc.chart.rsi = function() {
-        var yAxisWidth = 45;
-
         var dispatch = d3.dispatch(sc.event.viewChange);
+        var renderer = fc.indicator.renderer.relativeStrengthIndex();
+        var algorithm = fc.indicator.algorithm.relativeStrengthIndex();
+        var tickValues = [renderer.lowerValue(), 50, renderer.upperValue()];
 
-        var rsiRenderer = fc.indicator.renderer.relativeStrengthIndex();
-        var multi = fc.series.multi()
-            .series([rsiRenderer])
-            .mapping(function() { return this.data; });
-
-        var tickValues = [rsiRenderer.lowerValue(), 50, rsiRenderer.upperValue()];
-
-        var xScale = fc.scale.dateTime();
-
-        var rsiChart = fc.chart.cartesianChart(xScale, d3.scale.linear())
-            .xTicks(0)
-            .yOrient('right')
+        var chart = sc.chart.secondary()
+            .series([renderer])
             .yTickValues(tickValues)
-            .margin({
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: yAxisWidth
+            .on(sc.event.viewChange, function(domain) {
+                dispatch[sc.event.viewChange](domain);
             });
-
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
-
-        var rsiAlgorithm = fc.indicator.algorithm.relativeStrengthIndex();
 
         function rsi(selection) {
             var model = selection.datum();
+            algorithm(model.data);
 
-            rsiAlgorithm(model.data);
-
-            rsiChart.xDomain(model.viewDomain)
+            chart.trackingLatest(model.trackingLatest)
+                .xDomain(model.viewDomain)
                 .yDomain([0, 100]);
 
-            // Redraw
-            rsiChart.plotArea(multi);
-            selection.call(rsiChart);
-
-            selection.call(createForeground);
-            var foreground = selection.select('rect.foreground');
-
-            var zoom = sc.behavior.zoom()
-                .scale(xScale)
-                .trackingLatest(model.trackingLatest)
-                .on('zoom', function(domain) {
-                    dispatch[sc.event.viewChange](domain);
-                });
-            foreground.call(zoom);
+            selection.datum(model.data)
+                .call(chart);
         }
 
         d3.rebind(rsi, dispatch, 'on');
