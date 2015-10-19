@@ -6,11 +6,11 @@
         var app = {};
 
         var container = d3.select('#app-container');
-        var svgPrimary = container.select('svg.primary');
-        var svgSecondary = container.selectAll('svg.secondary');
-        var svgXAxis = container.select('svg.x-axis');
-        var svgNav = container.select('svg.nav');
-        var divLegend = container.select('#legend');
+        var primaryChartContainer = container.select('#primary-container');
+        var secondaryChartsContainer = container.selectAll('.secondary-container');
+        var xAxisContainer = container.select('#x-axis-container');
+        var navbarContainer = container.select('#navbar-container');
+        var legendContainer = container.select('#legend');
 
         var primaryChartModel = sc.model.primaryChart();
         var secondaryChartModel = sc.model.secondaryChart();
@@ -24,27 +24,47 @@
         var headMenu;
         var legend = sc.chart.legend();
 
-        function render() {
+        function renderInternal() {
+<<<<<<< HEAD
             svgPrimary.datum(primaryChartModel)
+=======
+
+            primaryChartContainer.datum(model)
+>>>>>>> Post code review except LESS issues.
                 .call(primaryChart);
 
-            divLegend.datum(sc.model.legendData)
+            legendContainer.datum(sc.model.legendData)
                 .call(legend);
 
+<<<<<<< HEAD
             svgSecondary.datum(secondaryChartModel)
+=======
+            secondaryChartsContainer.datum(model)
+>>>>>>> Post code review except LESS issues.
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
-                        .attr('class', 'chart secondary ' + secondaryCharts[i].valueString)
+                        .attr('class', 'secondary-container ' + secondaryCharts[i].valueString)
                         .call(secondaryCharts[i].option);
                 });
 
+<<<<<<< HEAD
             svgXAxis.datum(xAxisModel)
                 .call(xAxis);
 
             svgNav.datum(navModel)
-                .call(nav);
+=======
+            xAxisContainer.datum(model)
+                .call(xAxis);
 
+            navbarContainer.datum(model)
+>>>>>>> Post code review except LESS issues.
+                .call(nav);
+        }
+
+        var render = fc.util.render(renderInternal);
+
+        function renderHeadMenu() {
             container.select('.head-menu')
                 .call(headMenu);
         }
@@ -67,6 +87,7 @@
             xAxisModel.viewDomain = viewDomain;
             navModel.viewDomain = viewDomain;
 
+<<<<<<< HEAD
             var trackingLatest = sc.util.domain.trackingLatestData(
                 primaryChartModel.viewDomain,
                 primaryChartModel.data);
@@ -74,6 +95,10 @@
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
 
+=======
+        function onCrosshairChanged(dataPoint) {
+            sc.model.legendData = dataPoint;
+>>>>>>> Add requestAnimationFrame around rendering
             render();
         }
 
@@ -189,7 +214,7 @@
                         toggledChart.option.option.on(sc.event.viewChange, onViewChange);
                         secondaryCharts.push(toggledChart.option);
                     }
-                    svgSecondary.selectAll('*').remove();
+                    secondaryChartsContainer.selectAll('*').remove();
                     updateLayout();
                     render();
                 });
