@@ -12,23 +12,10 @@
         var svgNav = container.select('svg.nav');
         var divLegend = container.select('#legend');
 
-        var model = {
-            data: [],
-            trackingLatest: true,
-            viewDomain: [],
-            series: sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick()),
-            yValueAccessor: {option: function(d) { return d.close; }},
-            toggledIndicator: undefined
-        };
-
-        var xAxisModel = {
-            viewDomain: []
-        };
-
-        var navModel = {
-            data: [],
-            viewDomain: []
-        };
+        var primaryChartModel = sc.model.primaryChart();
+        var secondaryChartModel = sc.model.secondaryChart();
+        var xAxisModel = sc.model.xAxis();
+        var navModel = sc.model.nav();
 
         var primaryChart;
         var secondaryCharts = [];
@@ -38,13 +25,13 @@
         var legend = sc.chart.legend();
 
         function render() {
-            svgPrimary.datum(model)
+            svgPrimary.datum(primaryChartModel)
                 .call(primaryChart);
 
             divLegend.datum(sc.model.legendData)
                 .call(legend);
 
-            svgSecondary.datum(model)
+            svgSecondary.datum(secondaryChartModel)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
@@ -74,10 +61,13 @@
         }
 
         function onViewChange(domain) {
-            model.viewDomain = [domain[0], domain[1]];
+            primaryChartModel.viewDomain = [domain[0], domain[1]];
+            secondaryChartModel.viewDomain = [domain[0], domain[1]];
             xAxisModel.viewDomain = [domain[0], domain[1]];
             navModel.viewDomain = [domain[0], domain[1]];
-            model.trackingLatest = sc.util.domain.trackingLatestData(model.viewDomain, model.data);
+            primaryChartModel.trackingLatest = sc.util.domain.trackingLatestData(
+                primaryChartModel.viewDomain,
+                primaryChartModel.data);
             render();
         }
 
@@ -87,14 +77,15 @@
         }
 
         function resetToLatest() {
-            var data = model.data;
+            var data = primaryChartModel.data;
             var dataDomain = fc.util.extent(data, 'date');
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
             onViewChange(navTimeDomain);
         }
 
         function updateModelData(data) {
-            model.data = data;
+            primaryChartModel.data = data;
+            secondaryChartModel.data = data;
             navModel.data = data;
             sc.model.latestDataPoint = data[data.length - 1];
         }
@@ -119,8 +110,10 @@
                         socketEvent.type + ' ' + socketEvent.code);
                     } else if (socketEvent.type === 'message') {
                         updateModelData(data);
-                        if (model.trackingLatest) {
-                            var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
+                        if (primaryChartModel.trackingLatest) {
+                            var newDomain = sc.util.domain.moveToLatest(
+                                primaryChartModel.viewDomain,
+                                primaryChartModel.data);
                             onViewChange(newDomain);
                         }
                     }
@@ -161,15 +154,15 @@
         function initialiseSideMenu() {
             var sideMenu = sc.menu.side()
                 .on(sc.event.primaryChartSeriesChange, function(series) {
-                    model.series = series;
+                    primaryChartModel.series = series;
                     render();
                 })
                 .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
-                    model.yValueAccessor = yValueAccessor;
+                    primaryChartModel.yValueAccessor = yValueAccessor;
                     render();
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(toggledIndicator) {
-                    model.toggledIndicator = toggledIndicator;
+                    primaryChartModel.toggledIndicator = toggledIndicator;
                     render();
                 })
                 .on(sc.event.secondaryChartChange, function(toggledChart) {
