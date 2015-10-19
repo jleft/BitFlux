@@ -161,18 +161,10 @@
                 });
         }
 
-        function changeSeries(series) {
-            currentSeries = series;
-        }
-
-        function changeYValueAccessor(yValueAccessor) {
-            currentYValueAccessor = yValueAccessor.option;
-        }
-
         function primary(selection) {
             var model = selection.datum();
-            changeSeries(model.series);
-            changeYValueAccessor(model.yValueAccessor);
+            currentSeries = model.series;
+            currentYValueAccessor = model.yValueAccessor.option;
             currentIndicators = model.indicators;
 
             primaryChart.xDomain(model.viewDomain);
@@ -211,7 +203,7 @@
 
             var zoom = sc.behavior.zoom()
                 .scale(xScale)
-                .trackingLatest(selection.datum().trackingLatest)
+                .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch[sc.event.viewChange](domain);
                 });

@@ -4,7 +4,8 @@
     sc.model.secondaryChart = function() {
         return {
             data: [],
-            viewDomain: []
+            viewDomain: [],
+            trackingLatest: true
         };
     };
 

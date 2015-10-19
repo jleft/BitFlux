@@ -65,7 +65,7 @@
 
             var zoom = sc.behavior.zoom()
                 .scale(xScale)
-                .trackingLatest(selection.datum().trackingLatest)
+                .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch[sc.event.viewChange](domain);
                 });

@@ -4,7 +4,8 @@
     sc.model.nav = function() {
         return {
             data: [],
-            viewDomain: []
+            viewDomain: [],
+            trackingLatest: true
         };
     };
 

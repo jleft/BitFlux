@@ -62,7 +62,7 @@
             // Allow to zoom using mouse, but disable panning
             var zoom = sc.behavior.zoom()
                 .scale(viewScale)
-                .trackingLatest(selection.datum().trackingLatest)
+                .trackingLatest(model.trackingLatest)
                 .allowPan(false)
                 .on('zoom', function(domain) {
                     dispatch[sc.event.viewChange](domain);

@@ -61,13 +61,19 @@
         }
 
         function onViewChange(domain) {
-            primaryChartModel.viewDomain = [domain[0], domain[1]];
-            secondaryChartModel.viewDomain = [domain[0], domain[1]];
-            xAxisModel.viewDomain = [domain[0], domain[1]];
-            navModel.viewDomain = [domain[0], domain[1]];
-            primaryChartModel.trackingLatest = sc.util.domain.trackingLatestData(
+            var viewDomain = [domain[0], domain[1]];
+            primaryChartModel.viewDomain = viewDomain;
+            secondaryChartModel.viewDomain = viewDomain;
+            xAxisModel.viewDomain = viewDomain;
+            navModel.viewDomain = viewDomain;
+
+            var trackingLatest = sc.util.domain.trackingLatestData(
                 primaryChartModel.viewDomain,
                 primaryChartModel.data);
+            primaryChartModel.trackingLatest = trackingLatest;
+            secondaryChartModel.trackingLatest = trackingLatest;
+            navModel.trackingLatest = trackingLatest;
+
             render();
         }
 
