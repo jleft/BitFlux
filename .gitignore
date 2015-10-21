@@ -31,3 +31,6 @@ dist
 
 # Jasmine spec runner
 _SpecRunner.html
+
+#WebStorm et al.
+.idea
