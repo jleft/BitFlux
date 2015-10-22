@@ -61,8 +61,7 @@
             });
 
         var side = function(selection) {
-            // TODO: var model = selection.datum();
-            selection.each(function() { // TODO: Do we really need to support multiple selection here ?
+            selection.each(function(model) {
                 var selection = d3.select(this);
 
                 selection.select('#series-buttons')

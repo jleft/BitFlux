@@ -20,8 +20,7 @@
             });
 
         var head = function(selection) {
-            // TODO: var model = selection.datum();
-            selection.each(function() { // TODO: Multiple selection support required?
+            selection.each(function(model) {
                 var selection = d3.select(this);
 
                 selection.select('#product-dropdown')
@@ -34,7 +33,7 @@
 
                 var periods = sc.model.selectedProduct.getPeriods();
                 selection.select('#period-dropdown')
-                    .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: perhaps from model instead?
+                    .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
                     .datum({optionList: periods.map(sc.menu.periodAdaptor)})
                     .call(dataPeriodDropdown);
 
