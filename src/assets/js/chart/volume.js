@@ -1,68 +1,31 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    function formatVolume(x) { return sc.model.selectedProduct.volumeFormat(x); }
-
     sc.chart.volume = function() {
-        var yAxisWidth = 45;
-
-        var dispatch = d3.dispatch('viewChange');
-
-        var xScale = fc.scale.dateTime();
-
-        var volumeChart = fc.chart.cartesianChart(xScale, d3.scale.linear())
-            .xTicks(0)
-            .yOrient('right')
-            .yTickFormat(formatVolume)
-            .margin({
-                top: 0,
-                left: 0,
-                bottom: 0,
-                right: yAxisWidth
-            });
-
+        var dispatch = d3.dispatch(sc.event.viewChange);
+        var formatVolume = function(volume) { return sc.model.selectedProduct.volumeFormat(volume); };
         var volumeBar = fc.series.bar()
             .yValue(function(d) { return d.volume; });
-        var multi = fc.series.multi()
-            .series([volumeBar])
-            .mapping(function(series) {
-                return this.data;
-            });
 
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
+        var chart = sc.chart.secondary()
+            .series([volumeBar])
+            .yTickFormat(formatVolume)
+            .on(sc.event.viewChange, function(domain) {
+                dispatch[sc.event.viewChange](domain);
+            });
 
         function volume(selection) {
             var model = selection.datum();
 
-            volumeChart.xDomain(model.viewDomain);
-
-            // Add percentage padding either side of extreme high/lows
-            var maxYExtent = d3.max(model.data, function(d) {
-                return d3.max([d.volume]);
-            });
-            var minYExtent = d3.min(model.data, function(d) {
-                return d3.min([d.volume]);
-            });
+            var maxYExtent = d3.max(model.data, function(d) { return d3.max([d.volume]); });
+            var minYExtent = d3.min(model.data, function(d) { return d3.min([d.volume]); });
             var paddedYExtent = sc.util.domain.padYDomain([minYExtent, maxYExtent], 0.04);
-            volumeChart.yDomain(paddedYExtent);
+            chart.trackingLatest(model.trackingLatest)
+                .xDomain(model.viewDomain)
+                .yDomain(paddedYExtent);
 
-            // Redraw
-            volumeChart.plotArea(multi);
-            selection.call(volumeChart);
-
-            selection.call(createForeground);
-            var foreground = selection.select('rect.foreground');
-
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom()
-                .scale(xScale)
-                .trackingLatest(selection.datum().trackingLatest)
-                .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
-                });
-
-            foreground.call(zoom);
+            selection.datum(model.data)
+                .call(chart);
         }
 
         d3.rebind(volume, dispatch, 'on');

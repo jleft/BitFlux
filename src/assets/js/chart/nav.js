@@ -2,7 +2,7 @@
     'use strict';
 
     sc.chart.nav = function() {
-        var dispatch = d3.dispatch('viewChange');
+        var dispatch = d3.dispatch(sc.event.viewChange);
 
         var navChart = fc.chart.cartesianChart(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
@@ -46,12 +46,12 @@
 
             brush.on('brush', function() {
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
-                    dispatch.viewChange([brush.extent()[0][0], brush.extent()[1][0]]);
+                    dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
             .on('brushend', function() {
                 if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
-                    dispatch.viewChange(sc.util.domain.centerOnDate(viewScale.domain(),
+                    dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }
             });
@@ -62,10 +62,10 @@
             // Allow to zoom using mouse, but disable panning
             var zoom = sc.behavior.zoom()
                 .scale(viewScale)
-                .trackingLatest(selection.datum().trackingLatest)
+                .trackingLatest(model.trackingLatest)
                 .allowPan(false)
                 .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
+                    dispatch[sc.event.viewChange](domain);
                 });
 
             selection.call(zoom);

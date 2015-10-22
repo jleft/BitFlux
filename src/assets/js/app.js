@@ -12,26 +12,26 @@
         var svgNav = container.select('svg.nav');
         var divLegend = container.select('#legend');
 
-        var model = {
-            data: [],
-            trackingLatest: true,
-            viewDomain: []
-        };
+        var primaryChartModel = sc.model.primaryChart();
+        var secondaryChartModel = sc.model.secondaryChart();
+        var xAxisModel = sc.model.xAxis();
+        var navModel = sc.model.nav();
 
-        var primaryChart = sc.chart.primary();
+        var primaryChart;
         var secondaryCharts = [];
         var xAxis = sc.chart.xAxis();
-        var nav = sc.chart.nav();
-        var headMenu = sc.menu.head();
+        var nav;
+        var headMenu;
         var legend = sc.chart.legend();
 
         function render() {
-            svgPrimary.datum(model)
+            svgPrimary.datum(primaryChartModel)
                 .call(primaryChart);
 
-            renderLegend();
+            divLegend.datum(sc.model.legendData)
+                .call(legend);
 
-            svgSecondary.datum(model)
+            svgSecondary.datum(secondaryChartModel)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
@@ -39,14 +39,12 @@
                         .call(secondaryCharts[i].option);
                 });
 
-            svgXAxis.datum(model)
+            svgXAxis.datum(xAxisModel)
                 .call(xAxis);
 
-            svgNav.datum(model)
+            svgNav.datum(navModel)
                 .call(nav);
-        }
 
-        function renderHeadMenu() {
             container.select('.head-menu')
                 .call(headMenu);
         }
@@ -62,68 +60,83 @@
             });
         }
 
-        function onViewChanged(domain) {
-            model.viewDomain = [domain[0], domain[1]];
-            model.trackingLatest = sc.util.domain.trackingLatestData(model.viewDomain, model.data);
+        function onViewChange(domain) {
+            var viewDomain = [domain[0], domain[1]];
+            primaryChartModel.viewDomain = viewDomain;
+            secondaryChartModel.viewDomain = viewDomain;
+            xAxisModel.viewDomain = viewDomain;
+            navModel.viewDomain = viewDomain;
+
+            var trackingLatest = sc.util.domain.trackingLatestData(
+                primaryChartModel.viewDomain,
+                primaryChartModel.data);
+            primaryChartModel.trackingLatest = trackingLatest;
+            secondaryChartModel.trackingLatest = trackingLatest;
+            navModel.trackingLatest = trackingLatest;
+
             render();
         }
 
-        function renderLegend() {
-            divLegend.datum(sc.model.legendData)
-                .call(legend);
-        }
-
-        function onCrosshairChanged(dataPoint) {
+        function onCrosshairChange(dataPoint) {
             sc.model.legendData = dataPoint;
             render();
         }
 
-        function initialiseChartEventHandlers() {
-            primaryChart.on('crosshairChange', onCrosshairChanged);
-            primaryChart.on('viewChange', onViewChanged);
-            nav.on('viewChange', onViewChanged);
-        }
-
-        function resetToLive() {
-            var data = model.data;
+        function resetToLatest() {
+            var data = primaryChartModel.data;
             var dataDomain = fc.util.extent(data, 'date');
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
-            onViewChanged(navTimeDomain);
+            onViewChange(navTimeDomain);
         }
 
         function updateModelData(data) {
-            model.data = data;
+            primaryChartModel.data = data;
+            secondaryChartModel.data = data;
+            navModel.data = data;
             sc.model.latestDataPoint = data[data.length - 1];
         }
 
+        function initialisePrimaryChart() {
+            return sc.chart.primary()
+                .on(sc.event.crosshairChange, onCrosshairChange)
+                .on(sc.event.viewChange, onViewChange);
+        }
+
+        function initialiseNav() {
+            return sc.chart.nav()
+                .on(sc.event.viewChange, onViewChange);
+        }
+
         function initialiseDataInterface() {
-            var dataInterface = sc.data.dataInterface()
-                .on('messageReceived', function(socketEvent, data) {
+            return sc.data.dataInterface()
+                .on(sc.event.messageReceived, function(socketEvent, data) {
                     if (socketEvent.type === 'error' ||
                         (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
                         console.log('Error loading data from coinbase websocket: ' +
                         socketEvent.type + ' ' + socketEvent.code);
                     } else if (socketEvent.type === 'message') {
                         updateModelData(data);
-                        if (model.trackingLatest) {
-                            var newDomain = sc.util.domain.moveToLatest(model.viewDomain, model.data);
-                            onViewChanged(newDomain);
+                        if (primaryChartModel.trackingLatest) {
+                            var newDomain = sc.util.domain.moveToLatest(
+                                primaryChartModel.viewDomain,
+                                primaryChartModel.data);
+                            onViewChange(newDomain);
                         }
                     }
                 })
-                .on('dataLoaded', function(err, data) {
+                .on(sc.event.dataLoaded, function(err, data) {
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
                         updateModelData(data);
-                        resetToLive();
+                        resetToLatest();
                     }
                 });
-            return dataInterface;
         }
 
         function initialiseHeadMenu(dataInterface) {
-            headMenu.on('dataProductChange', function(product) {
+            return sc.menu.head()
+                .on(sc.event.dataProductChange, function(product) {
                     sc.model.selectedProduct = product.option;
                     sc.model.selectedPeriod = product.option.getPeriods()[0];
                     if (product.option === sc.model.product.bitcoin) {
@@ -131,40 +144,49 @@
                     } else if (product.option === sc.model.product.generated) {
                         dataInterface.generateDailyData();
                     }
-                    renderHeadMenu();
+                    render();
                 })
-                .on('dataPeriodChange', function(period) {
+                .on(sc.event.dataPeriodChange, function(period) {
                     sc.model.selectedPeriod = period.option;
                     dataInterface(sc.model.selectedPeriod.seconds);
                 })
-                .on('resetToLive', resetToLive)
-                .on('toggleSlideout', function() {
+                .on(sc.event.resetToLatest, resetToLatest)
+                .on(sc.event.toggleSlideout, function() {
                     container.selectAll('.row-offcanvas-right').classed('active',
                         !container.selectAll('.row-offcanvas-right').classed('active'));
                 });
+        }
 
-            renderHeadMenu();
+        function toggleIndicator(indicator, currentIndicators) {
+            if (indicator) {
+                if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
+                    currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
+                } else if (indicator.toggled) {
+                    currentIndicators.push(indicator.option);
+                }
+            }
+            return currentIndicators;
         }
 
         function initialiseSideMenu() {
             var sideMenu = sc.menu.side()
-                .on('primaryChartSeriesChange', function(series) {
-                    primaryChart.changeSeries(series);
+                .on(sc.event.primaryChartSeriesChange, function(series) {
+                    primaryChartModel.series = series;
                     render();
                 })
-                .on('primaryChartYValueAccessorChange', function(yValueAccessor) {
-                    primaryChart.changeYValueAccessor(yValueAccessor);
+                .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
+                    primaryChartModel.yValueAccessor = yValueAccessor;
                     render();
                 })
-                .on('primaryChartIndicatorChange', function(toggledIndicator) {
-                    primaryChart.toggleIndicator(toggledIndicator);
+                .on(sc.event.primaryChartIndicatorChange, function(toggledIndicator) {
+                    primaryChartModel.indicators = toggleIndicator(toggledIndicator, primaryChartModel.indicators);
                     render();
                 })
-                .on('secondaryChartChange', function(toggledChart) {
+                .on(sc.event.secondaryChartChange, function(toggledChart) {
                     if (secondaryCharts.indexOf(toggledChart.option) !== -1 && !toggledChart.toggled) {
                         secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option), 1);
                     } else if (toggledChart.toggled) {
-                        toggledChart.option.option.on('viewChange', onViewChanged);
+                        toggledChart.option.option.on(sc.event.viewChange, onViewChange);
                         secondaryCharts.push(toggledChart.option);
                     }
                     svgSecondary.selectAll('*').remove();
@@ -177,10 +199,11 @@
         }
 
         app.run = function() {
-            initialiseChartEventHandlers();
+            primaryChart = initialisePrimaryChart();
+            nav = initialiseNav();
 
             var dataInterface = initialiseDataInterface();
-            initialiseHeadMenu(dataInterface);
+            headMenu = initialiseHeadMenu(dataInterface);
             initialiseSideMenu();
 
             initialiseResize();

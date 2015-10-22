@@ -3,10 +3,11 @@
 
     sc.menu.head = function() {
 
-        var dispatch = d3.dispatch('resetToLive',
-            'toggleSlideout',
-            'dataProductChange',
-            'dataPeriodChange');
+        var dispatch = d3.dispatch(
+            sc.event.resetToLatest,
+            sc.event.toggleSlideout,
+            sc.event.dataProductChange,
+            sc.event.dataPeriodChange);
 
         function setPeriodChangeVisibility(visible) {
             var visibility = visible ? 'visible' : 'hidden';
@@ -17,13 +18,13 @@
         var dataProductDropdown = sc.menu.group()
             .generator(sc.menu.generator.dropdownGroup())
             .on('optionChange', function(product) {
-                dispatch.dataProductChange(product);
+                dispatch[sc.event.dataProductChange](product);
             });
 
         var dataPeriodDropdown = sc.menu.group()
             .generator(sc.menu.generator.dropdownGroup())
             .on('optionChange', function(period) {
-                dispatch.dataPeriodChange(period);
+                dispatch[sc.event.dataPeriodChange](period);
             });
 
         function configureDropdown() {
@@ -46,11 +47,11 @@
                     .call(dataPeriodDropdown);
                 selection.select('#reset-button')
                     .on('click', function() {
-                        dispatch.resetToLive();
+                        dispatch[sc.event.resetToLatest]();
                     });
                 selection.select('#toggle-button')
                     .on('click', function() {
-                        dispatch.toggleSlideout();
+                        dispatch[sc.event.toggleSlideout]();
                     });
             });
         };
