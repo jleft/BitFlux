@@ -22,6 +22,7 @@
             secondary: {}
         },
         model: {
+            menu: {},
             period: {},
             product: {},
             selectedPeriod: {},

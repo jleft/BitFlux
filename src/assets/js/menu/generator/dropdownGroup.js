@@ -11,7 +11,7 @@
         function layoutDropdown(sel) {
             var selectedIndex = sel.datum().selectedIndex || 0;
 
-            dataJoin(sel, sel.datum().optionList)
+            dataJoin(sel, sel.datum().options)
                 .text(function(d) { return d.displayString; })
                 .attr({
                     value: function(d) { return d.valueString; }
