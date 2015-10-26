@@ -5,13 +5,7 @@
         var dispatch = d3.dispatch(sc.event.viewChange);
 
         var navChart = fc.chart.cartesianChart(fc.scale.dateTime(), d3.scale.linear())
-            .yTicks(0)
-            .margin({
-                top: 0,
-                left: 0,
-                bottom: 20,
-                right: 0
-            });
+            .yTicks(0);
 
         var viewScale = fc.scale.dateTime();
 
@@ -35,7 +29,7 @@
             var model = selection.datum();
 
             viewScale.domain(model.viewDomain)
-                .range([0, fc.util.innerDimensions(selection.node()).width]);
+                .range([0, selection.node().getAttribute('layout-width')]);
 
             var yExtent = fc.util.extent(
                 sc.util.domain.filterDataInDateRange(fc.util.extent(model.data, 'date'), model.data),
