@@ -25,22 +25,13 @@
         var legend = sc.chart.legend();
 
         function renderInternal() {
-<<<<<<< HEAD
-            svgPrimary.datum(primaryChartModel)
-=======
-
-            primaryChartContainer.datum(model)
->>>>>>> Post code review except LESS issues.
+            primaryChartContainer.datum(primaryChartModel)
                 .call(primaryChart);
 
             legendContainer.datum(sc.model.legendData)
                 .call(legend);
 
-<<<<<<< HEAD
-            svgSecondary.datum(secondaryChartModel)
-=======
-            secondaryChartsContainer.datum(model)
->>>>>>> Post code review except LESS issues.
+            secondaryChartsContainer.datum(secondaryChartModel)
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
@@ -48,26 +39,17 @@
                         .call(secondaryCharts[i].option);
                 });
 
-<<<<<<< HEAD
-            svgXAxis.datum(xAxisModel)
+            xAxisContainer.datum(xAxisModel)
                 .call(xAxis);
 
-            svgNav.datum(navModel)
-=======
-            xAxisContainer.datum(model)
-                .call(xAxis);
-
-            navbarContainer.datum(model)
->>>>>>> Post code review except LESS issues.
+            navbarContainer.datum(navModel)
                 .call(nav);
-        }
 
-        var render = fc.util.render(renderInternal);
-
-        function renderHeadMenu() {
             container.select('.head-menu')
                 .call(headMenu);
         }
+
+        var render = fc.util.render(renderInternal);
 
         function updateLayout() {
             sc.util.layout(container, secondaryCharts);
@@ -87,18 +69,12 @@
             xAxisModel.viewDomain = viewDomain;
             navModel.viewDomain = viewDomain;
 
-<<<<<<< HEAD
             var trackingLatest = sc.util.domain.trackingLatestData(
                 primaryChartModel.viewDomain,
                 primaryChartModel.data);
             primaryChartModel.trackingLatest = trackingLatest;
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
-
-=======
-        function onCrosshairChanged(dataPoint) {
-            sc.model.legendData = dataPoint;
->>>>>>> Add requestAnimationFrame around rendering
             render();
         }
 
