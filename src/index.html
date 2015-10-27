@@ -17,6 +17,7 @@
     <script src="assets/js/bootstrap.min.js"></script>
   </head>
   <body>
+
     <div class="container" id="app-container">
       <div class="row row-offcanvas-right head-menu head-row">
         <div class="col-xs-12 col-sm-12 col-md-9">
@@ -38,21 +39,56 @@
       </div>
       <div class="row row-offcanvas-right primary-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
-            <div id="legend"></div>
-            <svg id="charts-container" layout-style="flex: 1; flexDirection: column">
-                <g id="primary-container" layout-style="flex: 5"></g>
-                <g class="secondary-container" layout-style="flex: 1"></g>
-                <g class="secondary-container" layout-style="flex: 1"></g>
-                <g class="secondary-container" layout-style="flex: 1"></g>
-                <g id="x-axis-container" layout-style="height: 20" ></g>
-                <g id="navbar-container" layout-style="flex: 1; minHeight: 100"></g>
-            </svg>
+          <div id="legend"></div>
+          <svg class="chart primary"></svg>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
           <div id="series-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="y-value-accessor-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons"></div>
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right x-axis-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart x-axis"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right nav-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart nav"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
         </div>
       </div>
     </div>
