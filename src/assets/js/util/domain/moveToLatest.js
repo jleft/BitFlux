@@ -7,11 +7,10 @@
         }
         var dataExtent = fc.util.extent(data, 'date');
         var dataTimeExtent = (dataExtent[1].getTime() - dataExtent[0].getTime()) / 1000;
-        var domainTimeExtent = ratio * (domain[1].getTime() - domain[0].getTime()) / 1000;
-        var latest = data[data.length - 1].date;
-        var scaledLiveDataDomain = domainTimeExtent < dataTimeExtent ?
-            [d3.time.second.offset(latest, -domainTimeExtent), latest] : dataExtent;
+        var domainTimes = domain.map(function(d) { return d.getTime(); });
+        var scaledDomainTimeDifference = ratio * (d3.max(domainTimes) - d3.min(domainTimes)) / 1000;
+        var scaledLiveDataDomain = scaledDomainTimeDifference < dataTimeExtent ?
+            [d3.time.second.offset(dataExtent[1], -scaledDomainTimeDifference), dataExtent[1]] : dataExtent;
         return scaledLiveDataDomain;
     };
-
 })(d3, fc, sc);

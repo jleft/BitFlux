@@ -14,6 +14,8 @@ module.exports = function(grunt) {
             ],
             srcJsFiles: [
                 'src/assets/js/sc.js',
+                'src/assets/js/event.js',
+                'src/assets/js/model/**/*.js',
                 'src/assets/js/chart/**/*.js',
                 'src/assets/js/menu/**/*.js',
                 'src/assets/js/util/**/*.js',

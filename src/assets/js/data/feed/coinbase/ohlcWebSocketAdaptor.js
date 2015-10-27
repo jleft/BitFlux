@@ -1,4 +1,4 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
     sc.data.feed.coinbase.ohlcWebSocketAdaptor = function() {
         // Expects transactions with a price, volume and date and organizes them into candles of given periods
@@ -61,4 +61,4 @@
 
         return ohlcWebSocketAdaptor;
     };
-})(sc);
+})(d3, fc, sc);

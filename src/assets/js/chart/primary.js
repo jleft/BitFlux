@@ -66,14 +66,22 @@
         return extent;
     }
 
-    sc.chart.primary = function() {
-        var yAxisWidth = 45;
+    function formatPrice(x) { return sc.model.selectedProduct.priceFormat(x); }
 
-        var dispatch = d3.dispatch('viewChange');
+    sc.chart.primary = function() {
+
+        var yAxisWidth = 45;
+        var dispatch = d3.dispatch(sc.event.viewChange, sc.event.crosshairChange);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
+
+
+        var crosshairData = [];
+        var crosshair = fc.tool.crosshair()
+             .xLabel('')
+             .yLabel('');
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
@@ -90,35 +98,42 @@
                 }
                 return series;
             })
-            .series([gridlines, currentSeries.option, closeLine])
+            .series([gridlines, currentSeries.option, closeLine, crosshair])
             .mapping(function(series) {
                 switch (series) {
                     case closeLine:
                         return [this.data[this.data.length - 1]];
+                    case crosshair:
+                        return crosshairData;
                     default:
                         return this.data;
                 }
             });
 
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
+        var xScale = fc.scale.dateTime();
+        var yScale = d3.scale.linear();
 
-        var priceFormat = d3.format('.2f');
-
-        var timeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
+        var primaryChart = fc.chart.cartesianChart(xScale, yScale)
+            .xTicks(0)
             .yOrient('right')
-            .yTickFormat(priceFormat);
+            .yTickFormat(formatPrice)
+            .margin({
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: yAxisWidth
+            });
 
         // Create and apply the Moving Average
         var movingAverage = fc.indicator.algorithm.movingAverage();
         var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
-        function updateMultiSeries() {
+        function updateMultiSeries(series) {
             var baseChart = [gridlines, currentSeries.option, closeLine];
             var indicators = currentIndicators.map(function(indicator) { return indicator.option; });
-            multi.series(baseChart.concat(indicators));
+            series(baseChart.concat(indicators));
+            // add crosshair last to have it on top
+            series(series().concat(crosshair));
         }
 
         function updateYValueAccessorUsed() {
@@ -136,30 +151,45 @@
             }
         }
 
-        function primary(selection) {
-            var dataModel = selection.datum();
+        function setCrosshairSnap(series, data) {
+            crosshair.snap(fc.util.seriesPointSnapXOnly(series, data))
+                .on('trackingmove', function(crosshairData) {
+                    dispatch[sc.event.crosshairChange](crosshairData[0].datum);
+                })
+                .on('trackingend', function() {
+                    dispatch[sc.event.crosshairChange](undefined);
+                });
+        }
 
-            timeSeries.xDomain(dataModel.viewDomain);
+        function primary(selection) {
+            var model = selection.datum();
+            currentSeries = model.series;
+            currentYValueAccessor = model.yValueAccessor.option;
+            currentIndicators = model.indicators;
+
+            primaryChart.xDomain(model.viewDomain);
 
             updateYValueAccessorUsed();
-            updateMultiSeries();
+            updateMultiSeries(multi.series);
+            setCrosshairSnap(currentSeries.option, model.data);
 
-            movingAverage(dataModel.data);
-            bollingerAlgorithm(dataModel.data);
+            movingAverage(model.data);
+            bollingerAlgorithm(model.data);
 
             // Scale y axis
-            var visibleData = sc.util.domain.filterDataInDateRange(timeSeries.xDomain(), dataModel.data);
+            var visibleData = sc.util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
             var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
             // Add percentage padding either side of extreme high/lows
             var paddedYExtent = sc.util.domain.padYDomain(yExtent, 0.04);
-            timeSeries.yDomain(paddedYExtent);
+            primaryChart.yDomain(paddedYExtent);
 
             // Find current tick values and add close price to this list, then set it explicitly below
-            var latestPrice = currentYValueAccessor(dataModel.data[dataModel.data.length - 1]);
-            var tickValues = produceAnnotatedTickValues(timeSeries.yScale(), [latestPrice]);
-            timeSeries.yTickValues(tickValues)
+            var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
+            var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
+            primaryChart.yTickValues(tickValues)
                 .yDecorate(function(s) {
-                    s.filter(function(d) { return d === latestPrice; })
+                    s.selectAll('.tick')
+                        .filter(function(d) { return d === latestPrice; })
                         .classed('closeLine', true)
                         .select('path')
                         .attr('d', function(d) {
@@ -168,41 +198,20 @@
                 });
 
             // Redraw
-            timeSeries.plotArea(multi);
-            selection.call(timeSeries);
+            primaryChart.plotArea(multi);
+            selection.call(primaryChart);
 
-            selection.call(createForeground);
-            var foreground = selection.select('rect.foreground');
-
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom(timeSeries.xScale())
+            var zoom = sc.behavior.zoom()
+                .scale(xScale)
+                .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
+                    dispatch[sc.event.viewChange](domain);
                 });
-
-            foreground.call(zoom);
+            selection.select('.plot-area')
+                .call(zoom);
         }
 
         d3.rebind(primary, dispatch, 'on');
-
-        primary.changeSeries = function(series) {
-            currentSeries = series;
-            return primary;
-        };
-
-        primary.changeYValueAccessor = function(yValueAccessor) {
-            currentYValueAccessor = yValueAccessor.option;
-            return primary;
-        };
-
-        primary.toggleIndicator = function(indicator) {
-            if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
-                currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
-            } else if (indicator.toggled) {
-                currentIndicators.push(indicator.option);
-            }
-            return primary;
-        };
 
         return primary;
     };

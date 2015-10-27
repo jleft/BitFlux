@@ -2,14 +2,19 @@
     'use strict';
 
     sc.util.domain.filterDataInDateRange = function(domain, data) {
-        // Calculate visible data, given [startDate, endDate]
+        var startDate = d3.min(domain, function(d) { return d.getTime(); });
+        var endDate = d3.max(domain, function(d) { return d.getTime(); });
+
+        var dataSortedByDate = data.sort(function(a, b) {
+            return a.date - b.date;
+        });
+
         var bisector = d3.bisector(function(d) { return d.date; });
         var filteredData = data.slice(
             // Pad and clamp the bisector values to ensure extents can be calculated
-            Math.max(0, bisector.left(data, domain[0]) - 1),
-            Math.min(bisector.right(data, domain[1]) + 1, data.length)
+            Math.max(0, bisector.left(dataSortedByDate, startDate) - 1),
+            Math.min(bisector.right(dataSortedByDate, endDate) + 1, dataSortedByDate.length)
         );
         return filteredData;
     };
-
 })(d3, fc, sc);

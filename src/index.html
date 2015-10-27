@@ -22,15 +22,8 @@
       <div class="row row-offcanvas-right head-menu head-row">
         <div class="col-xs-12 col-sm-12 col-md-9">
           <div class="pull-left">
-            <select id="type-selection" selected="type" class="form-control">
-              <option value="generated">Data generator</option>
-              <option value="bitcoin">Bitcoin data</option>
-            </select>
-            <select id="period-selection" selected="period" class="form-control">
-              <option value="3600">1 hr</option>
-              <option value="300">5 min</option>
-              <option value="60">1 min</option>
-            </select>
+            <select id="product-dropdown" selected="product" class="form-control"></select>
+            <select id="period-dropdown" selected="period" class="form-control"></select>
           </div>
           <div class="pull-right">
             <div id="reset-button">
@@ -46,6 +39,7 @@
       </div>
       <div class="row row-offcanvas-right primary-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <div id="legend"></div>
           <svg class="chart primary"></svg>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
@@ -54,7 +48,21 @@
           <div id="indicator-buttons" class="btn-group" data-toggle="buttons"></div>
           <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons"></div>
         </div>
-      </div>        
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
       <div class="row row-offcanvas-right secondary-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
           <svg class="chart secondary"></svg>
@@ -75,7 +83,7 @@
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
         </div>
-      </div>        
+      </div>
       <div class="row row-offcanvas-right nav-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
           <svg class="chart nav"></svg>

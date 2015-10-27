@@ -3,10 +3,10 @@
 
     sc.data.dataInterface = function() {
         var historicFeed = fc.data.feed.coinbase();
-        var callbackGenerator = sc.util.callbackInvalidator();
+        var callbackGenerator = sc.data.callbackInvalidator();
         var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
         var dataGenerator = fc.data.random.financial();
-        var dispatch = d3.dispatch('messageReceived', 'dataLoaded');
+        var dispatch = d3.dispatch(sc.event.messageReceived, sc.event.dataLoaded);
         var candlesOfData = 200;
 
         function updateHistoricFeedDateRangeToPresent(period) {
@@ -29,7 +29,7 @@
                 if (socketEvent.type === 'message' && latestBasket) {
                     newBasketReceived(latestBasket, data);
                 }
-                dispatch.messageReceived(socketEvent, data);
+                dispatch[sc.event.messageReceived](socketEvent, data);
             };
         }
 
@@ -44,14 +44,20 @@
                     currentData = data.reverse();
                     ohlcConverter(liveCallback(currentData), currentData[currentData.length - 1]);
                 }
-                dispatch.dataLoaded(err, currentData);
+                dispatch[sc.event.dataLoaded](err, currentData);
             }));
         }
 
-        dataInterface.generateData = function() {
+        dataInterface.generateDailyData = function() {
             dataInterface.invalidate();
-            dispatch.dataLoaded(null, dataGenerator(candlesOfData));
-            return dataInterface;
+
+            var now = new Date();
+            now.setHours(0, 0, 0, 0);
+            var millisecondsPerDay = 24 * 60 * 60 * 1000;
+            dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
+
+            var dataGenerated = dataGenerator(candlesOfData);
+            dispatch[sc.event.dataLoaded](null, dataGenerated);
         };
 
         dataInterface.invalidate = function() {
@@ -64,5 +70,4 @@
 
         return dataInterface;
     };
-
 })(d3, fc, sc);

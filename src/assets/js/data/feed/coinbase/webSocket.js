@@ -1,4 +1,4 @@
-(function(sc) {
+(function(d3, fc, sc) {
     'use strict';
     sc.data.feed.coinbase.webSocket = function() {
         var product = 'BTC-USD';
@@ -64,5 +64,4 @@
 
         return webSocket;
     };
-
-})(sc);
+})(d3, fc, sc);

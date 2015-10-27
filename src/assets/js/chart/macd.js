@@ -2,67 +2,40 @@
     'use strict';
 
     sc.chart.macd = function() {
-        var yAxisWidth = 45;
-
-        var dispatch = d3.dispatch('viewChange');
-
-        var macdTimeSeries = fc.chart.linearTimeSeries()
-            .xAxisHeight(0)
-            .yAxisWidth(yAxisWidth)
-            .yOrient('right');
-
-        var zero = fc.annotation.line()
+        var dispatch = d3.dispatch(sc.event.viewChange);
+        var zeroLine = fc.annotation.line()
             .value(0)
             .label('');
-        var macdRenderer = fc.indicator.renderer.macd();
-        var multi = fc.series.multi()
-            .series([zero, macdRenderer])
+        var renderer = fc.indicator.renderer.macd();
+        var algorithm = fc.indicator.algorithm.macd();
+
+        var chart = sc.chart.secondary()
+            .series([zeroLine, renderer])
             .mapping(function(series) {
-                if (series === zero) {
-                    return [0];
-                }
-                return this.data;
+                return series === zeroLine ? [0] : this;
             })
             .decorate(function(g) {
                 g.enter()
                     .attr('class', function(d, i) {
                         return ['multi zero', 'multi'][i];
                     });
+            })
+            .on(sc.event.viewChange, function(domain) {
+                dispatch[sc.event.viewChange](domain);
             });
-
-        var createForeground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
-
-        var macdAlgorithm = fc.indicator.algorithm.macd();
 
         function macd(selection) {
-            var dataModel = selection.datum();
+            var model = selection.datum();
+            algorithm(model.data);
 
-            macdAlgorithm(dataModel.data);
-
-            macdTimeSeries.xDomain(dataModel.viewDomain);
-
-            // Add percentage padding either side of extreme high/lows
-            var maxYExtent = d3.max(dataModel.data, function(d) {
-                return Math.abs(d.macd.macd);
-            });
+            var maxYExtent = d3.max(model.data, function(d) { return Math.abs(d.macd.macd); });
             var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
-            macdTimeSeries.yDomain(paddedYExtent);
+            chart.trackingLatest(model.trackingLatest)
+                .xDomain(model.viewDomain)
+                .yDomain(paddedYExtent);
 
-            // Redraw
-            macdTimeSeries.plotArea(multi);
-            selection.call(macdTimeSeries);
-
-            selection.call(createForeground);
-            var foreground = selection.select('rect.foreground');
-
-            // Behaves oddly if not reinitialized every render
-            var zoom = sc.behavior.zoom(macdTimeSeries.xScale())
-                .on('zoom', function(domain) {
-                    dispatch.viewChange(domain);
-                });
-
-            foreground.call(zoom);
+            selection.datum(model.data)
+                .call(chart);
         }
 
         d3.rebind(macd, dispatch, 'on');

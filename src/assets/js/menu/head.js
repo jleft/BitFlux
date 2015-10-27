@@ -3,50 +3,48 @@
 
     sc.menu.head = function() {
 
-        var dispatch = d3.dispatch('resetToLive',
-            'toggleSlideout',
-            'dataTypeChange',
-            'periodChange');
+        var dispatch = d3.dispatch(
+            sc.event.resetToLatest,
+            sc.event.toggleSlideout,
+            sc.event.dataProductChange,
+            sc.event.dataPeriodChange);
 
-        function setPeriodChangeVisibility(visible) {
-            var visibility = visible ? 'visible' : 'hidden';
-            d3.select('#period-selection')
-                .style('visibility', visibility);
-        }
-
-        setPeriodChangeVisibility(false);
-
-        var dataTypeChangeOptions = function(selection) {
-            selection.on('change', function() {
-                if (this.value === 'bitcoin') {
-                    setPeriodChangeVisibility(true);
-                } else {
-                    setPeriodChangeVisibility(false);
-                }
-                dispatch.dataTypeChange(this.value);
+        var dataProductDropdown = sc.menu.generator.dropdownGroup()
+            .on('optionChange', function(product) {
+                dispatch[sc.event.dataProductChange](product);
             });
-        };
 
-        var periodChangeOptions = function(selection) {
-            selection.on('change', function() {
-                dispatch.periodChange(this.value);
+        var dataPeriodDropdown = sc.menu.generator.dropdownGroup()
+            .on('optionChange', function(period) {
+                dispatch[sc.event.dataPeriodChange](period);
             });
-        };
 
         var head = function(selection) {
-            selection.each(function() {
+            selection.each(function(model) {
                 var selection = d3.select(this);
-                selection.select('#type-selection')
-                    .call(dataTypeChangeOptions);
-                selection.select('#period-selection')
-                    .call(periodChangeOptions);
+
+                selection.select('#product-dropdown')
+                    .datum({
+                        // TODO: No global model, use bound model instead.
+                        optionList: sc.model.products.map(sc.menu.productAdaptor),
+                        selectedIndex: sc.model.products.indexOf(sc.model.selectedProduct)
+                    })
+                    .call(dataProductDropdown);
+
+                var periods = sc.model.selectedProduct.getPeriods();
+                selection.select('#period-dropdown')
+                    .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
+                    .datum({optionList: periods.map(sc.menu.periodAdaptor)})
+                    .call(dataPeriodDropdown);
+
                 selection.select('#reset-button')
                     .on('click', function() {
-                        dispatch.resetToLive();
+                        dispatch[sc.event.resetToLatest]();
                     });
+
                 selection.select('#toggle-button')
                     .on('click', function() {
-                        dispatch.toggleSlideout();
+                        dispatch[sc.event.toggleSlideout]();
                     });
             });
         };

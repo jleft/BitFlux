@@ -1,70 +1,67 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.behavior.zoom = function(scale) {
+    sc.behavior.zoom = function() {
 
         var dispatch = d3.dispatch('zoom');
 
         var zoomBehavior = d3.behavior.zoom();
-        var zoomScale = scale;
+        var scale;
 
         var allowPan = true;
         var allowZoom = true;
+        var trackingLatest = true;
 
-        function controlPan(zoom, selection, scale) {
-            var tx = zoom.translate()[0];
-
-            var width = selection.attr('width') || parseInt(selection.style('width'), 10);
-            var xExtent = fc.util.extent(selection.datum().data, ['date']);
-            var min = scale(xExtent[0]);
-            var max = scale(xExtent[1]);
-
+        function controlPan(zoomExtent) {
             // Don't pan off sides
-            if (min > 0) {
-                tx -= min;
-            } else if (max - width < 0) {
-                tx -= (max - width);
+            if (zoomExtent[0] >= 0) {
+                return -zoomExtent[0];
+            } else if (zoomExtent[1] <= 0) {
+                return -zoomExtent[1];
             }
-
-            zoom.translate([tx, 0]);
+            return 0;
         }
 
-        function controlZoom(zoom, selection, scale) {
-            var tx = zoom.translate()[0];
-
-            var width = selection.attr('width') || parseInt(selection.style('width'), 10);
-            var xExtent = fc.util.extent(selection.datum().data, ['date']);
-            var min = scale(xExtent[0]);
-            var max = scale(xExtent[1]);
-
+        function controlZoom(zoomExtent) {
             // If zooming, and about to pan off screen, do nothing
-            if (zoom.scale() !== 1) {
-                if ((min >= 0) && (max - width) <= 0) {
-                    scale.domain(xExtent);
-                    zoom.x(scale);
-                    tx = scale(xExtent[0]);
-                    zoom.translate([tx, 0]);
-                    return true;
-                }
-            }
-            return false;
+            return (zoomExtent[0] > 0 && zoomExtent[1] < 0);
+        }
+
+        function translateXZoom(translation) {
+            var tx = zoomBehavior.translate()[0];
+            tx += translation;
+            zoomBehavior.translate([tx, 0]);
         }
 
         function zoom(selection) {
-            zoomBehavior.x(zoomScale)
+
+            var xExtent = fc.util.extent(selection.datum().data, ['date']);
+            var width = selection.attr('width') || parseInt(selection.style('width'), 10);
+
+            zoomBehavior.x(scale)
                 .on('zoom', function() {
-                    var maxDomainViewed = controlZoom(zoomBehavior, selection, zoomScale);
-                    controlPan(zoomBehavior, selection, zoomScale);
+                    var min = scale(xExtent[0]);
+                    var max = scale(xExtent[1]);
 
-                    var domain = zoomScale.domain();
-                    if (selection.datum().trackingLive && (zoomBehavior.scale() > 1)) {
-                        domain = sc.util.domain.moveToLatest(zoomScale.domain(), selection.datum().data);
-                    }
+                    var maxDomainViewed = controlZoom([min, max - width]);
+                    var panningRestriction = controlPan([min, max - width]);
+                    translateXZoom(panningRestriction);
 
-                    var panned = (zoomBehavior.scale() === 1)  && !maxDomainViewed;
-                    var zoomed = (zoomBehavior.scale() !== 1) || maxDomainViewed;
+                    var panned = (zoomBehavior.scale() === 1);
+                    var zoomed = (zoomBehavior.scale() !== 1);
+
                     if ((panned && allowPan) || (zoomed && allowZoom)) {
+                        var domain = scale.domain();
+                        if (maxDomainViewed) {
+                            domain = xExtent;
+                        } else if (zoomed && trackingLatest) {
+                            domain = sc.util.domain.moveToLatest(domain, selection.datum().data);
+                        }
                         dispatch.zoom(domain);
+                    } else {
+                        // Resets zoomBehaviour
+                        zoomBehavior.translate([0, 0]);
+                        zoomBehavior.scale(1);
                     }
                 });
 
@@ -78,11 +75,28 @@
             allowPan = x;
             return zoom;
         };
+
         zoom.allowZoom = function(x) {
             if (!arguments.length) {
                 return allowZoom;
             }
             allowZoom = x;
+            return zoom;
+        };
+
+        zoom.trackingLatest = function(x) {
+            if (!arguments.length) {
+                return trackingLatest;
+            }
+            trackingLatest = x;
+            return zoom;
+        };
+
+        zoom.scale = function(x) {
+            if (!arguments.length) {
+                return scale;
+            }
+            scale = x;
             return zoom;
         };
 

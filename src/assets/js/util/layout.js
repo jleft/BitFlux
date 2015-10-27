@@ -1,7 +1,7 @@
-(function(d3, fc) {
+(function(d3, fc, sc) {
     'use strict';
 
-    sc.util.dimensions.layout = function(container, secondaryCharts) {
+    sc.util.layout = function(container, secondaryCharts) {
         var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
             parseInt(container.select('.head-row').style('padding-top'), 10) +
             parseInt(container.select('.head-row').style('padding-bottom'), 10);
@@ -25,10 +25,11 @@
             .style('height', primaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
         container.selectAll('.secondary-row')
             .filter(function(d, i) { return i < secondaryChartsShown; })
+            .style('display', 'block')
             .style('height', secondaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
         container.selectAll('.secondary-row')
             .filter(function(d, i) { return i >= secondaryChartsShown; })
+            .style('display', 'none')
             .style('height', '0px');
     };
-
-})(d3, fc);
+})(d3, fc, sc);

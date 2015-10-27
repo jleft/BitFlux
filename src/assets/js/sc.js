@@ -16,15 +16,21 @@
             }
         },
         menu: {
+            data: {},
             generator: {},
             primary: {},
             secondary: {}
         },
+        model: {
+            period: {},
+            product: {},
+            selectedPeriod: {},
+            selectedProduct: {},
+            legendData: undefined
+        },
         series: {},
         util: {
-            dimensions: {},
-            domain: {},
-            zoom: {}
+            domain: {}
         }
     };
 })();
