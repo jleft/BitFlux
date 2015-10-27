@@ -81,7 +81,13 @@
         var crosshairData = [];
         var crosshair = fc.tool.crosshair()
              .xLabel('')
-             .yLabel('');
+             .yLabel('')
+             .on('trackingmove', function(crosshairData) {
+                 dispatch.crosshairChange(crosshairData[0].datum);
+             })
+             .on('trackingend', function() {
+                 dispatch.crosshairChange(undefined);
+             });
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
@@ -151,16 +157,6 @@
             }
         }
 
-        function setCrosshairSnap(series, data) {
-            crosshair.snap(fc.util.seriesPointSnapXOnly(series, data))
-                .on('trackingmove', function(crosshairData) {
-                    dispatch[sc.event.crosshairChange](crosshairData[0].datum);
-                })
-                .on('trackingend', function() {
-                    dispatch[sc.event.crosshairChange](undefined);
-                });
-        }
-
         function primary(selection) {
             var model = selection.datum();
             currentSeries = model.series;
@@ -171,7 +167,7 @@
 
             updateYValueAccessorUsed();
             updateMultiSeries(multi.series);
-            setCrosshairSnap(currentSeries.option, model.data);
+            crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
 
             movingAverage(model.data);
             bollingerAlgorithm(model.data);
