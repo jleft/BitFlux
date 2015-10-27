@@ -150,6 +150,7 @@
                 .on(sc.event.dataPeriodChange, function(period) {
                     sc.model.selectedPeriod = period.option;
                     dataInterface(sc.model.selectedPeriod.seconds);
+                    render();
                 })
                 .on(sc.event.resetToLatest, resetToLatest)
                 .on(sc.event.toggleSlideout, function() {
