@@ -8,10 +8,10 @@
                 secondaryChartsShown++;
             }
         }
-        container.selectAll('.secondary-container')
+        container.selectAll('.secondary-row')
             .filter(function(d, i) { return i < secondaryChartsShown; })
             .attr('layout-style', 'flex: 1');
-        container.selectAll('.secondary-container')
+        container.selectAll('.secondary-row')
             .filter(function(d, i) { return i >= secondaryChartsShown; })
             .attr('layout-style', 'flex: 0');
 

@@ -200,6 +200,8 @@
         }
 
         app.run = function() {
+            updateLayout();
+
             primaryChart = initialisePrimaryChart();
             nav = initialiseNav();
 
@@ -208,8 +210,6 @@
             initialiseSideMenu();
 
             initialiseResize();
-
-            updateLayout();
 
             dataInterface.generateDailyData();
         };
