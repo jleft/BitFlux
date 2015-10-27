@@ -14,6 +14,7 @@
 
         var primaryChartModel = sc.model.primaryChart();
         var secondaryChartModel = sc.model.secondaryChart();
+        var sideMenuModel = sc.model.menu.side();
         var xAxisModel = sc.model.xAxis();
         var navModel = sc.model.nav();
 
@@ -22,6 +23,7 @@
         var xAxis = sc.chart.xAxis();
         var nav;
         var headMenu;
+        var sideMenu;
         var legend = sc.chart.legend();
 
         function renderInternal() {
@@ -32,6 +34,7 @@
                 .call(legend);
 
             secondaryChartsContainer.datum(secondaryChartModel)
+                // TODO: Add component: group of secondary charts.
                 .filter(function(d, i) { return i < secondaryCharts.length; })
                 .each(function(d, i) {
                     d3.select(this)
@@ -47,6 +50,10 @@
 
             container.select('.head-menu')
                 .call(headMenu);
+
+            container.select('.sidebar-menu')
+              .datum(sideMenuModel)
+              .call(sideMenu);
         }
 
         var render = fc.util.render(renderInternal);
@@ -159,45 +166,46 @@
                 });
         }
 
-        function toggleIndicator(indicator, currentIndicators) {
-            if (indicator) {
-                if (currentIndicators.indexOf(indicator.option) !== -1 && !indicator.toggled) {
-                    currentIndicators.splice(currentIndicators.indexOf(indicator.option), 1);
-                } else if (indicator.toggled) {
-                    currentIndicators.push(indicator.option);
-                }
-            }
-            return currentIndicators;
+        function selectOption(option, options) {
+            options.forEach(function(option) {
+                option.isSelected = false;
+            });
+            option.isSelected = true;
         }
 
         function initialiseSideMenu() {
-            var sideMenu = sc.menu.side()
+            return sc.menu.side()
                 .on(sc.event.primaryChartSeriesChange, function(series) {
                     primaryChartModel.series = series;
+                    selectOption(series, sideMenuModel.seriesOptions);
                     render();
                 })
                 .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
                     primaryChartModel.yValueAccessor = yValueAccessor;
+                    selectOption(yValueAccessor, sideMenuModel.yValueAccessorOptions);
                     render();
                 })
-                .on(sc.event.primaryChartIndicatorChange, function(toggledIndicator) {
-                    primaryChartModel.indicators = toggleIndicator(toggledIndicator, primaryChartModel.indicators);
+                .on(sc.event.primaryChartIndicatorChange, function(indicator) {
+                    indicator.isSelected = !indicator.isSelected;
+                    primaryChartModel.indicators = sideMenuModel.indicatorOptions.filter(function(option) {
+                        return option.isSelected;
+                    });
                     render();
                 })
-                .on(sc.event.secondaryChartChange, function(toggledChart) {
-                    if (secondaryCharts.indexOf(toggledChart.option) !== -1 && !toggledChart.toggled) {
-                        secondaryCharts.splice(secondaryCharts.indexOf(toggledChart.option), 1);
-                    } else if (toggledChart.toggled) {
-                        toggledChart.option.option.on(sc.event.viewChange, onViewChange);
-                        secondaryCharts.push(toggledChart.option);
-                    }
+                .on(sc.event.secondaryChartChange, function(chart) {
+                    chart.isSelected = !chart.isSelected;
+                    secondaryCharts = sideMenuModel.secondaryChartOptions.filter(function(option) {
+                        return option.isSelected;
+                    });
+                    // TODO: This doesn't seem to be a concern of menu.
+                    secondaryCharts.forEach(function(chartOption) {
+                        chartOption.option.on(sc.event.viewChange, onViewChange);
+                    });
+                    // TODO: Remove .remove! (could a secondary chart group component manage this?).
                     secondaryChartsContainer.selectAll('*').remove();
                     updateLayout();
                     render();
                 });
-
-            container.select('.sidebar-menu')
-                .call(sideMenu);
         }
 
         app.run = function() {
@@ -208,7 +216,7 @@
 
             var dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu(dataInterface);
-            initialiseSideMenu();
+            sideMenu = initialiseSideMenu();
 
             initialiseResize();
 

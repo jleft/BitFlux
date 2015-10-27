@@ -25,8 +25,8 @@
 
                 selection.select('#product-dropdown')
                     .datum({
-                        // TODO: No global model, use bound model instead.
-                        optionList: sc.model.products.map(sc.menu.productAdaptor),
+                        // TODO: No global model, use bound model instead. #304
+                        options: sc.model.products.map(sc.menu.productAdaptor),
                         selectedIndex: sc.model.products.indexOf(sc.model.selectedProduct)
                     })
                     .call(dataProductDropdown);
@@ -35,7 +35,7 @@
                 selection.select('#period-dropdown')
                     .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
                     .datum({
-                        optionList: periods.map(sc.menu.periodAdaptor),
+                        options: periods.map(sc.menu.periodAdaptor),
                         selectedIndex: periods.indexOf(sc.model.selectedPeriod)
                     })
                     .call(dataPeriodDropdown);
