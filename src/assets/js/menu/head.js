@@ -34,7 +34,10 @@
                 var periods = sc.model.selectedProduct.getPeriods();
                 selection.select('#period-dropdown')
                     .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
-                    .datum({optionList: periods.map(sc.menu.periodAdaptor)})
+                    .datum({
+                        optionList: periods.map(sc.menu.periodAdaptor),
+                        selectedIndex: periods.indexOf(sc.model.selectedPeriod)
+                    })
                     .call(dataPeriodDropdown);
 
                 selection.select('#reset-button')
