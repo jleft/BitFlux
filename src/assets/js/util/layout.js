@@ -2,34 +2,28 @@
     'use strict';
 
     sc.util.layout = function(container, secondaryCharts) {
-        var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
-            parseInt(container.select('.head-row').style('padding-top'), 10) +
-            parseInt(container.select('.head-row').style('padding-bottom'), 10);
-        var navHeight = parseInt(container.select('.nav-row').style('height'), 10);
-        var xAxisHeight = parseInt(container.select('.x-axis-row').style('height'), 10);
-
-        var useableScreenHeight = window.innerHeight - headRowHeight - xAxisHeight - navHeight;
-
         var secondaryChartsShown = 0;
         for (var j = 0; j < secondaryCharts.length; j++) {
             if (secondaryCharts[j]) {
                 secondaryChartsShown++;
             }
         }
-
-        var primaryHeightRatio = 1 + secondaryChartsShown;
-        var secondaryHeightRatio = secondaryChartsShown ? 1 : 0;
-        var totalHeightRatio = 1 + 2 * secondaryChartsShown;
-
-        container.select('.primary-row')
-            .style('height', primaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
-        container.selectAll('.secondary-row')
+        container.selectAll('.secondary-container')
             .filter(function(d, i) { return i < secondaryChartsShown; })
-            .style('display', 'block')
-            .style('height', secondaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
-        container.selectAll('.secondary-row')
+            .attr('layout-style', 'flex: 1');
+        container.selectAll('.secondary-container')
             .filter(function(d, i) { return i >= secondaryChartsShown; })
-            .style('display', 'none')
-            .style('height', '0px');
+            .attr('layout-style', 'flex: 0');
+
+        var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
+            parseInt(container.select('.head-row').style('padding-top'), 10) +
+            parseInt(container.select('.head-row').style('padding-bottom'), 10) +
+            parseInt(container.select('.head-row').style('margin-bottom'), 10);
+
+        var useableScreenHeight = window.innerHeight - headRowHeight;
+
+        container.select('#charts-container')
+            .style('height', useableScreenHeight)
+            .layout();
     };
 })(d3, fc, sc);
