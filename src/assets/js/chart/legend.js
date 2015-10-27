@@ -5,7 +5,6 @@
         var formatPrice = function(x) { return sc.model.selectedProduct.priceFormat(x); };
         var formatVolume = function(x) { return sc.model.selectedProduct.volumeFormat(x); };
         var formatTime = function(x) { return sc.model.selectedPeriod.timeFormat(x); };
-        var lastDataPointDisplayed;
 
         var legendComponent = fc.chart.legend()
             .items([
@@ -21,10 +20,7 @@
             if (!selection.datum()) {
                 selection.datum(sc.model.latestDataPoint);
             }
-            if (selection.datum() !== lastDataPointDisplayed) {
-                selection.call(legendComponent);
-                lastDataPointDisplayed = selection.datum();
-            }
+            selection.call(legendComponent);
         }
 
         return legend;
