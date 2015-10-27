@@ -12,7 +12,7 @@
             .rightMargin(yAxisWidth);
 
         var multi = fc.series.multi();
-        var chart = fc.chart.cartesianChart(xScale, yScale)
+        var chart = fc.chart.cartesian(xScale, yScale)
             .plotArea(multi)
             .xTicks(0)
             .yOrient('right')

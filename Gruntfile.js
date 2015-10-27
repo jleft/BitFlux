@@ -113,6 +113,12 @@ module.exports = function(grunt) {
                     expand: true
                 },
                 {
+                    cwd: 'node_modules/d3fc/node_modules/svg-innerhtml/',
+                    src: ['svg-innerhtml.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
                     cwd: 'node_modules/d3fc/dist/',
                     src: ['d3fc.js'],
                     dest: 'dist/assets/js',

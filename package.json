@@ -24,7 +24,7 @@
   "homepage": "https://github.com/scottlogic/d3fc-showcase#readme",
   "dependencies": {
     "bootstrap": "^3.3.5",
-    "d3fc": "^2.1.1"
+    "d3fc": "^3.0.0"
   },
   "devDependencies": {
     "cordova": "^5.1.1",

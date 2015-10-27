@@ -66,8 +66,6 @@
         return extent;
     }
 
-    function formatPrice(x) { return sc.model.selectedProduct.priceFormat(x); }
-
     sc.chart.primary = function() {
 
         var yAxisWidth = 45;
@@ -119,10 +117,9 @@
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
 
-        var primaryChart = fc.chart.cartesianChart(xScale, yScale)
+        var primaryChart = fc.chart.cartesian(xScale, yScale)
             .xTicks(0)
             .yOrient('right')
-            .yTickFormat(formatPrice)
             .margin({
                 top: 0,
                 left: 0,
@@ -182,7 +179,8 @@
             // Find current tick values and add close price to this list, then set it explicitly below
             var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
             var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
-            primaryChart.yTickValues(tickValues)
+            primaryChart.yTickFormat(model.product.priceFormat)
+                .yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.selectAll('.tick')
                         .filter(function(d) { return d === latestPrice; })

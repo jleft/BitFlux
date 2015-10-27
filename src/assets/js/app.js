@@ -12,11 +12,45 @@
         var navbarContainer = container.select('#navbar-container');
         var legendContainer = container.select('#legend');
 
-        var primaryChartModel = sc.model.primaryChart();
-        var secondaryChartModel = sc.model.secondaryChart();
+        var day1 = sc.model.period({
+            display: '1 Day',
+            seconds: 86400,
+            d3TimeInterval: {unit: d3.time.day, value: 1},
+            timeFormat: '%b-%d'});
+        var hour1 = sc.model.period({
+            display: '1 Hour',
+            seconds: 3600,
+            d3TimeInterval: {unit: d3.time.hour, value: 1},
+            timeFormat: '%b-%d %Hh'});
+        var minute5 = sc.model.period({
+            display: '5 Minutes',
+            seconds: 300,
+            d3TimeInterval: {unit: d3.time.minute, value: 5},
+            timeFormat: '%H:%M'});
+        var minute1 = sc.model.period({
+            display: '1 Minute',
+            seconds: 60,
+            d3TimeInterval: {unit: d3.time.minute, value: 1},
+            timeFormat: '%H:%M'});
+
+        var generated = sc.model.product({
+            display: 'Data Generator',
+            volumeFormat: '.3s',
+            periods: [day1]
+        });
+        var bitcoin = sc.model.product({
+            display: 'Bitcoin',
+            volumeFormat: '.2f',
+            periods: [hour1, minute5, minute1]
+        });
+
+        var primaryChartModel = sc.model.primaryChart(generated);
+        var secondaryChartModel = sc.model.secondaryChart(generated);
         var sideMenuModel = sc.model.menu.side();
-        var xAxisModel = sc.model.xAxis();
+        var xAxisModel = sc.model.xAxis(day1);
         var navModel = sc.model.nav();
+        var headMenuModel = sc.model.headMenu([generated, bitcoin], generated, day1);
+        var legendModel = sc.model.legend(generated, day1);
 
         var primaryChart;
         var secondaryCharts = [];
@@ -30,7 +64,7 @@
             primaryChartContainer.datum(primaryChartModel)
                 .call(primaryChart);
 
-            legendContainer.datum(sc.model.legendData)
+            legendContainer.datum(legendModel)
                 .call(legend);
 
             secondaryChartsContainer.datum(secondaryChartModel)
@@ -49,6 +83,7 @@
                 .call(nav);
 
             container.select('.head-menu')
+                .datum(headMenuModel)
                 .call(headMenu);
 
             container.select('.sidebar-menu')
@@ -86,7 +121,7 @@
         }
 
         function onCrosshairChange(dataPoint) {
-            sc.model.legendData = dataPoint;
+            legendModel.data = dataPoint ? dataPoint : primaryChartModel.data[primaryChartModel.data.length - 1];
             render();
         }
 
@@ -101,7 +136,21 @@
             primaryChartModel.data = data;
             secondaryChartModel.data = data;
             navModel.data = data;
-            sc.model.latestDataPoint = data[data.length - 1];
+            // TODO: probably only want to update this if the user isn't already mousing over with the crosshair
+            legendModel.data = data[data.length - 1];
+        }
+
+        function updateModelSelectedProduct(product) {
+            headMenuModel.selectedProduct = product;
+            primaryChartModel.product = product;
+            secondaryChartModel.product = product;
+            legendModel.product = product;
+        }
+
+        function updateModelSelectedPeriod(period) {
+            headMenuModel.selectedPeriod = period;
+            xAxisModel.period = period;
+            legendModel.period = period;
         }
 
         function initialisePrimaryChart() {
@@ -145,18 +194,18 @@
         function initialiseHeadMenu(dataInterface) {
             return sc.menu.head()
                 .on(sc.event.dataProductChange, function(product) {
-                    sc.model.selectedProduct = product.option;
-                    sc.model.selectedPeriod = product.option.getPeriods()[0];
-                    if (product.option === sc.model.product.bitcoin) {
-                        dataInterface(sc.model.selectedPeriod.seconds);
-                    } else if (product.option === sc.model.product.generated) {
+                    updateModelSelectedProduct(product.option);
+                    updateModelSelectedPeriod(product.option.periods[0]);
+                    if (product.option === bitcoin) {
+                        dataInterface(product.option.periods[0].seconds);
+                    } else if (product.option === generated) {
                         dataInterface.generateDailyData();
                     }
                     render();
                 })
                 .on(sc.event.dataPeriodChange, function(period) {
-                    sc.model.selectedPeriod = period.option;
-                    dataInterface(sc.model.selectedPeriod.seconds);
+                    updateModelSelectedPeriod(period.option);
+                    dataInterface(period.option.seconds);
                     render();
                 })
                 .on(sc.event.resetToLatest, resetToLatest)

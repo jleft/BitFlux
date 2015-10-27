@@ -23,20 +23,20 @@
             selection.each(function(model) {
                 var selection = d3.select(this);
 
+                var products = model.products;
                 selection.select('#product-dropdown')
                     .datum({
-                        // TODO: No global model, use bound model instead. #304
-                        options: sc.model.products.map(sc.menu.productAdaptor),
-                        selectedIndex: sc.model.products.indexOf(sc.model.selectedProduct)
+                        options: products.map(sc.menu.productAdaptor),
+                        selectedIndex: products.indexOf(model.selectedProduct)
                     })
                     .call(dataProductDropdown);
 
-                var periods = sc.model.selectedProduct.getPeriods();
+                var periods = model.selectedProduct.periods;
                 selection.select('#period-dropdown')
-                    .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
+                    .classed('hide', periods.length <= 1) // TODO: get from model instead?
                     .datum({
                         options: periods.map(sc.menu.periodAdaptor),
-                        selectedIndex: periods.indexOf(sc.model.selectedPeriod)
+                        selectedIndex: periods.indexOf(model.selectedPeriod)
                     })
                     .call(dataPeriodDropdown);
 

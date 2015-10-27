@@ -2,13 +2,12 @@
     'use strict';
 
     sc.chart.legend = function() {
-        var formatPrice = function(x) { return sc.model.selectedProduct.priceFormat(x); };
-        var formatVolume = function(x) { return sc.model.selectedProduct.volumeFormat(x); };
-        var formatTime = function(x) { return sc.model.selectedPeriod.timeFormat(x); };
+        var formatPrice;
+        var formatVolume;
+        var formatTime;
         var lastDataPointDisplayed;
 
-        var legendComponent = fc.chart.legend()
-            .items([
+        var legendComponent = fc.chart.legend().items([
                 ['date', function(d) { return formatTime(d.date); }],
                 ['open', function(d) { return formatPrice(d.open); }],
                 ['high', function(d) { return formatPrice(d.high); }],
@@ -18,13 +17,19 @@
             ]);
 
         function legend(selection) {
-            if (!selection.datum()) {
-                selection.datum(sc.model.latestDataPoint);
-            }
-            if (selection.datum() !== lastDataPointDisplayed) {
-                selection.call(legendComponent);
-                lastDataPointDisplayed = selection.datum();
-            }
+            selection.each(function(model) {
+                var container = d3.select(this);
+
+                formatPrice = model.product.priceFormat;
+                formatVolume = model.product.volumeFormat;
+                formatTime = model.period.timeFormat;
+
+                if (model.data !== lastDataPointDisplayed) {
+                    lastDataPointDisplayed = model.data;
+                    container.datum(model.data)
+                        .call(legendComponent);
+                }
+            });
         }
 
         return legend;

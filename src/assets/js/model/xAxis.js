@@ -1,9 +1,10 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.xAxis = function() {
+    sc.model.xAxis = function(initialPeriod) {
         return {
-            viewDomain: []
+            viewDomain: [],
+            period: initialPeriod
         };
     };
 
