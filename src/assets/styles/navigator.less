@@ -1,9 +1,24 @@
 #navbar-container {
     min-height: @navigator-height;
   .extent {
-    stroke: @navigator-extent-stroke;
-    fill: @navigator-extent-fill;
+    fill: @navigator-extent-colour;
+    stroke: @offwhite;
     fill-opacity: 0.125;
     shape-rendering: crispEdges;
+  }
+  .background {
+    fill: @primary-dark-blue;
+    stroke: @line-colour;
+    stroke-width: 3px;
+  }
+  .plot-area {
+      .multi {
+          .area {
+            fill: @navigator-colour;
+          }
+          path {
+            stroke: @line-colour;
+          }
+      }
   }
 }
