@@ -4,7 +4,7 @@
     sc.chart.nav = function() {
         var dispatch = d3.dispatch(sc.event.viewChange);
 
-        var navChart = fc.chart.cartesianChart(fc.scale.dateTime(), d3.scale.linear())
+        var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0);
 
         var viewScale = fc.scale.dateTime();

@@ -22,12 +22,7 @@
             secondary: {}
         },
         model: {
-            menu: {},
-            period: {},
-            product: {},
-            selectedPeriod: {},
-            selectedProduct: {},
-            legendData: undefined
+            menu: {}
         },
         series: {},
         util: {

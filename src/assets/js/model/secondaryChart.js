@@ -1,11 +1,12 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.secondaryChart = function() {
+    sc.model.secondaryChart = function(initialProduct) {
         return {
             data: [],
             viewDomain: [],
-            trackingLatest: true
+            trackingLatest: true,
+            product: initialProduct
         };
     };
 
