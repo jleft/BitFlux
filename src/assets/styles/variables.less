@@ -1,23 +1,35 @@
-@primary-blue: #1a9af9;
+@primary-blue: #377FB9;
+@primary-dark-blue: #1E292C;
 @primary-green: #6c0;
+@primary-orange: #FF9832;
 @primary-red: #c60;
 @primary-white: #f0f8ff;
 @primary-black: #000;
 @offwhite: #fefefe;
+@background-color: #263337;
+
+// Font
+@font-family: 'Roboto', sans-serif;
+@font-family-sans-serif: @font-family;
+@legend-font-size: 15px;
+@axis-font-size: 10px;
 
 // Buttons
 @toggled-background-colour: #5cb85c;
 @toggled-text-colour: #fff;
 
 // Plot Area
-@candlestick-down-stroke: #000;
-@candlestick-up-stroke: #000;
-@candlestick-down-fill: @primary-red;
-@candlestick-up-fill: @primary-green;
+@candlestick-down-stroke: @primary-orange;
+@candlestick-up-stroke: @primary-orange;
+@candlestick-down-fill: @background-color;
+@candlestick-up-fill: @primary-orange;
 @moving-average-line-colour: #f0f;
 @bollinger-upper-colour: @primary-red;
 @bollinger-lower-colour: @primary-green;
-@bollinger-fill-colour: #d3d3d3; 
+@bollinger-fill-colour: #d3d3d3;
+
+// Line colour
+@line-colour: #515B5E;
 
 // Primary Y Axis
 @y-axis-width: 45px;
@@ -28,8 +40,8 @@
 
 // Navigator
 @navigator-height: 100px;
-@navigator-extent-stroke: #d1d1e0;
-@navigator-extent-fill: #000;
+@navigator-extent-colour: #d1d1e0;
+@navigator-colour: #324245;
 
 // Seperator
 @head-border-width: 2px solid;
@@ -52,5 +64,5 @@
 @crosshair-circle-opacity: 0.5;
 
 // legend-color
-@legend-background-color: @primary-blue;
-@legend-font-color: @primary-white;
+@legend-background-color: @background-color;
+@legend-font-color: @offwhite;
