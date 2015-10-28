@@ -23,7 +23,7 @@
         var useableScreenHeight = window.innerHeight - headRowHeight;
 
         container.select('#charts-container')
-            .style('height', useableScreenHeight)
+            .style('height', useableScreenHeight + 'px')
             .layout();
     };
 })(d3, fc, sc);
