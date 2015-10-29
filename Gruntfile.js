@@ -368,7 +368,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['jasmine:test']);
     grunt.registerTask('test:coverage', ['jasmine:coverage']);
 
-    grunt.registerTask('build', ['check', 'test:coverage', 'clean',
+    grunt.registerTask('build', ['check', 'karma:ci', 'clean',
         'concat:production', 'less:production', 'copy']);
     grunt.registerTask('build:development', ['check', 'test', 'clean',
         'concat:development', 'less:development', 'copy']);
