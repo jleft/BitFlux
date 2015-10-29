@@ -77,7 +77,7 @@
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
-
+        var zoomWidth;
 
         var crosshairData = [];
         var crosshair = fc.tool.crosshair()
@@ -198,7 +198,7 @@
             primaryChart.plotArea(multi);
             selection.call(primaryChart);
 
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(zoomWidth)
                 .scale(xScale)
                 .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
@@ -209,6 +209,10 @@
         }
 
         d3.rebind(primary, dispatch, 'on');
+
+        primary.dimensionChanged = function(container) {
+            zoomWidth = parseInt(container.style('width')) - yAxisWidth;
+        };
 
         return primary;
     };
