@@ -46,7 +46,7 @@ module.exports = function(config) {
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),
-        reporters: ['progress', 'saucelabs'],
+        reporters: ['dots', 'saucelabs'],
         singleRun: true,
         captureTimeout: 120000,
         browserDisconnectTimeout: 120000,
