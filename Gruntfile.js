@@ -324,6 +324,25 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        karma: {
+            options: {
+                files: [
+                    'node_modules/d3fc/node_modules/d3/d3.js',
+                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
+                    'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
+                    'node_modules/d3fc/dist/d3fc.js',
+                    'node_modules/jquery/dist/jquery.min.js',
+                    'node_modules/bootstrap/dist/js/bootstrap.js',
+                    '<%= meta.srcJsFiles %>',
+                    '<%= meta.testJsFiles %>'
+                ]
+            },
+            unit: {
+                configFile: 'karma.conf.js',
+                exclude: ['src/assets/js/main.js']
+            }
         }
 
     });
