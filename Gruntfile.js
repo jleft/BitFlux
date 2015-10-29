@@ -337,11 +337,14 @@ module.exports = function(grunt) {
                     'node_modules/bootstrap/dist/js/bootstrap.js',
                     '<%= meta.srcJsFiles %>',
                     '<%= meta.testJsFiles %>'
-                ]
+                ],
+                exclude: ['src/assets/js/main.js']
             },
             unit: {
-                configFile: 'karma.conf.js',
-                exclude: ['src/assets/js/main.js']
+                configFile: 'karma.conf.js'
+            },
+            ci: {
+                configFile: 'karma-ci.conf.js'
             }
         }
 
