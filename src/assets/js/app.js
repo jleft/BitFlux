@@ -5,12 +5,25 @@
 
         var app = {};
 
-        var container = d3.select('#app-container');
-        var primaryChartContainer = container.select('#primary-container');
-        var secondaryChartsContainer = container.selectAll('.secondary-container');
-        var xAxisContainer = container.select('#x-axis-container');
-        var navbarContainer = container.select('#navbar-container');
-        var legendContainer = container.select('#legend');
+        var appContainer = d3.select('#app-container');
+        var chartsContainer = appContainer.select('#charts-container');
+        var containers = {
+            app: appContainer,
+            charts: chartsContainer,
+            primary: chartsContainer.select('#primary-container'),
+            secondaries: chartsContainer.selectAll('.secondary-container'),
+            xAxis: chartsContainer.select('#x-axis-container'),
+            navbar: chartsContainer.select('#navbar-container'),
+            legend: appContainer.select('#legend'),
+            suspendLayout: function(value) {
+                        var self = this;
+                        Object.keys(self).forEach(function(key) {
+                            if (typeof self[key] !== 'function') {
+                                self[key].layoutSuspended(value);
+                            }
+                        });
+                    }
+        };
 
         var day1 = sc.model.period({
             display: 'Daily',
@@ -52,55 +65,79 @@
         var headMenuModel = sc.model.headMenu([generated, bitcoin], generated, day1);
         var legendModel = sc.model.legend(generated, day1);
 
-        var primaryChart;
-        var secondaryCharts = [];
-        var xAxis = sc.chart.xAxis();
-        var nav;
+        var charts = {
+            primary: undefined,
+            secondaries: [],
+            xAxis: sc.chart.xAxis(),
+            navbar: undefined,
+            legend: sc.chart.legend()
+        };
+
         var headMenu;
         var sideMenu;
-        var legend = sc.chart.legend();
 
         function renderInternal() {
-            primaryChartContainer.datum(primaryChartModel)
-                .call(primaryChart);
+            if (layoutRedrawnInNextRender) {
+                containers.suspendLayout(false);
+            }
 
-            legendContainer.datum(legendModel)
-                .call(legend);
+            containers.primary.datum(primaryChartModel)
+                .call(charts.primary);
 
-            secondaryChartsContainer.datum(secondaryChartModel)
+            containers.legend.datum(legendModel)
+                .call(charts.legend);
+
+            containers.secondaries.datum(secondaryChartModel)
                 // TODO: Add component: group of secondary charts.
-                .filter(function(d, i) { return i < secondaryCharts.length; })
+                .filter(function(d, i) { return i < charts.secondaries.length; })
                 .each(function(d, i) {
                     d3.select(this)
-                        .attr('class', 'secondary-container ' + secondaryCharts[i].valueString)
-                        .call(secondaryCharts[i].option);
+                        .attr('class', 'secondary-container ' + charts.secondaries[i].valueString)
+                        .call(charts.secondaries[i].option);
                 });
 
-            xAxisContainer.datum(xAxisModel)
-                .call(xAxis);
+            containers.xAxis.datum(xAxisModel)
+                .call(charts.xAxis);
 
-            navbarContainer.datum(navModel)
-                .call(nav);
+            containers.navbar.datum(navModel)
+                .call(charts.navbar);
 
-            container.select('.head-menu')
+            containers.app.select('.head-menu')
                 .datum(headMenuModel)
                 .call(headMenu);
 
-            container.select('.sidebar-menu')
+            containers.app.select('.sidebar-menu')
               .datum(sideMenuModel)
               .call(sideMenu);
+
+            if (layoutRedrawnInNextRender) {
+                containers.suspendLayout(true);
+                layoutRedrawnInNextRender = false;
+            }
         }
 
-        var render = fc.util.render(renderInternal);
+        var fcRender = fc.util.render(renderInternal);
+
+        function render(redrawLayout) {
+            if (arguments.length) {
+                if (redrawLayout) {
+                    layoutRedrawnInNextRender = true;
+                }
+            }
+
+            fcRender();
+        }
+
+        var layoutRedrawnInNextRender = true;
 
         function updateLayout() {
-            sc.util.layout(container, secondaryCharts);
+            sc.util.layout(containers, charts);
         }
 
         function initialiseResize() {
             d3.select(window).on('resize', function() {
                 updateLayout();
-                render();
+                render(true);
             });
         }
 
@@ -117,12 +154,12 @@
             primaryChartModel.trackingLatest = trackingLatest;
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
-            render();
+            render(false);
         }
 
         function onCrosshairChange(dataPoint) {
             legendModel.data = dataPoint ? dataPoint : primaryChartModel.data[primaryChartModel.data.length - 1];
-            render();
+            render(false);
         }
 
         function resetToLatest() {
@@ -201,17 +238,17 @@
                     } else if (product.option === generated) {
                         dataInterface.generateDailyData();
                     }
-                    render();
+                    render(false);
                 })
                 .on(sc.event.dataPeriodChange, function(period) {
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
-                    render();
+                    render(false);
                 })
                 .on(sc.event.resetToLatest, resetToLatest)
                 .on(sc.event.toggleSlideout, function() {
-                    container.selectAll('.row-offcanvas-right').classed('active',
-                        !container.selectAll('.row-offcanvas-right').classed('active'));
+                    containers.app.selectAll('.row-offcanvas-right').classed('active',
+                        !containers.app.selectAll('.row-offcanvas-right').classed('active'));
                 });
         }
 
@@ -227,46 +264,45 @@
                 .on(sc.event.primaryChartSeriesChange, function(series) {
                     primaryChartModel.series = series;
                     selectOption(series, sideMenuModel.seriesOptions);
-                    render();
+                    render(false);
                 })
                 .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
                     primaryChartModel.yValueAccessor = yValueAccessor;
                     selectOption(yValueAccessor, sideMenuModel.yValueAccessorOptions);
-                    render();
+                    render(false);
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(indicator) {
                     indicator.isSelected = !indicator.isSelected;
                     primaryChartModel.indicators = sideMenuModel.indicatorOptions.filter(function(option) {
                         return option.isSelected;
                     });
-                    render();
+                    render(false);
                 })
                 .on(sc.event.secondaryChartChange, function(chart) {
                     chart.isSelected = !chart.isSelected;
-                    secondaryCharts = sideMenuModel.secondaryChartOptions.filter(function(option) {
+                    charts.secondaries = sideMenuModel.secondaryChartOptions.filter(function(option) {
                         return option.isSelected;
                     });
                     // TODO: This doesn't seem to be a concern of menu.
-                    secondaryCharts.forEach(function(chartOption) {
+                    charts.secondaries.forEach(function(chartOption) {
                         chartOption.option.on(sc.event.viewChange, onViewChange);
                     });
                     // TODO: Remove .remove! (could a secondary chart group component manage this?).
-                    secondaryChartsContainer.selectAll('*').remove();
+                    containers.secondaries.selectAll('*').remove();
                     updateLayout();
-                    render();
+                    render(true);
                 });
         }
 
         app.run = function() {
-            updateLayout();
-
-            primaryChart = initialisePrimaryChart();
-            nav = initialiseNav();
+            charts.primary = initialisePrimaryChart();
+            charts.navbar = initialiseNav();
 
             var dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu(dataInterface);
             sideMenu = initialiseSideMenu();
 
+            updateLayout();
             initialiseResize();
 
             dataInterface.generateDailyData();

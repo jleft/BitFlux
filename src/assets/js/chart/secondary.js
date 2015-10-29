@@ -8,9 +8,6 @@
         var trackingLatest = true;
         var yAxisWidth = 60;
 
-        var foreground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
-
         var multi = fc.series.multi();
         var chart = fc.chart.cartesian(xScale, yScale)
             .plotArea(multi)
@@ -26,18 +23,18 @@
         function secondary(selection) {
             selection.each(function(data) {
                 var container = d3.select(this)
-                    .call(chart)
-                    .call(foreground);
+                    .call(chart);
 
-                var zoom = sc.behavior.zoom()
+                var zoomTarget = container.select('.plot-area-container');
+                var width = zoomTarget.attr('layout-width');
+                var zoom = sc.behavior.zoom(width)
                     .scale(xScale)
                     .trackingLatest(trackingLatest)
                     .on('zoom', function(domain) {
                         dispatch[sc.event.viewChange](domain);
                     });
 
-                container.select('rect.foreground')
-                    .datum({data: selection.datum()})
+                zoomTarget.datum({data: selection.datum()})
                     .call(zoom);
             });
         }

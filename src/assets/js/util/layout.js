@@ -1,29 +1,32 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.util.layout = function(container, secondaryCharts) {
+    sc.util.layout = function(containers, charts) {
         var secondaryChartsShown = 0;
-        for (var j = 0; j < secondaryCharts.length; j++) {
-            if (secondaryCharts[j]) {
+        for (var j = 0; j < charts.secondaries.length; j++) {
+            if (charts.secondaries[j]) {
                 secondaryChartsShown++;
             }
         }
-        container.selectAll('.secondary-row')
+        containers.secondaries
             .filter(function(d, i) { return i < secondaryChartsShown; })
-            .attr('layout-style', 'flex: 1');
-        container.selectAll('.secondary-row')
+            .style('flex', '1');
+        containers.secondaries
             .filter(function(d, i) { return i >= secondaryChartsShown; })
-            .attr('layout-style', 'flex: 0');
+            .style('flex', '0');
 
-        var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
-            parseInt(container.select('.head-row').style('padding-top'), 10) +
-            parseInt(container.select('.head-row').style('padding-bottom'), 10) +
-            parseInt(container.select('.head-row').style('margin-bottom'), 10);
+        var headRowHeight = parseInt(containers.app.select('.head-row').style('height'), 10) +
+            parseInt(containers.app.select('.head-row').style('padding-top'), 10) +
+            parseInt(containers.app.select('.head-row').style('padding-bottom'), 10) +
+            parseInt(containers.app.select('.head-row').style('margin-bottom'), 10);
 
         var useableScreenHeight = window.innerHeight - headRowHeight;
 
-        container.select('#charts-container')
-            .style('height', useableScreenHeight + 'px')
-            .layout();
+        containers.charts
+            .style('height', useableScreenHeight + 'px');
+
+        charts.xAxis.dimensionChanged(containers.xAxis);
+        charts.navbar.dimensionChanged(containers.navbar);
+        charts.primary.dimensionChanged(containers.primary);
     };
 })(d3, fc, sc);

@@ -1,12 +1,13 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.behavior.zoom = function() {
+    sc.behavior.zoom = function(clientWidth) {
 
         var dispatch = d3.dispatch('zoom');
 
         var zoomBehavior = d3.behavior.zoom();
         var scale;
+        var width = clientWidth;
 
         var allowPan = true;
         var allowZoom = true;
@@ -36,7 +37,6 @@
         function zoom(selection) {
 
             var xExtent = fc.util.extent(selection.datum().data, ['date']);
-            var width = selection.attr('layout-width');
 
             zoomBehavior.x(scale)
                 .on('zoom', function() {

@@ -3,16 +3,10 @@
 
     sc.chart.xAxis = function() {
 
-        var xAxisHeight = 23;
         var xScale = fc.scale.dateTime();
         var xAxis = d3.svg.axis()
             .scale(xScale)
             .orient('bottom');
-
-        var dataJoin = fc.util.dataJoin()
-            .selector('g.x-axis')
-            .element('g')
-            .attr('class', 'x-axis');
 
         function preventTicksMoreFrequentThanPeriod(period) {
             var scaleTickSeconds = (xScale.ticks()[1] - xScale.ticks()[0]) / 1000;
@@ -24,28 +18,16 @@
         }
 
         function xAxisChart(selection) {
-            selection.each(function(model) {
-                var container = d3.select(this);
-
-                var xAxisContainer = dataJoin(container, [model])
-                    .layout({
-                        position: 'absolute',
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        height: xAxisHeight
-                    });
-
-                container.layout();
-
-                xScale.range([0, xAxisContainer.layout('width')])
-                    .domain(model.viewDomain);
-
-                preventTicksMoreFrequentThanPeriod(model.period);
-
-                xAxisContainer.call(xAxis);
-            });
+            var model = selection.datum();
+            xScale.domain(model.viewDomain);
+            preventTicksMoreFrequentThanPeriod(model.period);
+            selection.call(xAxis);
         }
+
+        xAxisChart.dimensionChanged = function(selection) {
+            xScale.range([0, parseInt(selection.style('width'))]);
+            return xAxisChart;
+        };
 
         return xAxisChart;
     };

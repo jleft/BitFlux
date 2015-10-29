@@ -24,12 +24,12 @@
                 }
                 return this.data;
             });
+        var layoutWidth;
 
         function nav(selection) {
             var model = selection.datum();
 
-            viewScale.domain(model.viewDomain)
-                .range([0, selection.node().getAttribute('layout-width')]);
+            viewScale.domain(model.viewDomain);
 
             var yExtent = fc.util.extent(
                 sc.util.domain.filterDataInDateRange(fc.util.extent(model.data, 'date'), model.data),
@@ -54,7 +54,7 @@
             selection.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(layoutWidth)
                 .scale(viewScale)
                 .trackingLatest(model.trackingLatest)
                 .allowPan(false)
@@ -62,10 +62,16 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            selection.call(zoom);
+            selection.select('.plot-area').call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
+
+        nav.dimensionChanged = function(selection) {
+            layoutWidth = parseInt(selection.style('width'));
+            viewScale.range([0, layoutWidth]);
+            return nav;
+        };
 
         return nav;
     };
