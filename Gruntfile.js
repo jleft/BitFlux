@@ -28,6 +28,14 @@ module.exports = function(grunt) {
             testJsFiles: [
                 'test/**/*Spec.js'
             ],
+            vendorJsFiles: [
+                'node_modules/d3fc/node_modules/d3/d3.js',
+                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
+                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
+                'node_modules/d3fc/dist/d3fc.js',
+                'node_modules/jquery/dist/jquery.min.js',
+                'node_modules/bootstrap/dist/js/bootstrap.js'
+            ],
             ourJsFiles: [
                 'Gruntfile.js',
                 '<%= meta.srcJsFiles %>',
@@ -75,7 +83,7 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            files: ['<%= meta.srcFiles %>'],
+            files: ['<%= meta.srcFiles %>', '<%= meta.testJsFiles %>'],
             tasks: ['build:development'],
             options: {
                 atBegin: true,
@@ -280,68 +288,26 @@ module.exports = function(grunt) {
             }
         },
 
-        jasmine: {
-            options: {
-                specs: '<%= meta.testJsFiles %>',
-                vendor: [
-                    'node_modules/d3fc/node_modules/d3/d3.js',
-                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
-                    'node_modules/d3fc/dist/d3fc.js',
-                    'node_modules/jquery/dist/jquery.min.js',
-                    'node_modules/bootstrap/dist/js/bootstrap.min.js'
-                ],
-                keepRunner: true
-            },
-            test: {
-                src: [
-                    '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
-                ]
-            },
-            coverage: {
-                src: [
-                    '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
-                ],
-                options: {
-                    template: require('grunt-template-jasmine-istanbul'),
-                    templateOptions: {
-                        coverage: '<%= meta.coverageDir %>/coverage.json',
-                        report: [
-                            {
-                                type: 'html',
-                                options: {
-                                    dir: '<%= meta.coverageDir %>/html'
-                                }
-                            },
-                            {
-                                type: 'text-summary'
-                            },
-                            {
-                                type: 'text'
-                            }
-                        ]
-                    }
-                }
-            }
-        },
-
         karma: {
             options: {
                 files: [
-                    'node_modules/d3fc/node_modules/d3/d3.js',
-                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
-                    'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
-                    'node_modules/d3fc/dist/d3fc.js',
-                    'node_modules/jquery/dist/jquery.min.js',
-                    'node_modules/bootstrap/dist/js/bootstrap.js',
+                    '<%= meta.vendorJsFiles %>',
                     '<%= meta.srcJsFiles %>',
                     '<%= meta.testJsFiles %>'
-                ]
+                ],
+                exclude: ['src/assets/js/main.js'],
+                configFile: 'karma.conf.js'
             },
+            phantom: {
+                browsers: ['PhantomJS']
+            },
+            ci: {
+                browsers: ['Firefox', 'PhantomJS']
+            },
+            all: {},
             unit: {
-                configFile: 'karma.conf.js',
-                exclude: ['src/assets/js/main.js']
+                autoWatch: true,
+                singleRun: false
             }
         }
 
@@ -362,14 +328,15 @@ module.exports = function(grunt) {
     grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
     grunt.registerTask('check', ['check:failOnError']);
 
-    grunt.registerTask('test', ['jasmine:test']);
-    grunt.registerTask('test:coverage', ['jasmine:coverage']);
+    grunt.registerTask('test', ['karma:all']);
 
-    grunt.registerTask('build', ['check', 'test:coverage', 'clean',
+    grunt.registerTask('build', ['check', 'test', 'clean',
         'concat:production', 'less:production', 'copy']);
-    grunt.registerTask('build:development', ['check', 'test', 'clean',
+    grunt.registerTask('build:ci', ['check', 'karma:ci', 'clean',
+        'concat:production', 'less:production', 'copy']);
+    grunt.registerTask('build:development', ['check', 'karma:phantom', 'clean',
         'concat:development', 'less:development', 'copy']);
-    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'test', 'clean',
+    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'karma:phantom', 'clean',
         'concat:development', 'less:development', 'copy']);
 
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
