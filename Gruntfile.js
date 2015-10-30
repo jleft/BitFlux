@@ -319,7 +319,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
-            'build',
+            'build:ci',
             'mobile:platforms',
             'mobile:prepare'
         ]);
