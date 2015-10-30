@@ -42,7 +42,7 @@ module.exports = function(config) {
         concurrency: Infinity,
         sauceLabs: {
             testName: 'd3fc-showcase Unit Tests',
-            recordScreenshots: false
+            recordScreenshots: true
         },
         customLaunchers: customLaunchers,
         browsers: Object.keys(customLaunchers),
