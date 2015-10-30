@@ -7,14 +7,20 @@
         var formatTime;
         var lastDataPointDisplayed;
 
-        var legendComponent = fc.chart.legend().items([
-                ['date', function(d) { return formatTime(d.date); }],
-                ['open', function(d) { return formatPrice(d.open); }],
-                ['high', function(d) { return formatPrice(d.high); }],
-                ['low', function(d) { return formatPrice(d.low); }],
-                ['close', function(d) { return formatPrice(d.close); }],
-                ['volume', function(d) { return formatVolume(d.volume); }]
-            ]);
+        var legendItems =  [
+            'T',
+            function(d) { return formatTime(d.date); },
+            'O',
+            function(d) { return formatPrice(d.open); },
+            'H',
+            function(d) { return formatPrice(d.high); },
+            'L',
+            function(d) { return formatPrice(d.low); },
+            'C',
+            function(d) { return formatPrice(d.close); },
+            'V',
+            function(d) { return formatVolume(d.volume); }
+        ];
 
         function legend(selection) {
             selection.each(function(model) {
@@ -26,8 +32,20 @@
 
                 if (model.data !== lastDataPointDisplayed) {
                     lastDataPointDisplayed = model.data;
-                    container.datum(model.data)
-                        .call(legendComponent);
+
+                    var p = container.selectAll('p')
+                        .data([legendItems]);
+
+                    p.enter().append('p');
+
+                    var span = p.selectAll('span')
+                        .data(function(d) { return d; });
+
+                    span.enter()
+                        .append('span')
+                        .attr('class', function(d, i) { return i % 2 === 0 ? 'legendLabel' : 'legendValue'; });
+
+                    span.text(function(d) { return d3.functor(d)(model.data); });
                 }
             });
         }
