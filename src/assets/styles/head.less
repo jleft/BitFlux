@@ -1,6 +1,45 @@
 .head-row {
   padding-top: @head-padding-top;
-  padding-bottom: @head-padding-bottom;
-  margin-bottom: @head-margin-bottom;
   background-color: @background-color;
+}
+
+.head-sub-row {
+  display: flex;
+}
+
+#period-selector {
+  align-self: flex-end;
+  flex-grow: 1;
+  margin-right: 45px;
+
+  ul {
+    list-style: none;
+    float: right;
+    margin: 0;
+  }
+  li {
+    float: left;
+    border: 1px solid @line-colour;
+    border-bottom: 0;
+    margin-left: -1px;
+    width: 60px;
+    text-align: center;
+    color: #7B9A9C;
+  }
+  li:first-child {
+    margin-left: 0;
+  }
+  li.active {
+    background-color: rgba(255,255,255,0.15);
+  }
+  li.active a {
+    color: #eee;
+  }
+  a {
+    color: #7B9A9C;
+    text-decoration: none;
+    padding: 3px;
+    font-size: @legend-font-size;
+    display: block;
+  }
 }
