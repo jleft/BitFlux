@@ -18,28 +18,28 @@
     margin: 0;
   }
   li {
-    float: left;
+    display: inline-block;
     border: 1px solid @line-colour;
     border-bottom: 0;
     margin-left: -1px;
-    width: 60px;
+    width: 56px;
+    line-height: 15px;
     text-align: center;
-    color: #7B9A9C;
   }
   li:first-child {
     margin-left: 0;
   }
   li.active {
-    background-color: rgba(255,255,255,0.15);
+    background-color: fade(@primary-white, 20%);
   }
   li.active a {
-    color: #eee;
+    color: @primary-white;
   }
   a {
-    color: #7B9A9C;
+    color: @period-selector-font-color;
     text-decoration: none;
     padding: 3px;
-    font-size: @legend-font-size;
+    font-size: @period-selector-font-size;
     display: block;
   }
 }

@@ -15,16 +15,17 @@
             ul.enter().append('ul');
 
             var li = ul.selectAll('li')
-                .data(function(d) { return d; });
+                .data(fc.util.fn.identity);
 
             li.enter()
-                .append('li');
-
-            li.classed('active', function(d, i) { return (i === selectedIndex); })
-                .html(function(option) {
-                    return '<a href="#">' + option.displayString + '</a>';
-                })
+                .append('li')
+                .append('a')
+                .attr('href', '#')
                 .on('click', dispatch.tabClick);
+
+            li.classed('active', function(d, i) { return i === selectedIndex; })
+                .select('a')
+                .text(function(option) { return option.displayString; });
         }
 
         d3.rebind(tabGroup, dispatch, 'on');
