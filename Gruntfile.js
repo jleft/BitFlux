@@ -243,12 +243,16 @@ module.exports = function(grunt) {
                 options: {
                     sourceMap: true
                 }
+            }
+        },
+
+        uglify: {
+            options: {
+                preserveComments: 'some'
             },
             production: {
-                src: ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>'],
-                dest: 'dist/assets/js/app.js',
-                options: {
-                    sourceMap: false
+                files: {
+                    'dist/assets/js/app.js': ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>']
                 }
             }
         },
@@ -310,7 +314,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test:coverage', ['jasmine:coverage']);
 
     grunt.registerTask('build', ['check', 'test:coverage', 'clean',
-        'concat:production', 'less:production', 'copy']);
+        'uglify:production', 'less:production', 'copy']);
     grunt.registerTask('build:development', ['check', 'test', 'clean',
         'concat:development', 'less:development', 'copy']);
     grunt.registerTask('build:warnOnly', ['check:warnOnly', 'test', 'clean',
