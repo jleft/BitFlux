@@ -2,8 +2,8 @@
   .dropdown-toggle {
     border: none;
     background-image: none;
-    background-color: @background-color !important;
-    outline: none !important;
+    background-color: @background-color;
+    outline: none;
     box-shadow: none;
     color: @offwhite;
     font-size: @product-font-size;
@@ -18,23 +18,27 @@
     background-color: @dropdown-color;
     text-align: center;
     cursor: pointer;
-    
-    a {
-      color: @offwhite !important;
+
+    > li > a {
+      color: @offwhite;
       font-size: @product-dropdown-font-size;
-    }
-    a:hover {
-      background: none;
+
+      &:hover,
+      &:focus {
+        background: none;
+      }
     }
 
-    li {
+    > li {
       padding-left: 20px;
       padding-right: 20px;
       padding-top: 8px;
       padding-bottom: 8px;
-    }
-    li:hover {
-      background-color: @dropdown-hover !important;
+
+      &:hover,
+      &:focus {
+        background-color: @dropdown-hover;
+      }
     }
   }
 
