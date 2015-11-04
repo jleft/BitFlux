@@ -34,6 +34,14 @@ module.exports = function(grunt) {
                 '<%= meta.srcJsFiles %>',
                 '<%= meta.testJsFiles %>'
             ],
+            vendorJsFiles: [
+                'node_modules/d3fc/node_modules/d3/d3.js',
+                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
+                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
+                'node_modules/d3fc/dist/d3fc.js',
+                'node_modules/jquery/dist/jquery.min.js',
+                'node_modules/bootstrap/dist/js/bootstrap.min.js'
+            ],
             coverageDir: 'coverage'
         },
 
@@ -102,45 +110,9 @@ module.exports = function(grunt) {
                     expand: true
                 },
                 {
-                    cwd: 'node_modules/d3fc/node_modules/d3/',
-                    src: ['d3.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/node_modules/css-layout/dist/',
-                    src: ['css-layout.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/node_modules/svg-innerhtml/',
-                    src: ['svg-innerhtml.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/dist/',
-                    src: ['d3fc.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/bootstrap/dist/js/',
-                    src: ['bootstrap.min.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
                     cwd: 'node_modules/bootstrap/dist/fonts/',
                     src: ['**'],
                     dest: 'dist/assets/fonts',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/jquery/dist',
-                    src: ['jquery.min.js'],
-                    dest: 'dist/assets/js',
                     expand: true
                 }]
             },
@@ -266,14 +238,14 @@ module.exports = function(grunt) {
 
         concat: {
             development: {
-                src: ['<%= meta.srcJsFiles %>'],
+                src: ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>'],
                 dest: 'dist/assets/js/app.js',
                 options: {
                     sourceMap: true
                 }
             },
             production: {
-                src: ['<%= meta.srcJsFiles %>'],
+                src: ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>'],
                 dest: 'dist/assets/js/app.js',
                 options: {
                     sourceMap: false
@@ -284,13 +256,7 @@ module.exports = function(grunt) {
         jasmine: {
             options: {
                 specs: '<%= meta.testJsFiles %>',
-                vendor: [
-                    'node_modules/d3fc/node_modules/d3/d3.js',
-                    'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
-                    'node_modules/d3fc/dist/d3fc.js',
-                    'node_modules/jquery/dist/jquery.min.js',
-                    'node_modules/bootstrap/dist/js/bootstrap.min.js'
-                ],
+                vendor: '<%= meta.vendorJsFiles %>',
                 keepRunner: true
             },
             test: {
