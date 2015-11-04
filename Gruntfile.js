@@ -104,12 +104,6 @@ module.exports = function(grunt) {
         copy: {
             web: {
                 files: [{
-                    cwd: 'src',
-                    src: ['index.html'],
-                    dest: 'dist',
-                    expand: true
-                },
-                {
                     cwd: 'node_modules/bootstrap/dist/fonts/',
                     src: ['**'],
                     dest: 'dist/assets/fonts',
@@ -252,7 +246,7 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.js': ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>']
+                    'dist/assets/js/app.min.js': ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>']
                 }
             }
         },
@@ -295,6 +289,33 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        template: {
+            development: {
+                options: {
+                    data: {
+                        appJsPath: 'assets/js/app.js',
+                        liveReload: true,
+                        version: 'Development'
+                    }
+                },
+                files: {
+                    'dist/index.html': ['src/index.html.tpl']
+                }
+            },
+            production: {
+                options: {
+                    data: {
+                        appJsPath: 'assets/js/app.min.js',
+                        liveReload: false,
+                        version: '<%= pkg.version %>'
+                    }
+                },
+                files: {
+                    'dist/index.html': ['src/index.html.tpl']
+                }
+            }
         }
 
     });
@@ -314,11 +335,11 @@ module.exports = function(grunt) {
     grunt.registerTask('test:coverage', ['jasmine:coverage']);
 
     grunt.registerTask('build', ['check', 'test:coverage', 'clean',
-        'uglify:production', 'less:production', 'copy']);
+        'template:production', 'uglify:production', 'less:production', 'copy']);
     grunt.registerTask('build:development', ['check', 'test', 'clean',
-        'concat:development', 'less:development', 'copy']);
+        'template:development', 'concat:development', 'less:development', 'copy']);
     grunt.registerTask('build:warnOnly', ['check:warnOnly', 'test', 'clean',
-        'concat:development', 'less:development', 'copy']);
+        'template:development', 'concat:development', 'less:development', 'copy']);
 
     grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
