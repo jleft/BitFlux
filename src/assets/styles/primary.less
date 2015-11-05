@@ -1,6 +1,6 @@
 #primary-container {
   path.line {
-    stroke: @primary-blue;
+    stroke: @series-colour;
     stroke-width: @stroke-width;
 
     &.movingAverage {
@@ -39,12 +39,12 @@
   }
 
   .area {
-    fill: @area-fill;
+    fill: fade(@series-colour,75%);   // Faded because it was way too bright
   }
 
   .point {
-    stroke: @point-colour;
-    fill: @point-colour;
+    stroke: @series-colour;
+    fill: @series-colour;
   }
 
   .gridline {
