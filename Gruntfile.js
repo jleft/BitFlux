@@ -108,16 +108,21 @@ module.exports = function(grunt) {
                     src: ['**'],
                     dest: 'dist/assets/fonts',
                     expand: true
+                },
+                {
+                    cwd: 'src/assets/icons/',
+                    src: ['**/*.svg'],
+                    dest: 'dist/assets/icons',
+                    expand: true
                 }]
             },
             mobile: {
-                files: [
-                {
+                files: [{
                     expand: true,
                     cwd: 'dist/',
                     src: ['**'],
-                    dest: 'mobile/www/'}
-                ]
+                    dest: 'mobile/www/'
+                }]
             }
         },
 

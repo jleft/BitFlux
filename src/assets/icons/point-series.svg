@@ -1,0 +1,13 @@
+<svg viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+  <g stroke="#7B9FA1" fill="none" fill-rule="evenodd">
+    <g transform="translate(2 3.7)">
+      <circle cx="19.5" cy="1.8" r="1.5"/>
+      <circle cx="11.5" cy="11.8" r="1.5"/>
+      <circle cx="6.5" cy="4.8" r="1.5"/>
+      <circle cx="1.5" cy="14.8" r="1.5"/>
+    </g>
+    <g stroke-linecap="square" stroke-dasharray="1,2">
+      <path d="M15.5 13.5l5.4-7.2M12.5 13.5l-3-4M4.5 16.5l3.1305-6.261"/>
+    </g>
+  </g>
+</svg>
