@@ -3,7 +3,7 @@
 
     sc.chart.xAxis = function() {
 
-        var xAxisHeight = 20;
+        var xAxisHeight = 23;
         var xScale = fc.scale.dateTime();
         var xAxis = d3.svg.axis()
             .scale(xScale)

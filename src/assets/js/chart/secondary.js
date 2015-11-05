@@ -6,7 +6,7 @@
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
         var trackingLatest = true;
-        var yAxisWidth = 45;
+        var yAxisWidth = 60;
 
         var foreground = sc.chart.foreground()
             .rightMargin(yAxisWidth);
