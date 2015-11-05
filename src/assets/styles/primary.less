@@ -39,7 +39,7 @@
   }
 
   .area {
-    fill: fade(@series-colour,75%);   // Faded because it was way too bright
+    fill: @area-fill;
   }
 
   .point {
@@ -57,6 +57,7 @@
   }
 
   .ohlc {
+    stroke: @series-colour;
     stroke-width: @stroke-width;
   }
 
