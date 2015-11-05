@@ -8,7 +8,9 @@
 
 .x-axis {
   .tick text {
-    font-size: @axis-font-size;
+    font-size: @font-size-base;
+    font-weight: @font-weight-base;
+    line-height: @line-height-base;
     fill: @font-colour;
   }
   .tick path, line {
@@ -17,11 +19,18 @@
   .domain {
     stroke: @gridline-colour;
   }
+  .axis-adapter {
+    .tick text {
+      font-size: @font-size-small;
+    }
+  }
 }
 
 .y-axis {
   .tick text {
-    font-size: @axis-font-size;
+    font-size: @font-size-base;
+    font-weight: @font-weight-base;
+    line-height: @line-height-base;
     fill: @font-colour;
   }
   .tick path {

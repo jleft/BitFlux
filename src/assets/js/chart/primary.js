@@ -68,7 +68,7 @@
 
     sc.chart.primary = function() {
 
-        var yAxisWidth = 45;
+        var yAxisWidth = 60;
         var dispatch = d3.dispatch(sc.event.viewChange, sc.event.crosshairChange);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
