@@ -25,8 +25,6 @@
         containers.charts
             .style('height', useableScreenHeight + 'px');
 
-        charts.xAxis.dimensionChanged(containers.xAxis);
-        charts.navbar.dimensionChanged(containers.navbar);
-        charts.primary.dimensionChanged(containers.primary);
+        return fc.util.innerDimensions(containers.app.select('.col-chart').node()).width;
     };
 })(d3, fc, sc);

@@ -9,7 +9,8 @@
             series: sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick()),
             yValueAccessor: {option: function(d) { return d.close; }},
             indicators: [],
-            product: initialProduct
+            product: initialProduct,
+            width: undefined
         };
     };
 

@@ -5,7 +5,8 @@
         return {
             data: [],
             viewDomain: [],
-            trackingLatest: true
+            trackingLatest: true,
+            width: undefined
         };
     };
 

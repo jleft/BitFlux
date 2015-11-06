@@ -73,12 +73,6 @@
 
         d3.rebind(nav, dispatch, 'on');
 
-        nav.dimensionChanged = function(selection) {
-            layoutWidth = parseInt(selection.style('width'));
-            viewScale.range([0, layoutWidth]);
-            return nav;
-        };
-
         return nav;
     };
 })(d3, fc, sc);

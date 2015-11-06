@@ -159,6 +159,7 @@
             currentSeries = model.series;
             currentYValueAccessor = model.yValueAccessor.option;
             currentIndicators = model.indicators;
+            zoomWidth = model.width - yAxisWidth;
 
             primaryChart.xDomain(model.viewDomain);
 
@@ -205,11 +206,6 @@
         }
 
         d3.rebind(primary, dispatch, 'on');
-
-        primary.dimensionChanged = function(selection) {
-            zoomWidth = parseInt(selection.style('width')) - yAxisWidth;
-            return primary;
-        };
 
         return primary;
     };

@@ -131,7 +131,10 @@
         var layoutRedrawnInNextRender = true;
 
         function updateLayout() {
-            sc.util.layout(containers, charts);
+            var containerWidth = sc.util.layout(containers, charts);
+            primaryChartModel.width = containerWidth;
+            xAxisModel.width = containerWidth;
+            navModel.width = containerWidth;
         }
 
         function initialiseResize() {

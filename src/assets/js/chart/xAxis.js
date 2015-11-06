@@ -19,15 +19,11 @@
 
         function xAxisChart(selection) {
             var model = selection.datum();
-            xScale.domain(model.viewDomain);
+            xScale.domain(model.viewDomain)
+                .range([0, model.width]);
             preventTicksMoreFrequentThanPeriod(model.period);
             selection.call(xAxis);
         }
-
-        xAxisChart.dimensionChanged = function(selection) {
-            xScale.range([0, parseInt(selection.style('width'))]);
-            return xAxisChart;
-        };
 
         return xAxisChart;
     };

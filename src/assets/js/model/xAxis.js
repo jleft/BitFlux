@@ -4,7 +4,8 @@
     sc.model.xAxis = function(initialPeriod) {
         return {
             viewDomain: [],
-            period: initialPeriod
+            period: initialPeriod,
+            width: undefined
         };
     };
 

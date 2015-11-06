@@ -6,8 +6,10 @@
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
         var trackingLatest = true;
+        // should this be moved out too?
         var yAxisWidth = 60;
 
+        // how to determine right margin?
         var multi = fc.series.multi();
         var chart = fc.chart.cartesian(xScale, yScale)
             .plotArea(multi)
