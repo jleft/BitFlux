@@ -5,7 +5,13 @@
         var dispatch = d3.dispatch(sc.event.viewChange);
 
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
-            .yTicks(0);
+            .yTicks(0)
+            .margin({
+                top: 0,
+                left: 0,
+                bottom: 30,
+                right: 0
+            });
 
         var viewScale = fc.scale.dateTime();
 
