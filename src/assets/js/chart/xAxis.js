@@ -4,6 +4,7 @@
     sc.chart.xAxis = function() {
 
         var xAxisHeight = 23;
+        var yAxisWidth = 60;
         var xScale = fc.scale.dateTime();
         var xAxis = d3.svg.axis()
             .scale(xScale)
@@ -32,7 +33,7 @@
                         position: 'absolute',
                         left: 0,
                         bottom: 0,
-                        right: 0,
+                        right: yAxisWidth,
                         height: xAxisHeight
                     });
 
