@@ -30,22 +30,17 @@
                 formatVolume = model.product.volumeFormat;
                 formatTime = model.period.timeFormat;
 
-                if (model.data !== lastDataPointDisplayed) {
+                if (model.data == null || model.data !== lastDataPointDisplayed) {
                     lastDataPointDisplayed = model.data;
 
-                    var p = container.selectAll('p')
-                        .data([legendItems]);
-
-                    p.enter().append('p');
-
-                    var span = p.selectAll('span')
-                        .data(function(d) { return d; });
+                    var span = container.selectAll('span')
+                        .data(legendItems);
 
                     span.enter()
                         .append('span')
                         .attr('class', function(d, i) { return i % 2 === 0 ? 'legendLabel' : 'legendValue'; });
 
-                    span.text(function(d) { return d3.functor(d)(model.data); });
+                    span.text(function(d, i) { return i % 2 === 0 ? d : model.data ? d(model.data) : ''; });
                 }
             });
         }
