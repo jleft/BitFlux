@@ -138,10 +138,6 @@
             navModel.data = data;
         }
 
-        function initialiseLegendData(data) {
-            legendModel.data = null;
-        }
-
         function updateModelSelectedProduct(product) {
             headMenuModel.selectedProduct = product;
             primaryChartModel.product = product;
@@ -188,7 +184,7 @@
                         console.log('Error getting historic data: ' + err);
                     } else {
                         updateModelData(data);
-                        initialiseLegendData(data);
+                        legendModel.data = null;
                         resetToLatest();
                     }
                 });

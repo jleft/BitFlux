@@ -30,7 +30,7 @@
                 formatVolume = model.product.volumeFormat;
                 formatTime = model.period.timeFormat;
 
-                if (!model.data || model.data !== lastDataPointDisplayed) {
+                if (model.data == null || model.data !== lastDataPointDisplayed) {
                     lastDataPointDisplayed = model.data;
 
                     var span = container.selectAll('span')
