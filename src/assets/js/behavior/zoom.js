@@ -35,7 +35,8 @@
 
         function zoom(selection) {
 
-            var xExtent = fc.util.extent(selection.datum().data, ['date']);
+            var xExtent = fc.util.extent()
+                .fields('date')(selection.datum().data);
             var width = selection.attr('layout-width');
 
             zoomBehavior.x(scale)

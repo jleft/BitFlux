@@ -25,8 +25,8 @@
 
 
         it('should return all data (without padding) when date range covers the data\'s date extent', function() {
-            var domain = fc.util.extent(data, 'date');
-            var reversedDomain = [domain[1], domain[0]];
+            var domain = [monday, friday];
+            var reversedDomain = [friday, monday];
 
             var filteredData = sc.util.domain.filterDataInDateRange(domain, data);
 

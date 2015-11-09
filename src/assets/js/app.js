@@ -127,7 +127,8 @@
 
         function resetToLatest() {
             var data = primaryChartModel.data;
-            var dataDomain = fc.util.extent(data, 'date');
+            var dataDomain = fc.util.extent()
+                .fields('date')(data);
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
             onViewChange(navTimeDomain);
         }
