@@ -31,11 +31,13 @@
             viewScale.domain(model.viewDomain)
                 .range([0, selection.node().getAttribute('layout-width')]);
 
-            var yExtent = fc.util.extent(
-                sc.util.domain.filterDataInDateRange(fc.util.extent(model.data, 'date'), model.data),
-                ['low', 'high']);
+            var filteredData = sc.util.domain.filterDataInDateRange(
+                fc.util.extent().fields('date')(model.data),
+                model.data);
+            var yExtent = fc.util.extent()
+                .fields(['low', 'high'])(filteredData);
 
-            navChart.xDomain(fc.util.extent(model.data, 'date'))
+            navChart.xDomain(fc.util.extent().fields('date')(model.data))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {

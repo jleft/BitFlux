@@ -42,7 +42,8 @@
             default:
                 throw new Error('Main series given to chart does not have expected interface');
         }
-        var extent = fc.util.extent(visibleData, extentAccessor);
+        var extent = fc.util.extent()
+            .fields(extentAccessor)(visibleData);
 
         if (currentIndicators.length) {
             var indicators = currentIndicators.map(function(indicator) { return indicator.valueString; });
@@ -50,12 +51,14 @@
             var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
             if (bollingerBandsShown) {
                 var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
-                var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+                var bollingerBandsExtent = fc.util.extent()
+                    .fields(['lower', 'upper'])(bollingerBandsVisibleDataObject);
                 extent[0] = d3.min([bollingerBandsExtent[0], extent[0]]);
                 extent[1] = d3.max([bollingerBandsExtent[1], extent[1]]);
             }
             if (movingAverageShown) {
-                var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
+                var movingAverageExtent = fc.util.extent()
+                    .fields('movingAverage')(visibleData);
                 extent[0] = d3.min([movingAverageExtent[0], extent[0]]);
                 extent[1] = d3.max([movingAverageExtent[1], extent[1]]);
             }
