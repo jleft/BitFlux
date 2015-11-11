@@ -33,7 +33,7 @@
 
                 var periods = model.selectedProduct.periods;
                 selection.select('#period-selector')
-                    .classed('hide', periods.length <= 1) // TODO: get from model instead?
+                    .classed('hidden', periods.length <= 1) // TODO: get from model instead?
                     .datum({
                         options: periods.map(sc.menu.periodAdaptor),
                         selectedIndex: periods.indexOf(model.selectedPeriod)
