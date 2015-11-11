@@ -21,12 +21,12 @@
             .filter(function(d, i) { return i >= secondaryChartsShown; })
             .style('flex', '0');
 
-        var headRowHeight = parseInt(containers.app.select('.head-row').style('height'), 0);
+        var headRowHeight = parseInt(containers.app.select('.head-row').style('height'), 10);
         if (!renderedOnce) {
             headRowHeight +=
-                parseInt(containers.app.select('.head-row').style('padding-top'), 0) +
-                parseInt(containers.app.select('.head-row').style('padding-bottom'), 0) +
-                parseInt(containers.app.select('.head-row').style('margin-bottom'), 0);
+                parseInt(containers.app.select('.head-row').style('padding-top'), 10) +
+                parseInt(containers.app.select('.head-row').style('padding-bottom'), 10) +
+                parseInt(containers.app.select('.head-row').style('margin-bottom'), 10);
             renderedOnce = true;
         }
 
