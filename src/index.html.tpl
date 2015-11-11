@@ -16,9 +16,6 @@
             <div id="product-dropdown" class="dropdown">
                 <button id="product-dropdown-button" class="dropdown-toggle" type="button" data-toggle="dropdown"></button>
             </div>
-            <div id="reset-button">
-                <button class="btn btn-default" type="button">Reset</button>
-            </div>
             <div id="period-selector"></div>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
@@ -37,6 +34,7 @@
                 </div>
                 <div id="navbar-row">
                     <svg id="navbar-container"></svg>
+                    <svg id="navbar-reset"><g></g></svg>
                 </div>
             </div>
         </div>

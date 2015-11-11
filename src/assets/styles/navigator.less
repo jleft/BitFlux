@@ -1,33 +1,52 @@
-#navbar-container {
-  min-height: @navigator-height;
+#navbar-row {
+  #navbar-container {
+    min-height: @navigator-height;
 
-  .extent {
-    fill: @navigator-extent-colour;
-    stroke: @navigator-selection-border-colour;
-    fill-opacity: 0.125;
-    shape-rendering: crispEdges;
-  }
+    .extent {
+      fill: @navigator-extent-colour;
+      stroke: @navigator-selection-border-colour;
+      fill-opacity: 0.125;
+      shape-rendering: crispEdges;
+    }
 
-  .background {
-    fill: @navigator-background-colour;
-    stroke: @gridline-colour;
-    stroke-width: 3px;
-  }
+    .background {
+      fill: @navigator-background-colour;
+      stroke: @gridline-colour;
+      stroke-width: 3px;
+    }
 
-  .plot-area {
-    .multi {
-      .area {
-        fill: @gridline-colour;
+    .plot-area {
+      .multi {
+        .area {
+          fill: @gridline-colour;
+        }
+        path {
+          stroke: @navigator-colour;
+          stroke-width: @navigator-stroke;
+        }
       }
-      path {
-        stroke: @navigator-colour;
-        stroke-width: @navigator-stroke;
-      }
+    }
+
+    text {
+      font-size: @font-size-base;
+      fill: @font-colour;
     }
   }
 
-  text {
-    font-size: @font-size-base;
-    fill: @font-colour;
+  #navbar-reset {
+    stroke: @primary-white;
+    width: 24px;
+    height: 40px;
+    opacity: .199;
+    fill-rule: evenodd;
+
+    .reset-button-inactive {
+      fill: none;
+    }
+
+    .reset-button-active {
+      fill: @primary-white;
+      cursor: pointer;
+    }
   }
 }

@@ -1,0 +1,51 @@
+diff --git a/src/assets/js/chart/nav.js b/src/assets/js/chart/nav.js
+index 6b110d9..23b96f4 100644
+--- a/src/assets/js/chart/nav.js
++++ b/src/assets/js/chart/nav.js
+@@ -9,8 +9,8 @@
+         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
+             .yTicks(0)
+             .margin({
+-                    bottom: 30
+-                });
++                bottom: 40
++            });
+ 
+         var viewScale = fc.scale.dateTime();
+ 
+@@ -36,10 +36,14 @@
+             var navbarReset = selection.select('#navbar-reset');
+             var model = navbarContainer.datum();
+ 
++            navbarContainer.style('margin-right', '0');
++
+             viewScale.domain(model.viewDomain);
+             navbarReset
++                .style('margin-right', '21')
++                .style('margin-left', '15')
++                .style('margin-top', '10')
+                 .select('g')
+-                .attr('transform', 'translate(18,16)')
+                 .on('click', function() { dispatch[sc.event.resetToLatest](); })
+                 .attr('xmlns', 'http://www.w3.org/2000/svg')
+                 .classed('reset-button-inactive', model.trackingLatest)
+diff --git a/src/assets/styles/axis.less b/src/assets/styles/axis.less
+index a1e265c..f02c5aa 100644
+--- a/src/assets/styles/axis.less
++++ b/src/assets/styles/axis.less
+@@ -26,6 +26,15 @@
+   }
+ }
+ 
++.axis-adapter {
++  .domain {
++    stroke: @gridline-colour;
++  }
++  path {
++    stroke: @gridline-colour;
++  }
++}
++
+ .y-axis {
+   .tick text {
+     font-size: @font-size-base;
