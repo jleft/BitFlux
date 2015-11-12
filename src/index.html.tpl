@@ -27,26 +27,18 @@
     <div class="row row-offcanvas-right primary-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
             <div id="legend"></div>
-            <svg id="charts-container" layout-style="flexDirection: column">
-                <g id="primary-row" layout-style="flex: 5; flexDirection: row" >
-                    <svg id="primary-container" layout-style="flex: 1"></svg>
-                </g>
-                <g class="secondary-row" layout-style="flex: 1; flexDirection: row">
-                    <svg class="secondary-container" layout-style="flex: 1"></svg>
-                </g>
-                <g class="secondary-row" layout-style="flex: 1; flexDirection: row">
-                    <svg class="secondary-container" layout-style="flex: 1"></svg>
-                </g>
-                <g class="secondary-row" layout-style="flex: 1; flexDirection: row">
-                    <svg class="secondary-container" layout-style="flex: 1"></svg>
-                </g>
-                <g id="x-axis-row" layout-style="height: 20; flexDirection: row" >
-                    <svg id="x-axis-container" layout-style="flex: 1"></svg>
-                </g>
-                <g id="navbar-row" layout-style="minHeight: 100; flexDirection: row">
-                    <svg id="navbar-container" layout-style="flex: 1"></svg>
-                </g>
-            </svg>
+            <div id="charts-container">
+                <svg id="primary-container"></svg>
+                <svg class="secondary-container"></svg>
+                <svg class="secondary-container"></svg>
+                <svg class="secondary-container"></svg>
+                <div id="x-axis-row">
+                    <svg id="x-axis-container"></svg>
+                </div>
+                <div id="navbar-row">
+                    <svg id="navbar-container"></svg>
+                </div>
+            </div>
         </div>
         <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
             <div class="series-buttons btn-group"></div>

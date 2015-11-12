@@ -40,6 +40,10 @@
 
         d3.rebind(macd, dispatch, 'on');
 
+        macd.dimensionChanged = function(container) {
+            chart.dimensionChanged(container);
+        };
+
         return macd;
     };
 })(d3, fc, sc);

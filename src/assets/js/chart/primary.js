@@ -77,7 +77,7 @@
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
-
+        var zoomWidth;
 
         var crosshairData = [];
         var crosshair = fc.tool.crosshair()
@@ -159,14 +159,13 @@
 
         function primary(selection) {
             var model = selection.datum();
-            currentSeries = model.series;
-            currentYValueAccessor = model.yValueAccessor.option;
-            currentIndicators = model.indicators;
+
+            if (model.metaChanged) {
+                metadataChanged(model);
+            }
 
             primaryChart.xDomain(model.viewDomain);
 
-            updateYValueAccessorUsed();
-            updateMultiSeries(multi.series);
             crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
 
             movingAverage(model.data);
@@ -182,8 +181,7 @@
             // Find current tick values and add close price to this list, then set it explicitly below
             var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
             var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
-            primaryChart.yTickFormat(model.product.priceFormat)
-                .yTickValues(tickValues)
+            primaryChart.yTickValues(tickValues)
                 .yDecorate(function(s) {
                     s.selectAll('.tick')
                         .filter(function(d) { return d === latestPrice; })
@@ -198,17 +196,34 @@
             primaryChart.plotArea(multi);
             selection.call(primaryChart);
 
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(zoomWidth)
                 .scale(xScale)
                 .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch[sc.event.viewChange](domain);
                 });
+
             selection.select('.plot-area')
                 .call(zoom);
         }
 
         d3.rebind(primary, dispatch, 'on');
+
+        // Call when the main layout is modified
+        primary.dimensionChanged = function(container) {
+            zoomWidth = parseInt(container.style('width')) - yAxisWidth;
+        };
+
+        // Call when what to display on the chart is modified (ie series, options)
+        var metadataChanged = function(model) {
+            currentSeries = model.series;
+            currentYValueAccessor = model.yValueAccessor.option;
+            currentIndicators = model.indicators;
+            updateYValueAccessorUsed();
+            updateMultiSeries(multi.series);
+            primaryChart.yTickFormat(model.product.priceFormat);
+            model.metaChanged = false;
+        };
 
         return primary;
     };

@@ -5,7 +5,10 @@
         var dispatch = d3.dispatch(sc.event.viewChange);
 
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
-            .yTicks(0);
+            .yTicks(0)
+            .margin({
+                    bottom: 30
+                });
 
         var viewScale = fc.scale.dateTime();
 
@@ -24,12 +27,12 @@
                 }
                 return this.data;
             });
+        var layoutWidth;
 
         function nav(selection) {
             var model = selection.datum();
 
-            viewScale.domain(model.viewDomain)
-                .range([0, selection.node().getAttribute('layout-width')]);
+            viewScale.domain(model.viewDomain);
 
             var filteredData = sc.util.domain.filterDataInDateRange(
                 fc.util.extent().fields('date')(model.data),
@@ -56,7 +59,7 @@
             selection.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(layoutWidth)
                 .scale(viewScale)
                 .trackingLatest(model.trackingLatest)
                 .allowPan(false)
@@ -64,10 +67,15 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            selection.call(zoom);
+            selection.select('.plot-area').call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
+
+        nav.dimensionChanged = function(container) {
+            layoutWidth = parseInt(container.style('width'));
+            viewScale.range([0, layoutWidth]);
+        };
 
         return nav;
     };

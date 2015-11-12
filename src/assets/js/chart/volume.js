@@ -29,6 +29,10 @@
 
         d3.rebind(volume, dispatch, 'on');
 
+        volume.dimensionChanged = function(container) {
+            chart.dimensionChanged(container);
+        };
+
         return volume;
     };
 })(d3, fc, sc);

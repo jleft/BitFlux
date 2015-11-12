@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.behavior.zoom = function() {
+    sc.behavior.zoom = function(width) {
 
         var dispatch = d3.dispatch('zoom');
 
@@ -37,7 +37,6 @@
 
             var xExtent = fc.util.extent()
                 .fields('date')(selection.datum().data);
-            var width = selection.attr('layout-width');
 
             zoomBehavior.x(scale)
                 .on('zoom', function() {

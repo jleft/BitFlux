@@ -28,6 +28,10 @@
 
         d3.rebind(rsi, dispatch, 'on');
 
+        rsi.dimensionChanged = function(container) {
+            chart.dimensionChanged(container);
+        };
+
         return rsi;
     };
 })(d3, fc, sc);
