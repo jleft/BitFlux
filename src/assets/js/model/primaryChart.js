@@ -6,7 +6,7 @@
             data: [],
             trackingLatest: true,
             viewDomain: [],
-            metaChanged: false
+            metaChanged: true
         };
 
         var _product = initialProduct;
