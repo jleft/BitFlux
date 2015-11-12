@@ -117,11 +117,7 @@
             }
         }
 
-        var fcRender = fc.util.render(renderInternal);
-
-        function render() {
-            fcRender();
-        }
+        var render = fc.util.render(renderInternal);
 
         var layoutRedrawnInNextRender = true;
 
