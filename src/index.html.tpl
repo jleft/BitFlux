@@ -13,8 +13,8 @@
 <div class="container" id="app-container">
     <div class="row row-offcanvas-right head-menu head-row">
         <div class="col-xs-12 col-sm-12 col-md-9 head-sub-row">
-            <div id="product-dropdown" class="dropdown">
-                <button id="product-dropdown-button" class="dropdown-toggle" type="button" data-toggle="dropdown"></button>
+            <div id="product-dropdown" class="dropdown product-dropdown">
+                <button id="product-dropdown-button" class="dropdown-toggle product-dropdown-toggle" type="button" data-toggle="dropdown"></button>
             </div>
             <div id="period-selector"></div>
         </div>
@@ -23,10 +23,17 @@
     </div>
     <div class="row row-offcanvas-right primary-row">
         <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+            <div id="selectors">
+                <div id="series-dropdown" class="dropdown selector-dropdown">
+                    <button id="series-dropdown-button" class="dropdown-toggle selector-dropdown-toggle" type="button" data-toggle="dropdown"></button>
+                </div>
+                <div id="indicator-dropdown" class="dropdown selector-dropdown" list-icons>
+                    <button id="indicator-dropdown-button" class="dropdown-toggle selector-dropdown-toggle" type="button" data-toggle="dropdown"></button>
+                </div>
+            </div>
             <div id="legend"></div>
             <div id="charts-container">
                 <svg id="primary-container"></svg>
-                <svg class="secondary-container"></svg>
                 <svg class="secondary-container"></svg>
                 <svg class="secondary-container"></svg>
                 <div id="x-axis-row">
@@ -37,12 +44,6 @@
                     <svg id="navbar-reset"></svg>
                 </div>
             </div>
-        </div>
-        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
-            <div class="series-buttons btn-group"></div>
-            <div class="y-value-accessor-buttons btn-group"></div>
-            <div class="indicator-buttons btn-group"></div>
-            <div class="secondary-chart-buttons btn-group"></div>
         </div>
     </div>
 </div>
