@@ -119,24 +119,21 @@
 
         var fcRender = fc.util.render(renderInternal);
 
-        function render(redrawLayout) {
-            if (redrawLayout) {
-                layoutRedrawnInNextRender = true;
-            }
-
+        function render() {
             fcRender();
         }
 
         var layoutRedrawnInNextRender = true;
 
         function updateLayout() {
+            layoutRedrawnInNextRender = true;
             sc.util.layout(containers, charts);
         }
 
         function initialiseResize() {
             d3.select(window).on('resize', function() {
                 updateLayout();
-                render(true);
+                render();
             });
         }
 
@@ -153,12 +150,12 @@
             primaryChartModel.trackingLatest = trackingLatest;
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
-            render(false);
+            render();
         }
 
         function onCrosshairChange(dataPoint) {
             legendModel.data = dataPoint;
-            render(false);
+            render();
         }
 
         function resetToLatest() {
@@ -237,12 +234,12 @@
                     } else if (product.option === generated) {
                         dataInterface.generateDailyData();
                     }
-                    render(false);
+                    render();
                 })
                 .on(sc.event.dataPeriodChange, function(period) {
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
-                    render(false);
+                    render();
                 })
                 .on(sc.event.resetToLatest, resetToLatest)
                 .on(sc.event.toggleSlideout, function() {
@@ -263,19 +260,19 @@
                 .on(sc.event.primaryChartSeriesChange, function(series) {
                     primaryChartModel.series = series;
                     selectOption(series, sideMenuModel.seriesOptions);
-                    render(false);
+                    render();
                 })
                 .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
                     primaryChartModel.yValueAccessor = yValueAccessor;
                     selectOption(yValueAccessor, sideMenuModel.yValueAccessorOptions);
-                    render(false);
+                    render();
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(indicator) {
                     indicator.isSelected = !indicator.isSelected;
                     primaryChartModel.indicators = sideMenuModel.indicatorOptions.filter(function(option) {
                         return option.isSelected;
                     });
-                    render(false);
+                    render();
                 })
                 .on(sc.event.secondaryChartChange, function(chart) {
                     chart.isSelected = !chart.isSelected;
@@ -289,7 +286,7 @@
                     // TODO: Remove .remove! (could a secondary chart group component manage this?).
                     containers.secondaries.selectAll('*').remove();
                     updateLayout();
-                    render(true);
+                    render();
                 });
         }
 
