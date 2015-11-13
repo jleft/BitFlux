@@ -8,4 +8,11 @@
         fill-opacity: @crosshair-circle-opacity;
         stroke: darken(@crosshair-circle-colour, 20%);
     }
+  .crosshairHidden {
+    visibility: hidden;
+  }
+  .crosshairShown {
+    stroke: @crosshair-colour !important;     // Important avoids the tick mark css overwriting
+    stroke-dasharray: 0;
+  }
 }
