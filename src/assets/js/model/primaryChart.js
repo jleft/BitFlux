@@ -6,7 +6,7 @@
             data: [],
             trackingLatest: true,
             viewDomain: [],
-            metaChanged: true
+            selectorsChanged: true
         };
 
         var _product = initialProduct;
@@ -14,7 +14,7 @@
             get: function() { return _product; },
             set: function(newValue) {
                 _product = newValue;
-                model.metaChanged = true;
+                model.selectorsChanged = true;
             }
         });
 
@@ -23,7 +23,7 @@
             get: function() { return _series; },
             set: function(newValue) {
                 _series = newValue;
-                model.metaChanged = true;
+                model.selectorsChanged = true;
             }
         });
 
@@ -32,7 +32,7 @@
             get: function() { return _yValueAccessor; },
             set: function(newValue) {
                 _yValueAccessor = newValue;
-                model.metaChanged = true;
+                model.selectorsChanged = true;
             }
         });
 
@@ -41,7 +41,7 @@
             get: function() { return _indicators; },
             set: function(newValue) {
                 _indicators = newValue;
-                model.metaChanged = true;
+                model.selectorsChanged = true;
             }
         });
 

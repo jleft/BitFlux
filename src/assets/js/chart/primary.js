@@ -157,11 +157,22 @@
             }
         }
 
+        // Call when what to display on the chart is modified (ie series, options)
+        var selectorsChanged = function(model) {
+            currentSeries = model.series;
+            currentYValueAccessor = model.yValueAccessor.option;
+            currentIndicators = model.indicators;
+            updateYValueAccessorUsed();
+            updateMultiSeries(multi.series);
+            primaryChart.yTickFormat(model.product.priceFormat);
+            model.selectorsChanged = false;
+        };
+
         function primary(selection) {
             var model = selection.datum();
 
-            if (model.metaChanged) {
-                metadataChanged(model);
+            if (model.selectorsChanged) {
+                selectorsChanged(model);
             }
 
             primaryChart.xDomain(model.viewDomain);
@@ -212,17 +223,6 @@
         // Call when the main layout is modified
         primary.dimensionChanged = function(container) {
             zoomWidth = parseInt(container.style('width')) - yAxisWidth;
-        };
-
-        // Call when what to display on the chart is modified (ie series, options)
-        var metadataChanged = function(model) {
-            currentSeries = model.series;
-            currentYValueAccessor = model.yValueAccessor.option;
-            currentIndicators = model.indicators;
-            updateYValueAccessorUsed();
-            updateMultiSeries(multi.series);
-            primaryChart.yTickFormat(model.product.priceFormat);
-            model.metaChanged = false;
         };
 
         return primary;
