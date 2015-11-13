@@ -22,27 +22,30 @@
         var navMulti = fc.series.multi()
             .series([area, line, brush])
             .decorate(function(selection) {
-                //The following selections append on the navigator handles to the navigator bars
-                selection.select('.e')
+                selection.enter()
+                    .select('.e')
                     .append('circle')
                     .attr('cy', 34)
                     .attr('r', 7)
-                    .classed('outer-handle', true);
-                selection.select('.e')
+                    .attr('class', 'outer-handle');
+                selection.enter()
+                    .select('.e')
                     .append('circle')
                     .attr('cy', 34)
                     .attr('r', 4)
-                    .classed('inner-handle', true);
-                selection.select('.w')
+                    .attr('class', 'inner-handle');
+                selection.enter()
+                    .select('.w')
                     .append('circle')
                     .attr('cy', 34)
                     .attr('r', 7)
-                    .classed('outer-handle', true);
-                selection.select('.w')
+                    .attr('class', 'outer-handle');
+                selection.enter()
+                    .select('.w')
                     .append('circle')
                     .attr('cy', 34)
                     .attr('r', 4)
-                    .classed('inner-handle', true);
+                    .attr('class', 'inner-handle');
             })
             .mapping(function(series) {
                 if (series === brush) {
@@ -50,7 +53,8 @@
                         [viewScale.domain()[0], navChart.yDomain()[0]],
                         [viewScale.domain()[1], navChart.yDomain()[1]]
                     ]);
-                } else {        // This stops the brush data being overwritten by the point data
+                } else {
+                    // This stops the brush data being overwritten by the point data
                     return this.data;
                 }
             });

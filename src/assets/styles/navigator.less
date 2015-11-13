@@ -7,8 +7,7 @@
       height: @navigator-extent-height;
       transform: translateY(1.25px);
       fill: @navigator-extent-colour;
-      stroke: @navigator-selection-border-colour;
-      stroke-opacity: 0;
+      stroke: none;
       fill-opacity: 0.125;
       shape-rendering: crispEdges;
     }
@@ -30,7 +29,7 @@
         }
       }
       .n, .s, .ne, .nw, .se, .sw {
-        cursor: default !important;   // Removed cursor set by brush. Gave false impression of resizing ability
+        display: none;   // Removed cursor set by brush. Gave false impression of resizing ability
       }
       .e, .w {
         > rect {
@@ -38,19 +37,17 @@
           height: @navigator-handle-height;
           fill: @navigator-stroke-colour;
           stroke: @navigator-stroke-colour;
-          stroke-opacity: 0.75;
           transform: translate(2px, 2px);
           visibility: visible !important;
         }
-      }
-      .outer-handle {
-        stroke: @primary-white;
-        stroke-width: @stroke-width;
-        fill: @primary-dark-blue;
-      }
-      .inner-handle {
-        stroke: @primary-white;
-        fill: @primary-white;
+        .outer-handle {
+          stroke: @primary-white;
+          fill: @primary-dark-blue;
+        }
+        .inner-handle {
+          stroke: @primary-white;
+          fill: @primary-white;
+        }
       }
     }
 
