@@ -19,15 +19,40 @@
         var line = fc.series.line()
             .yValue(function(d) { return d.close; });
         var brush = d3.svg.brush();
-        var navMulti = fc.series.multi().series([area, line, brush])
+        var navMulti = fc.series.multi()
+            .series([area, line, brush])
+            .decorate(function(selection) {
+                //The following selections append on the navigator handles to the navigator bars
+                selection.select('.e')
+                    .append('circle')
+                    .attr('cy', 34)
+                    .attr('r', 7)
+                    .classed('outer-handle', true);
+                selection.select('.e')
+                    .append('circle')
+                    .attr('cy', 34)
+                    .attr('r', 4)
+                    .classed('inner-handle', true);
+                selection.select('.w')
+                    .append('circle')
+                    .attr('cy', 34)
+                    .attr('r', 7)
+                    .classed('outer-handle', true);
+                selection.select('.w')
+                    .append('circle')
+                    .attr('cy', 34)
+                    .attr('r', 4)
+                    .classed('inner-handle', true);
+            })
             .mapping(function(series) {
                 if (series === brush) {
                     brush.extent([
                         [viewScale.domain()[0], navChart.yDomain()[0]],
                         [viewScale.domain()[1], navChart.yDomain()[1]]
                     ]);
+                } else {        // This stops the brush data being overwritten by the point data
+                    return this.data;
                 }
-                return this.data;
             });
         var layoutWidth;
 
