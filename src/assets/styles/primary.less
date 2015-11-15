@@ -61,5 +61,26 @@
     stroke-width: @stroke-width;
   }
 
+  .crosshair {
+    .point {
+      fill: @crosshair-circle-colour;
+      fill-opacity: @crosshair-circle-opacity;
+      stroke: darken(@crosshair-circle-colour, 20%);
+    }
+    .annotation > line {
+      stroke: @crosshair-line-colour;
+      stroke-dasharray: 3, 10;
+    }
+    &.band {
+      .point {
+        .hidden;
+      }
+      .annotation > line {
+        stroke: @crosshair-colour;
+        stroke-dasharray: 0;
+      }
+    }
+  }
+
   background-color: @background-colour;
 }

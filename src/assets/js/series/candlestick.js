@@ -52,7 +52,6 @@
             xScale = x;
             return candlestick;
         };
-
         candlestick.yScale = function(x) {
             if (!arguments.length) {
                 return yScale;
@@ -74,7 +73,6 @@
             yLowValue = x;
             return candlestick;
         };
-
         candlestick.yHighValue = function(x) {
             if (!arguments.length) {
                 return yHighValue;
@@ -88,6 +86,9 @@
             }
             yCloseValue = x;
             return candlestick;
+        };
+        candlestick.width = function(data) {
+            return barWidth(data.map(xValueScaled));
         };
 
         return candlestick;

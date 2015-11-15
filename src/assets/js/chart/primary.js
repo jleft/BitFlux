@@ -168,6 +168,48 @@
             model.selectorsChanged = false;
         };
 
+        function bandCrosshair(data) {
+            var width = currentSeries.option.width(data);
+
+            crosshair.decorate(function(selection) {
+                selection.enter()
+                    .classed('band', true);
+
+                selection.enter()
+                    .selectAll('line')
+                    // TODO: hide horizontal annotation in styles, when classes are added in d3fc
+                    .classed('hidden', function() {
+                        if (this.hasAttribute('x2')) {
+                            return true;
+                        } else if (this.hasAttribute('y2')) {
+                            return false;
+                        }
+                    });
+
+                selection.selectAll('line')
+                    .style('stroke-width', function() {
+                        if (this.hasAttribute('y2')) {
+                            return width;
+                        }
+                    });
+            });
+        }
+
+        function lineCrosshair(selection) {
+            selection.enter()
+                .classed('band', false)
+                .selectAll('line')
+                .style('stroke-width', null);
+        }
+
+        function updateCrosshairDecorate(data) {
+            if (currentSeries.valueString === 'candlestick' || currentSeries.valueString === 'ohlc') {
+                bandCrosshair(data);
+            } else {
+                crosshair.decorate(lineCrosshair);
+            }
+        }
+
         function primary(selection) {
             var model = selection.datum();
 
@@ -178,6 +220,7 @@
             primaryChart.xDomain(model.viewDomain);
 
             crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
+            updateCrosshairDecorate(model.data);
 
             movingAverage(model.data);
             bollingerAlgorithm(model.data);
