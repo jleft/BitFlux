@@ -168,6 +168,48 @@
             model.selectorsChanged = false;
         };
 
+        function bandCrosshair(data) {
+            var width = currentSeries.option.width(data);
+
+            crosshair.decorate(function(selection) {
+                selection.enter()
+                    .classed('band', true);
+
+                selection.enter()
+                    .selectAll('line')
+                    // TODO: hide horizontal annotation in styles, when classes are added in d3fc
+                    .classed('hidden', function() {
+                        if (this.hasAttribute('x2')) {
+                            return true;
+                        } else if (this.hasAttribute('y2')) {
+                            return false;
+                        }
+                    });
+
+                selection.selectAll('line')
+                    .style('stroke-width', function() {
+                        if (this.hasAttribute('y2')) {
+                            return width;
+                        }
+                    });
+            });
+        }
+
+        function lineCrosshair(selection) {
+            selection.enter()
+                .classed('band', false)
+                .selectAll('line')
+                .style('stroke-width', null);
+        }
+
+        function updateCrosshairDecorate(data) {
+            if (currentSeries.valueString === 'candlestick' || currentSeries.valueString === 'ohlc') {
+                bandCrosshair(data);
+            } else {
+                crosshair.decorate(lineCrosshair);
+            }
+        }
+
         function primary(selection) {
             var model = selection.datum();
 
@@ -178,63 +220,10 @@
             primaryChart.xDomain(model.viewDomain);
 
             crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
+            updateCrosshairDecorate(model.data);
 
             movingAverage(model.data);
             bollingerAlgorithm(model.data);
-
-            // Update the crosshair depending on the series displayed
-            if (currentSeries.valueString === 'candlestick' || currentSeries.valueString === 'ohlc') {
-                //If the candlestick or ohlc selected, updated the crosshair to add classes to reflect UX designs
-                selection.each(function(data) {
-                    var barWidth = fc.util.fractionalBarWidth(0.75);
-                    var xValue = function(d) { return d.date; };
-                    var xValueScaled = function(d, i) { return xScale(xValue(d, i)); };
-                    var width = (barWidth(data.data.map(xValueScaled))) + 2;
-
-                    crosshair.decorate(function(s) {
-                        s.enter()
-                            .selectAll('line')
-                            .classed('crosshairHidden', function() {
-                                if (this.hasAttribute('x2')) {
-                                    return true;
-                                } else if (this.hasAttribute('y2')) {
-                                    return false;
-                                }
-                            })
-                            .classed('crosshairShown', function() {
-                                if (this.hasAttribute('x2')) {
-                                    return false;
-                                } else if (this.hasAttribute('y2')) {
-                                    return true;
-                                }
-                            });
-
-                        s.selectAll('line')
-                            .style('stroke-width', function() {
-                            if (this.hasAttribute('y2')) {
-                                return width;
-                            }
-                        });
-
-                        s.enter()
-                            .select('.point')
-                            .style('visibility', 'hidden');
-                    });
-                });
-            } else {
-                // If line, point, or area series selected, remove the classes added
-                crosshair.decorate(function(s) {
-                    s.enter()
-                        .selectAll('line')
-                        .classed('crosshairHidden', false)
-                        .classed('crosshairShown', false)
-                        .style('stroke-width', '1px');
-
-                    s.enter()
-                        .select('.point')
-                        .style('visibility', 'shown');
-                });
-            }
 
             // Scale y axis
             var visibleData = sc.util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
