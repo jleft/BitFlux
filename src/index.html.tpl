@@ -34,7 +34,7 @@
                 </div>
                 <div id="navbar-row">
                     <svg id="navbar-container"></svg>
-                    <svg id="navbar-reset"><g></g></svg>
+                    <svg id="navbar-reset"></svg>
                 </div>
             </div>
         </div>

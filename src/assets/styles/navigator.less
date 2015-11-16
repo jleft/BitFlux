@@ -1,6 +1,7 @@
 #navbar-row {
   #navbar-container {
     min-height: @navigator-height;
+    margin-right: 0 !important;
 
     .extent {
       fill: @navigator-extent-colour;
@@ -35,14 +36,11 @@
 
   #navbar-reset {
     stroke: @primary-white;
-    width: 24px;
+    flex: 0 0 24px;
     height: 40px;
-    opacity: .199;
-    fill-rule: evenodd;
-
-    .reset-button-inactive {
-      fill: none;
-    }
+    opacity: .2;
+    margin: 10px 21px 0 15px;
+    fill: none;
 
     .reset-button-active {
       fill: @primary-white;

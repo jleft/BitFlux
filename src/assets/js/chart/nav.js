@@ -36,24 +36,17 @@
             var navbarReset = selection.select('#navbar-reset');
             var model = navbarContainer.datum();
 
-            navbarContainer.style('margin-right', '0');
-
             viewScale.domain(model.viewDomain);
-            navbarReset
-                .style('margin-right', '21')
-                .style('margin-left', '15')
-                .style('margin-top', '10')
-                .select('g')
-                .on('click', function() { dispatch[sc.event.resetToLatest](); })
-                .attr('xmlns', 'http://www.w3.org/2000/svg')
+
+            navbarReset.selectAll('g')
+                .data([model])
                 .classed('reset-button-inactive', model.trackingLatest)
                 .classed('reset-button-active', !model.trackingLatest)
-                .html(function() {
-                    return '<path d="M1.5 1.5h13.438L23 20.218 14.937 38H1.5l9.406-17.782L1.5 1.5z"></path>';
-                });
-
-            viewScale.domain(model.viewDomain)
-                .range([0, navbarContainer.node().getAttribute('layout-width')]);
+                .enter()
+                .append('g')
+                .on('click', function() { dispatch[sc.event.resetToLatest](); })
+                .append('path')
+                .attr('d', 'M1.5 1.5h13.438L23 20.218 14.937 38H1.5l9.406-17.782L1.5 1.5z');
 
             var filteredData = sc.util.domain.filterDataInDateRange(
                 fc.util.extent().fields('date')(model.data),
@@ -89,7 +82,6 @@
                 });
 
             navbarContainer.select('.plot-area').call(zoom);
-            navbarContainer.call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
