@@ -38,15 +38,17 @@
 
             viewScale.domain(model.viewDomain);
 
-            navbarReset.selectAll('g')
-                .data([model])
-                .classed('reset-button-inactive', model.trackingLatest)
-                .classed('reset-button-active', !model.trackingLatest)
-                .enter()
+            var resetButton = navbarReset.selectAll('g')
+                .data([model]);
+
+            resetButton.enter()
                 .append('g')
+                .attr('class', 'reset-button')
                 .on('click', function() { dispatch[sc.event.resetToLatest](); })
                 .append('path')
                 .attr('d', 'M1.5 1.5h13.438L23 20.218 14.937 38H1.5l9.406-17.782L1.5 1.5z');
+
+            resetButton.classed('active', !model.trackingLatest);
 
             var filteredData = sc.util.domain.filterDataInDateRange(
                 fc.util.extent().fields('date')(model.data),
