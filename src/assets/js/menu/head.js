@@ -4,7 +4,6 @@
     sc.menu.head = function() {
 
         var dispatch = d3.dispatch(
-            sc.event.resetToLatest,
             sc.event.toggleSlideout,
             sc.event.dataProductChange,
             sc.event.dataPeriodChange);
@@ -39,11 +38,6 @@
                         selectedIndex: periods.indexOf(model.selectedPeriod)
                     })
                     .call(dataPeriodSelector);
-
-                selection.select('#reset-button')
-                    .on('click', function() {
-                        dispatch[sc.event.resetToLatest]();
-                    });
 
                 selection.select('#toggle-button')
                     .on('click', function() {

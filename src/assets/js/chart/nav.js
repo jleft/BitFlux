@@ -2,13 +2,15 @@
     'use strict';
 
     sc.chart.nav = function() {
-        var dispatch = d3.dispatch(sc.event.viewChange);
+        var dispatch = d3.dispatch(
+            sc.event.viewChange,
+            sc.event.resetToLatest);
 
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
             .margin({
-                    bottom: 30
-                });
+                bottom: 40
+            });
 
         var viewScale = fc.scale.dateTime();
 
@@ -30,9 +32,23 @@
         var layoutWidth;
 
         function nav(selection) {
-            var model = selection.datum();
+            var navbarContainer = selection.select('#navbar-container');
+            var navbarReset = selection.select('#navbar-reset');
+            var model = navbarContainer.datum();
 
             viewScale.domain(model.viewDomain);
+
+            var resetButton = navbarReset.selectAll('g')
+                .data([model]);
+
+            resetButton.enter()
+                .append('g')
+                .attr('class', 'reset-button')
+                .on('click', function() { dispatch[sc.event.resetToLatest](); })
+                .append('path')
+                .attr('d', 'M1.5 1.5h13.438L23 20.218 14.937 38H1.5l9.406-17.782L1.5 1.5z');
+
+            resetButton.classed('active', !model.trackingLatest);
 
             var filteredData = sc.util.domain.filterDataInDateRange(
                 fc.util.extent().fields('date')(model.data),
@@ -56,7 +72,7 @@
             });
 
             navChart.plotArea(navMulti);
-            selection.call(navChart);
+            navbarContainer.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
             var zoom = sc.behavior.zoom(layoutWidth)
@@ -67,7 +83,7 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            selection.select('.plot-area').call(zoom);
+            navbarContainer.select('.plot-area').call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');

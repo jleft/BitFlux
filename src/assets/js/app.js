@@ -13,7 +13,7 @@
             primary: chartsContainer.select('#primary-container'),
             secondaries: chartsContainer.selectAll('.secondary-container'),
             xAxis: chartsContainer.select('#x-axis-container'),
-            navbar: chartsContainer.select('#navbar-container'),
+            navbar: chartsContainer.select('#navbar-row'),
             legend: appContainer.select('#legend'),
             suspendLayout: function(value) {
                 var self = this;
@@ -189,7 +189,8 @@
 
         function initialiseNav() {
             return sc.chart.nav()
-                .on(sc.event.viewChange, onViewChange);
+                .on(sc.event.viewChange, onViewChange)
+                .on(sc.event.resetToLatest, resetToLatest);
         }
 
         function initialiseDataInterface() {
@@ -237,7 +238,6 @@
                     dataInterface(period.option.seconds);
                     render();
                 })
-                .on(sc.event.resetToLatest, resetToLatest)
                 .on(sc.event.toggleSlideout, function() {
                     containers.app.selectAll('.row-offcanvas-right').classed('active',
                         !containers.app.selectAll('.row-offcanvas-right').classed('active'));
