@@ -1,10 +1,21 @@
-.closeLine {
-  text {
-    fill: @annotation-text-colour;
-  }
+.y-axis {
+  .closeLine {
+    text {
+      fill: @font-colour;
+      font-size: @font-size-base;
+      font-weight: @font-weight-base;
+      line-height: @line-height-base;
+    }
 
-  path {
-    stroke: @primary-blue;
-    fill: @primary-blue;
+    &.tick > path {
+      stroke: @closing-colour;
+      fill: @closing-colour;
+    }
+  }
+}
+
+.plot-area {
+  .annotation > line {
+    stroke: @closing-colour;
   }
 }

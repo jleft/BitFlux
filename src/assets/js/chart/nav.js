@@ -2,15 +2,14 @@
     'use strict';
 
     sc.chart.nav = function() {
-        var dispatch = d3.dispatch(sc.event.viewChange);
+        var dispatch = d3.dispatch(
+            sc.event.viewChange,
+            sc.event.resetToLatest);
 
-        var navChart = fc.chart.cartesianChart(fc.scale.dateTime(), d3.scale.linear())
+        var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
             .margin({
-                top: 0,
-                left: 0,
-                bottom: 20,
-                right: 0
+                bottom: 40
             });
 
         var viewScale = fc.scale.dateTime();
@@ -30,18 +29,34 @@
                 }
                 return this.data;
             });
+        var layoutWidth;
 
         function nav(selection) {
-            var model = selection.datum();
+            var navbarContainer = selection.select('#navbar-container');
+            var navbarReset = selection.select('#navbar-reset');
+            var model = navbarContainer.datum();
 
-            viewScale.domain(model.viewDomain)
-                .range([0, fc.util.innerDimensions(selection.node()).width]);
+            viewScale.domain(model.viewDomain);
 
-            var yExtent = fc.util.extent(
-                sc.util.domain.filterDataInDateRange(fc.util.extent(model.data, 'date'), model.data),
-                ['low', 'high']);
+            var resetButton = navbarReset.selectAll('g')
+                .data([model]);
 
-            navChart.xDomain(fc.util.extent(model.data, 'date'))
+            resetButton.enter()
+                .append('g')
+                .attr('class', 'reset-button')
+                .on('click', function() { dispatch[sc.event.resetToLatest](); })
+                .append('path')
+                .attr('d', 'M1.5 1.5h13.438L23 20.218 14.937 38H1.5l9.406-17.782L1.5 1.5z');
+
+            resetButton.classed('active', !model.trackingLatest);
+
+            var filteredData = sc.util.domain.filterDataInDateRange(
+                fc.util.extent().fields('date')(model.data),
+                model.data);
+            var yExtent = fc.util.extent()
+                .fields(['low', 'high'])(filteredData);
+
+            navChart.xDomain(fc.util.extent().fields('date')(model.data))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
@@ -57,10 +72,10 @@
             });
 
             navChart.plotArea(navMulti);
-            selection.call(navChart);
+            navbarContainer.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(layoutWidth)
                 .scale(viewScale)
                 .trackingLatest(model.trackingLatest)
                 .allowPan(false)
@@ -68,10 +83,15 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            selection.call(zoom);
+            navbarContainer.select('.plot-area').call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
+
+        nav.dimensionChanged = function(container) {
+            layoutWidth = parseInt(container.style('width'));
+            viewScale.range([0, layoutWidth]);
+        };
 
         return nav;
     };

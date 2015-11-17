@@ -1,18 +1,26 @@
 #legend {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 10px;
-    background-color: fadeout(@legend-background-color, 25%);
-    font-size: @font-size-small;
-    color : @legend-font-color;
-    line-height: 1em;
-    font-family: @font-family-monospace;
-    th {
-        padding-right: 5px;
-        text-align: center;
-    }
-    td {
-        text-align: right;
-    }
+  position: absolute;
+  top: 1px;
+  right: ((@grid-gutter-width / 2) + @y-axis-width);
+  padding: 10px;
+  background-color: fadeout(@legend-background-colour, 25%);
+  font-size: @font-size-tiny;
+
+  span:nth-child(2) {
+    min-width: 70px;
+  }
+
+  .legendLabel, .legendValue {
+    display: inline-block
+  }
+
+  .legendLabel {
+    margin-right: 4px;
+    color: @legend-label-font-colour;
+  }
+
+  .legendValue {
+    min-width: 45px;
+    color: @legend-value-font-colour;
+  }
 }

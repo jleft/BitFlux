@@ -4,7 +4,6 @@
     sc.menu.head = function() {
 
         var dispatch = d3.dispatch(
-            sc.event.resetToLatest,
             sc.event.toggleSlideout,
             sc.event.dataProductChange,
             sc.event.dataPeriodChange);
@@ -14,8 +13,8 @@
                 dispatch[sc.event.dataProductChange](product);
             });
 
-        var dataPeriodDropdown = sc.menu.generator.dropdownGroup()
-            .on('optionChange', function(period) {
+        var dataPeriodSelector = sc.menu.generator.tabGroup()
+            .on('tabClick', function(period) {
                 dispatch[sc.event.dataPeriodChange](period);
             });
 
@@ -23,24 +22,22 @@
             selection.each(function(model) {
                 var selection = d3.select(this);
 
+                var products = model.products;
                 selection.select('#product-dropdown')
                     .datum({
-                        // TODO: No global model, use bound model instead.
-                        optionList: sc.model.products.map(sc.menu.productAdaptor),
-                        selectedIndex: sc.model.products.indexOf(sc.model.selectedProduct)
+                        options: products.map(sc.menu.productAdaptor),
+                        selectedIndex: products.indexOf(model.selectedProduct)
                     })
                     .call(dataProductDropdown);
 
-                var periods = sc.model.selectedProduct.getPeriods();
-                selection.select('#period-dropdown')
-                    .style('visibility', periods.length > 1 ? 'visible' : 'hidden') // TODO: get from model instead?
-                    .datum({optionList: periods.map(sc.menu.periodAdaptor)})
-                    .call(dataPeriodDropdown);
-
-                selection.select('#reset-button')
-                    .on('click', function() {
-                        dispatch[sc.event.resetToLatest]();
-                    });
+                var periods = model.selectedProduct.periods;
+                selection.select('#period-selector')
+                    .classed('hidden', periods.length <= 1) // TODO: get from model instead?
+                    .datum({
+                        options: periods.map(sc.menu.periodAdaptor),
+                        selectedIndex: periods.indexOf(model.selectedPeriod)
+                    })
+                    .call(dataPeriodSelector);
 
                 selection.select('#toggle-button')
                     .on('click', function() {

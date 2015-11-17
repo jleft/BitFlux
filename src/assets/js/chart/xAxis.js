@@ -2,17 +2,10 @@
     'use strict';
 
     sc.chart.xAxis = function() {
-
-        var xAxisHeight = 20;
         var xScale = fc.scale.dateTime();
         var xAxis = d3.svg.axis()
             .scale(xScale)
             .orient('bottom');
-
-        var dataJoin = fc.util.dataJoin()
-            .selector('g.x-axis')
-            .element('g')
-            .attr('class', 'x-axis');
 
         function preventTicksMoreFrequentThanPeriod(period) {
             var scaleTickSeconds = (xScale.ticks()[1] - xScale.ticks()[0]) / 1000;
@@ -24,24 +17,15 @@
         }
 
         function xAxisChart(selection) {
-            var xAxisContainer = dataJoin(selection, [selection.datum()])
-                .layout({
-                    position: 'absolute',
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    height: xAxisHeight
-                });
-
-            selection.layout();
-
-            xScale.range([0, xAxisContainer.layout('width')])
-                .domain(selection.datum().viewDomain);
-
-            preventTicksMoreFrequentThanPeriod(sc.model.selectedPeriod);
-
-            xAxisContainer.call(xAxis);
+            var model = selection.datum();
+            xScale.domain(model.viewDomain);
+            preventTicksMoreFrequentThanPeriod(model.period);
+            selection.call(xAxis);
         }
+
+        xAxisChart.dimensionChanged = function(container) {
+            xScale.range([0, parseInt(container.style('width'))]);
+        };
 
         return xAxisChart;
     };

@@ -6,13 +6,10 @@
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
         var trackingLatest = true;
-        var yAxisWidth = 45;
-
-        var foreground = sc.chart.foreground()
-            .rightMargin(yAxisWidth);
+        var yAxisWidth = 60;
 
         var multi = fc.series.multi();
-        var chart = fc.chart.cartesianChart(xScale, yScale)
+        var chart = fc.chart.cartesian(xScale, yScale)
             .plotArea(multi)
             .xTicks(0)
             .yOrient('right')
@@ -22,21 +19,21 @@
                 bottom: 0,
                 right: yAxisWidth
             });
+        var zoomWidth;
 
         function secondary(selection) {
             selection.each(function(data) {
                 var container = d3.select(this)
-                    .call(chart)
-                    .call(foreground);
+                    .call(chart);
 
-                var zoom = sc.behavior.zoom()
+                var zoom = sc.behavior.zoom(zoomWidth)
                     .scale(xScale)
                     .trackingLatest(trackingLatest)
                     .on('zoom', function(domain) {
                         dispatch[sc.event.viewChange](domain);
                     });
 
-                container.select('rect.foreground')
+                container.select('.plot-area-container')
                     .datum({data: selection.datum()})
                     .call(zoom);
             });
@@ -52,7 +49,11 @@
 
         d3.rebind(secondary, dispatch, 'on');
         d3.rebind(secondary, multi, 'series', 'mapping', 'decorate');
-        d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'xDomain', 'yDomain');
+        d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'yTicks', 'xDomain', 'yDomain');
+
+        secondary.dimensionChanged = function(container) {
+            zoomWidth = parseInt(container.style('width')) - yAxisWidth;
+        };
 
         return secondary;
     };

@@ -1,35 +1,45 @@
 (function(d3, fc, sc) {
     'use strict';
+    var renderedOnce = false;
 
-    sc.util.layout = function(container, secondaryCharts) {
-        var headRowHeight = parseInt(container.select('.head-row').style('height'), 10) +
-            parseInt(container.select('.head-row').style('padding-top'), 10) +
-            parseInt(container.select('.head-row').style('padding-bottom'), 10);
-        var navHeight = parseInt(container.select('.nav-row').style('height'), 10);
-        var xAxisHeight = parseInt(container.select('.x-axis-row').style('height'), 10);
+    sc.util.layout = function(containers, charts) {
 
-        var useableScreenHeight = window.innerHeight - headRowHeight - xAxisHeight - navHeight;
+        function getSecondaryContainer(i) {
+            return containers.secondaries.filter(function(d, i) {return i === iChart; });
+        }
 
         var secondaryChartsShown = 0;
-        for (var j = 0; j < secondaryCharts.length; j++) {
-            if (secondaryCharts[j]) {
+        for (var j = 0; j < charts.secondaries.length; j++) {
+            if (charts.secondaries[j]) {
                 secondaryChartsShown++;
             }
         }
-
-        var primaryHeightRatio = 1 + secondaryChartsShown;
-        var secondaryHeightRatio = secondaryChartsShown ? 1 : 0;
-        var totalHeightRatio = 1 + 2 * secondaryChartsShown;
-
-        container.select('.primary-row')
-            .style('height', primaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
-        container.selectAll('.secondary-row')
+        containers.secondaries
             .filter(function(d, i) { return i < secondaryChartsShown; })
-            .style('display', 'block')
-            .style('height', secondaryHeightRatio * useableScreenHeight / totalHeightRatio + 'px');
-        container.selectAll('.secondary-row')
+            .style('flex', '1');
+        containers.secondaries
             .filter(function(d, i) { return i >= secondaryChartsShown; })
-            .style('display', 'none')
-            .style('height', '0px');
+            .style('flex', '0');
+
+        var headRowHeight = parseInt(containers.app.select('.head-row').style('height'), 10);
+        if (!renderedOnce) {
+            headRowHeight +=
+                parseInt(containers.app.select('.head-row').style('padding-top'), 10) +
+                parseInt(containers.app.select('.head-row').style('padding-bottom'), 10) +
+                parseInt(containers.app.select('.head-row').style('margin-bottom'), 10);
+            renderedOnce = true;
+        }
+
+        var useableScreenHeight = window.innerHeight - headRowHeight;
+
+        containers.charts
+            .style('height', useableScreenHeight + 'px');
+
+        charts.xAxis.dimensionChanged(containers.xAxis);
+        charts.navbar.dimensionChanged(containers.navbar);
+        charts.primary.dimensionChanged(containers.primary);
+        for (var iChart = 0; iChart < charts.secondaries.length; iChart++) {
+            charts.secondaries[iChart].option.dimensionChanged(getSecondaryContainer(iChart));
+        }
     };
 })(d3, fc, sc);

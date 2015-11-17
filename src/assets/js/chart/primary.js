@@ -42,7 +42,8 @@
             default:
                 throw new Error('Main series given to chart does not have expected interface');
         }
-        var extent = fc.util.extent(visibleData, extentAccessor);
+        var extent = fc.util.extent()
+            .fields(extentAccessor)(visibleData);
 
         if (currentIndicators.length) {
             var indicators = currentIndicators.map(function(indicator) { return indicator.valueString; });
@@ -50,12 +51,14 @@
             var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
             if (bollingerBandsShown) {
                 var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
-                var bollingerBandsExtent = fc.util.extent(bollingerBandsVisibleDataObject, ['lower', 'upper']);
+                var bollingerBandsExtent = fc.util.extent()
+                    .fields(['lower', 'upper'])(bollingerBandsVisibleDataObject);
                 extent[0] = d3.min([bollingerBandsExtent[0], extent[0]]);
                 extent[1] = d3.max([bollingerBandsExtent[1], extent[1]]);
             }
             if (movingAverageShown) {
-                var movingAverageExtent = fc.util.extent(visibleData, 'movingAverage');
+                var movingAverageExtent = fc.util.extent()
+                    .fields('movingAverage')(visibleData);
                 extent[0] = d3.min([movingAverageExtent[0], extent[0]]);
                 extent[1] = d3.max([movingAverageExtent[1], extent[1]]);
             }
@@ -66,22 +69,26 @@
         return extent;
     }
 
-    function formatPrice(x) { return sc.model.selectedProduct.priceFormat(x); }
-
     sc.chart.primary = function() {
 
-        var yAxisWidth = 45;
+        var yAxisWidth = 60;
         var dispatch = d3.dispatch(sc.event.viewChange, sc.event.crosshairChange);
 
         var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
         var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
-
+        var zoomWidth;
 
         var crosshairData = [];
         var crosshair = fc.tool.crosshair()
              .xLabel('')
-             .yLabel('');
+             .yLabel('')
+             .on('trackingmove', function(crosshairData) {
+                 dispatch.crosshairChange(crosshairData[0].datum);
+             })
+             .on('trackingend', function() {
+                 dispatch.crosshairChange(undefined);
+             });
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
@@ -113,10 +120,9 @@
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
 
-        var primaryChart = fc.chart.cartesianChart(xScale, yScale)
+        var primaryChart = fc.chart.cartesian(xScale, yScale)
             .xTicks(0)
             .yOrient('right')
-            .yTickFormat(formatPrice)
             .margin({
                 top: 0,
                 left: 0,
@@ -151,27 +157,70 @@
             }
         }
 
-        function setCrosshairSnap(series, data) {
-            crosshair.snap(fc.util.seriesPointSnapXOnly(series, data))
-                .on('trackingmove', function(crosshairData) {
-                    dispatch[sc.event.crosshairChange](crosshairData[0].datum);
-                })
-                .on('trackingend', function() {
-                    dispatch[sc.event.crosshairChange](undefined);
-                });
+        // Call when what to display on the chart is modified (ie series, options)
+        var selectorsChanged = function(model) {
+            currentSeries = model.series;
+            currentYValueAccessor = model.yValueAccessor.option;
+            currentIndicators = model.indicators;
+            updateYValueAccessorUsed();
+            updateMultiSeries(multi.series);
+            primaryChart.yTickFormat(model.product.priceFormat);
+            model.selectorsChanged = false;
+        };
+
+        function bandCrosshair(data) {
+            var width = currentSeries.option.width(data);
+
+            crosshair.decorate(function(selection) {
+                selection.enter()
+                    .classed('band', true);
+
+                selection.enter()
+                    .selectAll('line')
+                    // TODO: hide horizontal annotation in styles, when classes are added in d3fc
+                    .classed('hidden', function() {
+                        if (this.hasAttribute('x2')) {
+                            return true;
+                        } else if (this.hasAttribute('y2')) {
+                            return false;
+                        }
+                    });
+
+                selection.selectAll('line')
+                    .style('stroke-width', function() {
+                        if (this.hasAttribute('y2')) {
+                            return width;
+                        }
+                    });
+            });
+        }
+
+        function lineCrosshair(selection) {
+            selection.enter()
+                .classed('band', false)
+                .selectAll('line')
+                .style('stroke-width', null);
+        }
+
+        function updateCrosshairDecorate(data) {
+            if (currentSeries.valueString === 'candlestick' || currentSeries.valueString === 'ohlc') {
+                bandCrosshair(data);
+            } else {
+                crosshair.decorate(lineCrosshair);
+            }
         }
 
         function primary(selection) {
             var model = selection.datum();
-            currentSeries = model.series;
-            currentYValueAccessor = model.yValueAccessor.option;
-            currentIndicators = model.indicators;
+
+            if (model.selectorsChanged) {
+                selectorsChanged(model);
+            }
 
             primaryChart.xDomain(model.viewDomain);
 
-            updateYValueAccessorUsed();
-            updateMultiSeries(multi.series);
-            setCrosshairSnap(currentSeries.option, model.data);
+            crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
+            updateCrosshairDecorate(model.data);
 
             movingAverage(model.data);
             bollingerAlgorithm(model.data);
@@ -201,17 +250,23 @@
             primaryChart.plotArea(multi);
             selection.call(primaryChart);
 
-            var zoom = sc.behavior.zoom()
+            var zoom = sc.behavior.zoom(zoomWidth)
                 .scale(xScale)
                 .trackingLatest(model.trackingLatest)
                 .on('zoom', function(domain) {
                     dispatch[sc.event.viewChange](domain);
                 });
+
             selection.select('.plot-area')
                 .call(zoom);
         }
 
         d3.rebind(primary, dispatch, 'on');
+
+        // Call when the main layout is modified
+        primary.dimensionChanged = function(container) {
+            zoomWidth = parseInt(container.style('width')) - yAxisWidth;
+        };
 
         return primary;
     };

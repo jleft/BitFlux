@@ -1,10 +1,13 @@
 (function(d3, fc, sc) {
     'use strict';
+
+    // TODO: Move to /model
     sc.menu.option = function(displayString, valueString, option) {
         return {
-            displayString: displayString,
-            valueString: valueString,
-            option: option
+            displayString: displayString, // TODO: is 'displayName' better?
+            valueString: valueString, // TODO: is this an id?
+            option: option, // TODO: Ideally, remove.
+            isSelected: false
         };
     };
 

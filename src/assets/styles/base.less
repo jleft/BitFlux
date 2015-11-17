@@ -1,10 +1,22 @@
 html, body {
   overflow-x: hidden;
   overflow-y: hidden;
+  background: @background-colour;
+  fill: @primary-white;
+  font-family: @font-family;
+  font-weight: @font-weight-base;
+  line-height: @line-height-base;
+}
+
+text {
+  font-family: @font-family;
+  font-weight: @font-weight-base;
+  line-height: @line-height-base;
 }
 
 .container {
   height: 100%;
+  background: @background-colour;
 }
 
 .row {
@@ -15,7 +27,7 @@ html, body {
   height: 100%;
 }
 
-.chart {
+.secondary-container {
   height: 100%;
   width: 100%;
   rect.foreground {
@@ -26,5 +38,8 @@ html, body {
 .cartesian-chart {
   .axes-container {
     overflow: visible;
+  }
+  .background {
+    fill: @background-colour;
   }
 }

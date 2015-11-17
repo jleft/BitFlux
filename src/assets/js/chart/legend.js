@@ -2,25 +2,47 @@
     'use strict';
 
     sc.chart.legend = function() {
-        var formatPrice = function(x) { return sc.model.selectedProduct.priceFormat(x); };
-        var formatVolume = function(x) { return sc.model.selectedProduct.volumeFormat(x); };
-        var formatTime = function(x) { return sc.model.selectedPeriod.timeFormat(x); };
+        var formatPrice;
+        var formatVolume;
+        var formatTime;
+        var lastDataPointDisplayed;
 
-        var legendComponent = fc.chart.legend()
-            .items([
-                ['date', function(d) { return formatTime(d.date); }],
-                ['open', function(d) { return formatPrice(d.open); }],
-                ['high', function(d) { return formatPrice(d.high); }],
-                ['low', function(d) { return formatPrice(d.low); }],
-                ['close', function(d) { return formatPrice(d.close); }],
-                ['volume', function(d) { return formatVolume(d.volume); }]
-            ]);
+        var legendItems =  [
+            'T',
+            function(d) { return formatTime(d.date); },
+            'O',
+            function(d) { return formatPrice(d.open); },
+            'H',
+            function(d) { return formatPrice(d.high); },
+            'L',
+            function(d) { return formatPrice(d.low); },
+            'C',
+            function(d) { return formatPrice(d.close); },
+            'V',
+            function(d) { return formatVolume(d.volume); }
+        ];
 
         function legend(selection) {
-            if (!selection.datum()) {
-                selection.datum(sc.model.latestDataPoint);
-            }
-            selection.call(legendComponent);
+            selection.each(function(model) {
+                var container = d3.select(this);
+
+                formatPrice = model.product.priceFormat;
+                formatVolume = model.product.volumeFormat;
+                formatTime = model.period.timeFormat;
+
+                if (model.data == null || model.data !== lastDataPointDisplayed) {
+                    lastDataPointDisplayed = model.data;
+
+                    var span = container.selectAll('span')
+                        .data(legendItems);
+
+                    span.enter()
+                        .append('span')
+                        .attr('class', function(d, i) { return i % 2 === 0 ? 'legendLabel' : 'legendValue'; });
+
+                    span.text(function(d, i) { return i % 2 === 0 ? d : model.data ? d(model.data) : ''; });
+                }
+            });
         }
 
         return legend;
