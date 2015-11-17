@@ -247,7 +247,8 @@ module.exports = function(grunt) {
 
         uglify: {
             options: {
-                preserveComments: 'some'
+                preserveComments: 'some',
+                mangle: false
             },
             production: {
                 files: {
