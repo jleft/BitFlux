@@ -1,12 +1,12 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.volume = function() {
+    sc.chart.secondary.volume = function() {
         var dispatch = d3.dispatch(sc.event.viewChange);
         var volumeBar = fc.series.bar()
             .yValue(function(d) { return d.volume; });
 
-        var chart = sc.chart.secondary()
+        var chart = sc.chart.secondary.base()
             .series([volumeBar])
             .yTicks(4)
             .on(sc.event.viewChange, function(domain) {

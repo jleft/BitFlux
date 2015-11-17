@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.secondary = function() {
+    sc.chart.secondary.base = function() {
         var dispatch = d3.dispatch(sc.event.viewChange);
         var xScale = fc.scale.dateTime();
         var yScale = d3.scale.linear();
