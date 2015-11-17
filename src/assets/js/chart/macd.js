@@ -11,6 +11,7 @@
 
         var chart = sc.chart.secondary()
             .series([zeroLine, renderer])
+            .yTicks(5)
             .mapping(function(series) {
                 return series === zeroLine ? [0] : this;
             })

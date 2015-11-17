@@ -8,6 +8,7 @@
 
         var chart = sc.chart.secondary()
             .series([volumeBar])
+            .yTicks(4)
             .on(sc.event.viewChange, function(domain) {
                 dispatch[sc.event.viewChange](domain);
             });

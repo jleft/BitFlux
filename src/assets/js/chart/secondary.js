@@ -49,7 +49,7 @@
 
         d3.rebind(secondary, dispatch, 'on');
         d3.rebind(secondary, multi, 'series', 'mapping', 'decorate');
-        d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'xDomain', 'yDomain');
+        d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'yTicks', 'xDomain', 'yDomain');
 
         secondary.dimensionChanged = function(container) {
             zoomWidth = parseInt(container.style('width')) - yAxisWidth;
