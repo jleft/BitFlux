@@ -14,7 +14,7 @@
 
                 dataJoin(selection, model.options)
                     .classed('active', function(option) { return (option.isSelected); })
-                    .classed('btn btn-default', true)
+                    .classed('btn btn-primary', true)
                     .text(function(option) { return option.displayString; })
                     .on('click', dispatch.optionChange);
             });
