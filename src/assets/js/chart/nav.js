@@ -9,7 +9,7 @@
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
             .margin({
-                bottom: 40
+                bottom: 40      // Variable also in navigator.less - should be used once ported to flex
             });
 
         var viewScale = fc.scale.dateTime();
@@ -25,25 +25,25 @@
                 selection.enter()
                     .select('.e')
                     .append('circle')
-                    .attr('cy', 34)
+                    .attr('cy', 29)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
                 selection.enter()
                     .select('.e')
                     .append('circle')
-                    .attr('cy', 34)
+                    .attr('cy', 29)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
                 selection.enter()
                     .select('.w')
                     .append('circle')
-                    .attr('cy', 34)
+                    .attr('cy', 29)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
                 selection.enter()
                     .select('.w')
                     .append('circle')
-                    .attr('cy', 34)
+                    .attr('cy', 29)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
             })
@@ -85,15 +85,31 @@
             var yExtent = fc.util.extent()
                 .fields(['low', 'high'])(filteredData);
 
+            var brushHide = false;
+
             navChart.xDomain(fc.util.extent().fields('date')(model.data))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
+                var width = selection.select('.plot-area').select('.extent').attr('width');
+
+                // Hide the bar if the extent has no length
+                if (width > 0) {
+                    brushHide = false;
+                } else {
+                    brushHide = true;
+                }
+
+                nav.setHide(selection, brushHide);
+
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
             .on('brushend', function() {
+                brushHide = false;
+                nav.setHide(selection, brushHide);
+
                 if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
@@ -116,6 +132,15 @@
         }
 
         d3.rebind(nav, dispatch, 'on');
+
+        nav.setHide = function(selection, brushHide) {
+            selection.select('.plot-area')
+                .selectAll('.e')
+                .classed('hidden', brushHide);
+            selection.select('.plot-area')
+                .selectAll('.w')
+                .classed('hidden', brushHide);
+        };
 
         nav.dimensionChanged = function(container) {
             layoutWidth = parseInt(container.style('width'));

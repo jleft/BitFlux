@@ -85,7 +85,7 @@
 
 // Navigator
 @navigator-height: 100px;
-@navigator-bottom-margin-from-javascript: 30px;   //Temporary variable until fully pored to flex
+@navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
 @navigator-extent-colour: @primary-white;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
@@ -93,8 +93,8 @@
 @navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;
 // The following resize the extent and handle heights - needed to correctly size them inside of the navigator
-@navigator-extent-height: calc(@navigator-height - @navigator-bottom-margin-from-javascript - @stroke-width);
-@navigator-handle-height: calc(@navigator-height - @navigator-bottom-margin-from-javascript - 2*@stroke-width);
+@navigator-extent-height: (@navigator-height - @navigator-bottom-margin-from-javascript - @stroke-width);
+@navigator-handle-height: (@navigator-height - @navigator-bottom-margin-from-javascript - 2*@stroke-width);
 
 // Seperator
 @head-padding-top: 10px;
