@@ -9,7 +9,9 @@
 
     global.sc = {
         behavior: {},
-        chart: {},
+        chart: {
+            secondary: {}
+        },
         data: {
             feed: {
                 coinbase: {}
