@@ -4,8 +4,10 @@
     sc.event = {
         crosshairChange: 'crosshairChange',
         viewChange: 'viewChange',
-        messageReceived: 'messageReceived',
+        newTrade: 'newTrade',
         dataLoaded: 'dataLoaded',
+        dataLoadError: 'dataLoadError',
+        webSocketError: 'webSocketError',
         dataProductChange: 'dataProductChange',
         dataPeriodChange: 'dataPeriodChange',
         resetToLatest: 'resetToLatest',

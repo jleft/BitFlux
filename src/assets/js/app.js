@@ -213,31 +213,27 @@
 
         function initialiseDataInterface() {
             return sc.data.dataInterface()
-                .on(sc.event.messageReceived, function(socketEvent, data) {
-                    if (socketEvent.type === 'error' ||
-                        (socketEvent.type === 'close' && socketEvent.code !== 1000)) {
-                        console.log('Error loading data from coinbase websocket: ' +
-                        socketEvent.type + ' ' + socketEvent.code);
-                    } else if (socketEvent.type === 'message') {
-                        updateModelData(data);
-                        if (primaryChartModel.trackingLatest) {
-                            var newDomain = sc.util.domain.moveToLatest(
-                                primaryChartModel.viewDomain,
-                                primaryChartModel.data);
-                            onViewChange(newDomain);
-                        }
+                .on(sc.event.newTrade, function(data) {
+                    updateModelData(data);
+                    if (primaryChartModel.trackingLatest) {
+                        var newDomain = sc.util.domain.moveToLatest(
+                          primaryChartModel.viewDomain,
+                          primaryChartModel.data);
+                        onViewChange(newDomain);
                     }
                 })
-                .on(sc.event.dataLoaded, function(err, data) {
+                .on(sc.event.dataLoaded, function(data) {
                     loading(false);
-                    if (err) {
-                        console.log('Error getting historic data: ' + err);
-                    } else {
-                        updateModelData(data);
-                        legendModel.data = null;
-                        resetToLatest();
-                        updateLayout();
-                    }
+                    updateModelData(data);
+                    legendModel.data = null;
+                    resetToLatest();
+                    updateLayout();
+                })
+                .on(sc.event.dataLoadError, function(err) {
+                    console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
+                })
+                .on(sc.event.webSocketError, function(err) {
+                    console.log('Error loading data from websocket: ' + err);
                 });
         }
 
