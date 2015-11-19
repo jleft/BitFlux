@@ -54,14 +54,22 @@
                         var domain = scale.domain();
                         if (maxDomainViewed) {
                             domain = xExtent;
+
                         } else if (zoomed && trackingLatest) {
                             domain = sc.util.domain.moveToLatest(domain, selection.datum().data);
                         }
-                        dispatch.zoom(domain);
+
+                        var lowDomain = domain[0].toString();
+                        var highDomain = domain[1].toString();
+
+                        // Check that the low and high domains are not the same value due to zoom level
+                        if (lowDomain.localeCompare(highDomain) !== 0) {
+                            dispatch.zoom(domain);
+                        } else {
+                            zoom.resetBehaviour();
+                        }
                     } else {
-                        // Resets zoomBehaviour
-                        zoomBehavior.translate([0, 0]);
-                        zoomBehavior.scale(1);
+                        zoom.resetBehaviour();
                     }
                 });
 
@@ -98,6 +106,12 @@
             }
             scale = x;
             return zoom;
+        };
+
+        // Resets zoomBehaviour
+        zoom.resetBehaviour = function() {
+            zoomBehavior.translate([0, 0]);
+            zoomBehavior.scale(1);
         };
 
         d3.rebind(zoom, dispatch, 'on');
