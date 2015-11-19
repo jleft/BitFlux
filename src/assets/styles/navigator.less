@@ -4,8 +4,10 @@
     margin-right: 0 !important;
 
     .extent {
+      height: @navigator-extent-height;
+      transform: translateY(1.25px);
       fill: @navigator-extent-colour;
-      stroke: @navigator-selection-border-colour;
+      stroke: none;
       fill-opacity: 0.125;
       shape-rendering: crispEdges;
     }
@@ -24,6 +26,27 @@
         path {
           stroke: @navigator-colour;
           stroke-width: @navigator-stroke;
+        }
+      }
+      .n, .s, .ne, .nw, .se, .sw {
+        display: none;   // Removed cursor set by brush. Gave false impression of resizing ability
+      }
+      .e, .w {
+        > rect {
+          width: @stroke-width;
+          height: @navigator-handle-height;
+          fill: @navigator-stroke-colour;
+          stroke: @navigator-stroke-colour;
+          transform: translate(2px, 2px);
+          visibility: visible !important;
+        }
+        .outer-handle {
+          stroke: @primary-white;
+          fill: @primary-dark-blue;
+        }
+        .inner-handle {
+          stroke: @primary-white;
+          fill: @primary-white;
         }
       }
     }
