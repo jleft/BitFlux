@@ -75,9 +75,14 @@
       .point {
         .hidden;
       }
-      .annotation > line {
-        stroke: @crosshair-colour;
-        stroke-dasharray: 0;
+      .annotation {
+        &.horizontal {
+          .hidden;
+        }
+        > line {
+          stroke: @crosshair-colour;
+          stroke-dasharray: 0;
+        }
       }
     }
   }

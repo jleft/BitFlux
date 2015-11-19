@@ -175,23 +175,8 @@
                 selection.enter()
                     .classed('band', true);
 
-                selection.enter()
-                    .selectAll('line')
-                    // TODO: hide horizontal annotation in styles, when classes are added in d3fc
-                    .classed('hidden', function() {
-                        if (this.hasAttribute('x2')) {
-                            return true;
-                        } else if (this.hasAttribute('y2')) {
-                            return false;
-                        }
-                    });
-
-                selection.selectAll('line')
-                    .style('stroke-width', function() {
-                        if (this.hasAttribute('y2')) {
-                            return width;
-                        }
-                    });
+                selection.selectAll('.vertical > line')
+                    .style('stroke-width', width);
             });
         }
 
