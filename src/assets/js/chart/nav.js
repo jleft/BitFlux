@@ -100,7 +100,7 @@
                     brushHide = true;
                 }
 
-                nav.setHide(selection, brushHide);
+                setHide(selection, brushHide);
 
                 if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
@@ -108,7 +108,7 @@
             })
             .on('brushend', function() {
                 brushHide = false;
-                nav.setHide(selection, brushHide);
+                setHide(selection, brushHide);
 
                 if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
@@ -133,14 +133,14 @@
 
         d3.rebind(nav, dispatch, 'on');
 
-        nav.setHide = function(selection, brushHide) {
+        function setHide(selection, brushHide) {
             selection.select('.plot-area')
                 .selectAll('.e')
                 .classed('hidden', brushHide);
             selection.select('.plot-area')
                 .selectAll('.w')
                 .classed('hidden', brushHide);
-        };
+        }
 
         nav.dimensionChanged = function(container) {
             layoutWidth = parseInt(container.style('width'));
