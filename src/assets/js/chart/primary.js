@@ -84,7 +84,9 @@
              .xLabel('')
              .yLabel('')
              .on('trackingmove', function(crosshairData) {
-                 dispatch.crosshairChange(crosshairData[0].datum);
+                 if (crosshairData.length > 0) {
+                     dispatch.crosshairChange(crosshairData[0].datum);
+                 }
              })
              .on('trackingend', function() {
                  dispatch.crosshairChange(undefined);
