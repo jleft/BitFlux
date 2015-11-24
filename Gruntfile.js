@@ -34,10 +34,22 @@ module.exports = function(grunt) {
                 '<%= meta.srcJsFiles %>',
                 '<%= meta.testJsFiles %>'
             ],
+            developmentVendorJsFiles: [
+                'assets/js/d3.js',
+                'assets/js/css-layout.js',
+                'assets/js/d3-legend.js',
+                'assets/js/svg-innerhtml.js',
+                'assets/js/d3fc.js',
+                'assets/js/jquery.js',
+                'assets/js/bootstrap.js'
+            ],
             vendorJsFiles: [
-                'node_modules/d3fc/node_modules/d3/d3.js',
-                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.js',
+                'node_modules/d3fc/node_modules/d3/d3.min.js',
+                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
+                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
                 'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
+                // Using minified version of d3fc causes issues when keying by series on multi
+                // https://github.com/ScottLogic/d3fc/issues/791
                 'node_modules/d3fc/dist/d3fc.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
@@ -53,14 +65,6 @@ module.exports = function(grunt) {
                 files: {
                     src: ['<%= meta.ourJsFiles %>']
                 }
-            },
-            warnOnly: {
-                options: {
-                    force: true
-                },
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
             }
         },
 
@@ -69,14 +73,6 @@ module.exports = function(grunt) {
                 jshintrc: true
             },
             failOnError: {
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
-            },
-            warnOnly: {
-                options: {
-                    force: true
-                },
                 files: {
                     src: ['<%= meta.ourJsFiles %>']
                 }
@@ -102,17 +98,63 @@ module.exports = function(grunt) {
         },
 
         copy: {
-            web: {
+            js: {
+                files: [{
+                    cwd: 'node_modules/d3fc/node_modules/d3/',
+                    src: ['d3.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/node_modules/css-layout/dist/',
+                    src: ['css-layout.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/node_modules/d3-svg-legend/',
+                    src: ['d3-legend.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/node_modules/svg-innerhtml/',
+                    src: ['svg-innerhtml.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc/dist/',
+                    src: ['d3fc.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/bootstrap/dist/js/',
+                    src: ['bootstrap.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/jquery/dist',
+                    src: ['jquery.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                }]
+            },
+            icons: {
+                files: [{
+                    cwd: 'src/assets/icons/',
+                    src: ['**/*.svg'],
+                    dest: 'dist/assets/icons',
+                    expand: true
+                }]
+            },
+            fonts: {
                 files: [{
                     cwd: 'node_modules/bootstrap/dist/fonts/',
                     src: ['**'],
                     dest: 'dist/assets/fonts',
-                    expand: true
-                },
-                {
-                    cwd: 'src/assets/icons/',
-                    src: ['**/*.svg'],
-                    dest: 'dist/assets/icons',
                     expand: true
                 }]
             },
@@ -237,22 +279,28 @@ module.exports = function(grunt) {
 
         concat: {
             development: {
-                src: ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>'],
+                src: ['<%= meta.srcJsFiles %>'],
                 dest: 'dist/assets/js/app.js',
                 options: {
                     sourceMap: true
+                }
+            },
+            production: {
+                src: ['<%= meta.vendorJsFiles %>', 'dist/assets/js/app.min.js'],
+                dest: 'dist/assets/js/app.min.js',
+                options: {
+                    sourceMap: false
                 }
             }
         },
 
         uglify: {
             options: {
-                preserveComments: 'some',
-                mangle: false
+                preserveComments: 'some'
             },
             production: {
                 files: {
-                    'dist/assets/js/app.min.js': ['<%= meta.vendorJsFiles %>', '<%= meta.srcJsFiles %>']
+                    'dist/assets/js/app.min.js': ['<%= meta.srcJsFiles %>']
                 }
             }
         },
@@ -301,9 +349,11 @@ module.exports = function(grunt) {
             development: {
                 options: {
                     data: {
+                        development: true,
                         appJsPath: 'assets/js/app.js',
                         liveReload: true,
-                        version: 'Development'
+                        version: 'Development',
+                        developmentVendorJsFiles: '<%= meta.developmentVendorJsFiles %>'
                     }
                 },
                 files: {
@@ -313,6 +363,7 @@ module.exports = function(grunt) {
             production: {
                 options: {
                     data: {
+                        development: false,
                         appJsPath: 'assets/js/app.min.js',
                         liveReload: false,
                         version: '<%= pkg.version %>'
@@ -329,26 +380,36 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
             'build',
+            'test:coverage',
             'mobile:platforms',
             'mobile:prepare'
         ]);
 
-    grunt.registerTask('check:failOnError', ['jshint:failOnError', 'jscs:failOnError']);
-    grunt.registerTask('check:warnOnly', ['jshint:warnOnly', 'jscs:warnOnly']);
-    grunt.registerTask('check', ['check:failOnError']);
+    grunt.registerTask('check', ['jshint:failOnError', 'jscs:failOnError']);
 
     grunt.registerTask('test', ['jasmine:test']);
     grunt.registerTask('test:coverage', ['jasmine:coverage']);
 
-    grunt.registerTask('build', ['check', 'test:coverage', 'clean',
-        'template:production', 'uglify:production', 'less:production', 'copy']);
-    grunt.registerTask('build:development', ['check', 'test', 'clean',
-        'template:development', 'concat:development', 'less:development', 'copy']);
-    grunt.registerTask('build:warnOnly', ['check:warnOnly', 'test', 'clean',
-        'template:development', 'concat:development', 'less:development', 'copy']);
+    grunt.registerTask('build', [
+        'check',
+        'clean',
+        'template:production',
+        'uglify:production',
+        'concat:production',
+        'less:production',
+        'copy:fonts',
+        'copy:icons',
+        'copy:mobile']);
+    grunt.registerTask('build:development', [
+        'check',
+        'clean',
+        'template:development',
+        'concat:development',
+        'less:development',
+        'copy']);
 
-    grunt.registerTask('build:android', ['build', 'cordovacli:buildAndroid']);
-    grunt.registerTask('build:ios', ['build', 'cordovacli:buildIos']);
+    grunt.registerTask('build:android', ['buildAndTest', 'cordovacli:buildAndroid']);
+    grunt.registerTask('build:ios', ['buildAndTest', 'cordovacli:buildIos']);
     grunt.registerTask('mobile:platforms', [
             'cordovacli:addIos',
             'cordovacli:addAndroid'
@@ -358,14 +419,15 @@ module.exports = function(grunt) {
             'cordovacli:prepareAndroid'
         ]);
     grunt.registerTask('mobile:init', [
-            'build',
+            'buildAndTest',
             'mobile:platforms',
             'mobile:prepare'
         ]);
 
-    grunt.registerTask('deploy', ['build', 'gh-pages:origin']);
-    grunt.registerTask('deploy:upstream', ['build', 'gh-pages:upstream']);
+    grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
+    grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
+    grunt.registerTask('buildAndTest', ['build', 'test']);
     grunt.registerTask('dev', ['connect:watch', 'watch']);
 
     grunt.registerTask('serve', ['connect:dist']);
