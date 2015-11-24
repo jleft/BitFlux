@@ -22,14 +22,12 @@
         var navMulti = fc.series.multi()
             .series([area, line, brush])
             .decorate(function(selection) {
-                var eastResizeRect = selection.select('.resize.e>rect');
                 var westResizeRect = selection.select('.resize.w>rect');
+                var eastResizeRect = selection.select('.resize.e>rect');
                 westResizeRect.attr('width', '2px')
-                    .attr('x', '-2')
-                    .attr('stroke-width', '1px');
+                    .attr('x', '-1');
                 eastResizeRect.attr('width', '2px')
-                    .attr('x', '-2')
-                    .attr('stroke-width', '1px');
+                    .attr('x', '-1');
 
                 selection.enter()
                     .select('.e')
