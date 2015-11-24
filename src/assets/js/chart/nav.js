@@ -22,6 +22,15 @@
         var navMulti = fc.series.multi()
             .series([area, line, brush])
             .decorate(function(selection) {
+                var eastResizeRect = selection.select('.resize.e>rect');
+                var westResizeRect = selection.select('.resize.w>rect');
+                westResizeRect.attr('width', '2px')
+                    .attr('x', '-2')
+                    .attr('stroke-width', '1px');
+                eastResizeRect.attr('width', '2px')
+                    .attr('x', '-2')
+                    .attr('stroke-width', '1px');
+
                 selection.enter()
                     .select('.e')
                     .append('circle')
@@ -128,7 +137,8 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            navbarContainer.select('.plot-area').call(zoom);
+            navbarContainer.select('.plot-area')
+                .call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
