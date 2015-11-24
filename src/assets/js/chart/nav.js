@@ -109,7 +109,7 @@
 
                 setHide(selection, brushHide);
 
-                if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
+                if (!brush.empty()) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
@@ -117,7 +117,7 @@
                 brushHide = false;
                 setHide(selection, brushHide);
 
-                if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
+                if (brush.empty() === 0) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }
