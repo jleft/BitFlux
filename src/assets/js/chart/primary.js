@@ -86,6 +86,8 @@
              .on('trackingmove', function(crosshairData) {
                  if (crosshairData.length > 0) {
                      dispatch.crosshairChange(crosshairData[0].datum);
+                 } else {
+                     dispatch.crosshairChange(undefined);
                  }
              })
              .on('trackingend', function() {

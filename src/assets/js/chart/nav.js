@@ -22,33 +22,34 @@
         var navMulti = fc.series.multi()
             .series([area, line, brush])
             .decorate(function(selection) {
-                var westResizeRect = selection.select('.resize.w>rect');
-                var eastResizeRect = selection.select('.resize.e>rect');
-                westResizeRect.attr('width', '2px')
-                    .attr('x', '-1');
-                eastResizeRect.attr('width', '2px')
-                    .attr('x', '-1');
+                var enter = selection.enter();
 
-                selection.enter()
-                    .select('.e')
+                // overload d3 styling for the brush sides
+                // as Firefox does not react properly to setting these through less file.
+                var westResizeRect = enter.select('.resize.w>rect');
+                var eastResizeRect = enter.select('.resize.e>rect');
+                westResizeRect.attr('width', 2)
+                    .attr('x', -1);
+                eastResizeRect.attr('width', 2)
+                    .attr('x', -1);
+
+                // Adds the handles to the brush sides
+                enter.select('.e')
                     .append('circle')
                     .attr('cy', 29)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
-                selection.enter()
-                    .select('.e')
+                enter.select('.e')
                     .append('circle')
                     .attr('cy', 29)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
-                selection.enter()
-                    .select('.w')
+                enter.select('.w')
                     .append('circle')
                     .attr('cy', 29)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
-                selection.enter()
-                    .select('.w')
+                enter.select('.w')
                     .append('circle')
                     .attr('cy', 29)
                     .attr('r', 4)
