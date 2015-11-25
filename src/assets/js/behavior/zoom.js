@@ -33,6 +33,11 @@
             zoomBehavior.translate([tx, 0]);
         }
 
+        function resetBehaviour() {
+            zoomBehavior.translate([0, 0]);
+            zoomBehavior.scale(1);
+        }
+
         function zoom(selection) {
 
             var xExtent = fc.util.extent()
@@ -57,11 +62,16 @@
                         } else if (zoomed && trackingLatest) {
                             domain = sc.util.domain.moveToLatest(domain, selection.datum().data);
                         }
-                        dispatch.zoom(domain);
+
+                        if (domain[0].getTime() !== domain[1].getTime()) {
+                            dispatch.zoom(domain);
+                        } else {
+                            // Ensure the user can't zoom-in infinitely, causing the chart to fail to render
+                            // #168, #411
+                            resetBehaviour();
+                        }
                     } else {
-                        // Resets zoomBehaviour
-                        zoomBehavior.translate([0, 0]);
-                        zoomBehavior.scale(1);
+                        resetBehaviour();
                     }
                 });
 
