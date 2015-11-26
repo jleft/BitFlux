@@ -13,7 +13,7 @@
             primary: chartsContainer.select('#primary-container'),
             secondaries: chartsContainer.selectAll('.secondary-container'),
             xAxis: chartsContainer.select('#x-axis-container'),
-            navbar: chartsContainer.select('#navbar-row'),
+            navbar: chartsContainer.select('#navbar-container'),
             legend: appContainer.select('#legend'),
             suspendLayout: function(value) {
                 var self = this;
@@ -62,6 +62,7 @@
         var sideMenuModel = sc.model.menu.side();
         var xAxisModel = sc.model.xAxis(day1);
         var navModel = sc.model.nav();
+        var navResetModel = sc.model.navigationReset();
         var headMenuModel = sc.model.headMenu([generated, bitcoin], generated, day1);
         var legendModel = sc.model.legend(generated, day1);
 
@@ -75,6 +76,7 @@
 
         var headMenu;
         var sideMenu;
+        var navReset;
 
         function renderInternal() {
             if (layoutRedrawnInNextRender) {
@@ -102,6 +104,10 @@
 
             containers.navbar.datum(navModel)
                 .call(charts.navbar);
+
+            containers.app.select('#navbar-reset')
+                .datum(navResetModel)
+                .call(navReset);
 
             containers.app.select('.head-menu')
                 .datum(headMenuModel)
@@ -146,6 +152,7 @@
             primaryChartModel.trackingLatest = trackingLatest;
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
+            navResetModel.trackingLatest = trackingLatest;
             render();
         }
 
@@ -189,7 +196,11 @@
 
         function initialiseNav() {
             return sc.chart.nav()
-                .on(sc.event.viewChange, onViewChange)
+                .on(sc.event.viewChange, onViewChange);
+        }
+
+        function initialiseNavReset() {
+            return sc.menu.navigationReset()
                 .on(sc.event.resetToLatest, resetToLatest);
         }
 
@@ -293,6 +304,7 @@
             var dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu(dataInterface);
             sideMenu = initialiseSideMenu();
+            navReset = initialiseNavReset();
 
             updateLayout();
             initialiseResize();
