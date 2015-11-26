@@ -40,37 +40,22 @@
                     .attr('height', extentHeight)
                     .attr('y', backgroundStrokeWidth / 2);
 
-                // overload d3 styling for the brush sides
+                // overload d3 styling for the brush handles
                 // as Firefox does not react properly to setting these through less file.
-                var westResizeRect = enter.select('.resize.w>rect');
-                var eastResizeRect = enter.select('.resize.e>rect');
-                westResizeRect.attr('width', handleBarWidth)
-                    .attr('x', -handleBarWidth / 2)
-                    .attr('height', barHeight)
-                    .attr('y', borderWidth);
-                eastResizeRect.attr('width', handleBarWidth)
-                    .attr('x', -handleBarWidth / 2)
+                enter.selectAll('.resize.w>rect, .resize.e>rect')
+                    .attr('width', handleBarWidth)
+                    .attr('x', -handleBarWidth / 2);
+                selection.selectAll('.resize.w>rect, .resize.e>rect')
                     .attr('height', barHeight)
                     .attr('y', borderWidth);
 
                 // Adds the handles to the brush sides
-                enter.select('.e')
-                    .append('circle')
+                var handles = enter.selectAll('.e, .w');
+                handles.append('circle')
                     .attr('cy', handleCircleCenter)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
-                enter.select('.e')
-                    .append('circle')
-                    .attr('cy', handleCircleCenter)
-                    .attr('r', 4)
-                    .attr('class', 'inner-handle');
-                enter.select('.w')
-                    .append('circle')
-                    .attr('cy', handleCircleCenter)
-                    .attr('r', 7)
-                    .attr('class', 'outer-handle');
-                enter.select('.w')
-                    .append('circle')
+                handles.append('circle')
                     .attr('cy', handleCircleCenter)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
@@ -164,10 +149,7 @@
 
         function setHide(selection, brushHide) {
             selection.select('.plot-area')
-                .selectAll('.e')
-                .classed('hidden', brushHide);
-            selection.select('.plot-area')
-                .selectAll('.w')
+                .selectAll('.e, .w')
                 .classed('hidden', brushHide);
         }
 
