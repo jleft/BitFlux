@@ -46,6 +46,12 @@
         </div>
     </div>
 </div>
+<% if (development) { %>
+<% _.forEach(developmentVendorJsFiles, function(filePath) {
+%><script src="<%- filePath %>"></script>
+<%
+}); %>
+<% } %>
 <script src="<%- appJsPath %>"></script>
 <%= liveReload === true ? '<script src="//localhost:35729/livereload.js"></script>' : '' %>
 </body>
