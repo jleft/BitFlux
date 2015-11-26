@@ -2,6 +2,18 @@
     'use strict';
 
     sc.chart.nav = function() {
+        var navHeight = 100; // Also maintain in variables.less
+        var bottomMargin = 40; // Also maintain in variables.less
+        var navChartHeight = navHeight - bottomMargin;
+        var backgroundStrokeWidth = 2; // Also maintain in variables.less
+        // Stroke is half inside half outside, so stroke/2 per border
+        var borderWidth = backgroundStrokeWidth / 2;
+        // should have been 2 * borderWidth, but for unknown reason it is incorrect in practice.
+        var extentHeight = navChartHeight - borderWidth;
+        var barHeight = extentHeight;
+        var handleCircleCenter = borderWidth + barHeight / 2;
+        var handleBarWidth = 2;
+
         var dispatch = d3.dispatch(
             sc.event.viewChange,
             sc.event.resetToLatest);
@@ -9,7 +21,7 @@
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
             .margin({
-                bottom: 40      // Variable also in navigator.less - should be used once ported to flex
+                bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
             });
 
         var viewScale = fc.scale.dateTime();
@@ -24,34 +36,42 @@
             .decorate(function(selection) {
                 var enter = selection.enter();
 
+                selection.select('.extent')
+                    .attr('height', extentHeight)
+                    .attr('y', backgroundStrokeWidth / 2);
+
                 // overload d3 styling for the brush sides
                 // as Firefox does not react properly to setting these through less file.
                 var westResizeRect = enter.select('.resize.w>rect');
                 var eastResizeRect = enter.select('.resize.e>rect');
-                westResizeRect.attr('width', 2)
-                    .attr('x', -1);
-                eastResizeRect.attr('width', 2)
-                    .attr('x', -1);
+                westResizeRect.attr('width', handleBarWidth)
+                    .attr('x', -handleBarWidth / 2)
+                    .attr('height', barHeight)
+                    .attr('y', borderWidth);
+                eastResizeRect.attr('width', handleBarWidth)
+                    .attr('x', -handleBarWidth / 2)
+                    .attr('height', barHeight)
+                    .attr('y', borderWidth);
 
                 // Adds the handles to the brush sides
                 enter.select('.e')
                     .append('circle')
-                    .attr('cy', 29)
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
                 enter.select('.e')
                     .append('circle')
-                    .attr('cy', 29)
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
                 enter.select('.w')
                     .append('circle')
-                    .attr('cy', 29)
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
                 enter.select('.w')
                     .append('circle')
-                    .attr('cy', 29)
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
             })
@@ -118,7 +138,7 @@
                 brushHide = false;
                 setHide(selection, brushHide);
 
-                if (brush.empty() === 0) {
+                if (brush.empty()) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }

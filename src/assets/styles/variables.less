@@ -84,17 +84,16 @@
 @x-axis-height: 23px;
 
 // Navigator
+// Changes to height or bottom-margin must also be carried over in nav.js variables
 @navigator-height: 100px;
 @navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
 @navigator-extent-colour: @primary-white;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
+@navigator-background-stroke-width: 2px;
 @navigator-stroke: 1px;
 @navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;
-// The following resize the extent and handle heights - needed to correctly size them inside of the navigator
-@navigator-extent-height: (@navigator-height - @navigator-bottom-margin-from-javascript - @stroke-width);
-@navigator-handle-height: (@navigator-height - @navigator-bottom-margin-from-javascript - 2*@stroke-width);
 
 // Seperator
 @head-padding-top: 10px;
