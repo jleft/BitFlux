@@ -6,8 +6,6 @@
 
 A cross-platform financial charting application to showcase the functionality of [d3fc](http://scottlogic.github.io/d3fc/) components.
 
-**The project is currently under development and very much in a state of flux.**
-
 ## Developing
 
 [npm](https://www.npmjs.com/), the package manager for [Node.js](https://nodejs.org/), is used to manage the project's dependencies. [Grunt](http://gruntjs.com/), a JavaScript task runner, is used to test and build the project.
@@ -44,7 +42,7 @@ To run on local server, run the grunt task:
 grunt serve
 ```
 
-The project is then accessible at http://localhost:PORTNUMBER/index.html
+The project is then accessible at http://localhost:PORTNUMBER
 
 #### GitHub Pages
 
@@ -57,6 +55,18 @@ grunt deploy
 ```
 
 The project is then accessible at the obvious address (USERNAME.github.io/REPO-NAME).
+
+### Development
+
+To run a development build on a local server, run the grunt task:
+
+```
+grunt dev
+```
+
+The project is then accessible at http://localhost:PORTNUMBER
+
+This will also start a watch task on the repository, and cause grunt to rebuild and reload the project once any file is changed.
 
 ### Testing
 
