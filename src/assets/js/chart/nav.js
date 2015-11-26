@@ -2,6 +2,18 @@
     'use strict';
 
     sc.chart.nav = function() {
+        var navHeight = 100; // Also maintain in variables.less
+        var bottomMargin = 40; // Also maintain in variables.less
+        var navChartHeight = navHeight - bottomMargin;
+        var backgroundStrokeWidth = 2; // Also maintain in variables.less
+        // Stroke is half inside half outside, so stroke/2 per border
+        var borderWidth = backgroundStrokeWidth / 2;
+        // should have been 2 * borderWidth, but for unknown reason it is incorrect in practice.
+        var extentHeight = navChartHeight - borderWidth;
+        var barHeight = extentHeight;
+        var handleCircleCenter = borderWidth + barHeight / 2;
+        var handleBarWidth = 2;
+
         var dispatch = d3.dispatch(
             sc.event.viewChange,
             sc.event.resetToLatest);
@@ -9,7 +21,7 @@
         var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
             .yTicks(0)
             .margin({
-                bottom: 40      // Variable also in navigator.less - should be used once ported to flex
+                bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
             });
 
         var viewScale = fc.scale.dateTime();
@@ -22,28 +34,29 @@
         var navMulti = fc.series.multi()
             .series([area, line, brush])
             .decorate(function(selection) {
-                selection.enter()
-                    .select('.e')
-                    .append('circle')
-                    .attr('cy', 29)
+                var enter = selection.enter();
+
+                selection.select('.extent')
+                    .attr('height', extentHeight)
+                    .attr('y', backgroundStrokeWidth / 2);
+
+                // overload d3 styling for the brush handles
+                // as Firefox does not react properly to setting these through less file.
+                enter.selectAll('.resize.w>rect, .resize.e>rect')
+                    .attr('width', handleBarWidth)
+                    .attr('x', -handleBarWidth / 2);
+                selection.selectAll('.resize.w>rect, .resize.e>rect')
+                    .attr('height', barHeight)
+                    .attr('y', borderWidth);
+
+                // Adds the handles to the brush sides
+                var handles = enter.selectAll('.e, .w');
+                handles.append('circle')
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 7)
                     .attr('class', 'outer-handle');
-                selection.enter()
-                    .select('.e')
-                    .append('circle')
-                    .attr('cy', 29)
-                    .attr('r', 4)
-                    .attr('class', 'inner-handle');
-                selection.enter()
-                    .select('.w')
-                    .append('circle')
-                    .attr('cy', 29)
-                    .attr('r', 7)
-                    .attr('class', 'outer-handle');
-                selection.enter()
-                    .select('.w')
-                    .append('circle')
-                    .attr('cy', 29)
+                handles.append('circle')
+                    .attr('cy', handleCircleCenter)
                     .attr('r', 4)
                     .attr('class', 'inner-handle');
             })
@@ -102,7 +115,7 @@
 
                 setHide(selection, brushHide);
 
-                if (brush.extent()[0][0] - brush.extent()[1][0] !== 0) {
+                if (!brush.empty()) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
@@ -110,7 +123,7 @@
                 brushHide = false;
                 setHide(selection, brushHide);
 
-                if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
+                if (brush.empty()) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }
@@ -128,17 +141,15 @@
                     dispatch[sc.event.viewChange](domain);
                 });
 
-            navbarContainer.select('.plot-area').call(zoom);
+            navbarContainer.select('.plot-area')
+                .call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
 
         function setHide(selection, brushHide) {
             selection.select('.plot-area')
-                .selectAll('.e')
-                .classed('hidden', brushHide);
-            selection.select('.plot-area')
-                .selectAll('.w')
+                .selectAll('.e, .w')
                 .classed('hidden', brushHide);
         }
 

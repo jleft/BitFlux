@@ -4,8 +4,6 @@
     margin-right: 0 !important;
 
     .extent {
-      height: @navigator-extent-height;
-      transform: translateY(1.25px);
       fill: @navigator-extent-colour;
       stroke: none;
       fill-opacity: 0.125;
@@ -15,7 +13,7 @@
     .background {
       fill: @navigator-background-colour;
       stroke: @gridline-colour;
-      stroke-width: 3px;
+      stroke-width: @navigator-background-stroke-width;
     }
 
     .plot-area {
@@ -33,11 +31,8 @@
       }
       .e, .w {
         > rect {
-          width: @stroke-width;
-          height: @navigator-handle-height;
           fill: @navigator-stroke-colour;
-          stroke: @navigator-stroke-colour;
-          transform: translate(2px, 2px);
+          stroke-width: 0;
           visibility: visible !important;
         }
         .outer-handle {
