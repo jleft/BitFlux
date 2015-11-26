@@ -111,6 +111,7 @@
 - Close price annotation callout label on y-axis
 - Live Coinbase data source 
 - Historical Coinbase data source
+
 ### Changed
 - Primary chart series types
 - Converted Coinbase data from trades to OHLC
