@@ -1,48 +1,48 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import event from '../event';
+import buttonGroup from './generator/buttonGroup';
 
-    sc.menu.side = function() {
+export default function() {
 
-        var dispatch = d3.dispatch(
-            sc.event.primaryChartSeriesChange,
-            sc.event.primaryChartYValueAccessorChange,
-            sc.event.primaryChartIndicatorChange,
-            sc.event.secondaryChartChange);
+    var dispatch = d3.dispatch(
+      event.primaryChartSeriesChange,
+      event.primaryChartYValueAccessorChange,
+      event.primaryChartIndicatorChange,
+      event.secondaryChartChange);
 
-        var primaryChartSeriesButtons = sc.menu.generator.buttonGroup()
-            .on('optionChange', dispatch[sc.event.primaryChartSeriesChange]);
+    var primaryChartSeriesButtons = buttonGroup()
+      .on('optionChange', dispatch[event.primaryChartSeriesChange]);
 
-        var primaryChartYValueAccessorButtons = sc.menu.generator.buttonGroup()
-            .on('optionChange', dispatch[sc.event.primaryChartYValueAccessorChange]);
+    var primaryChartYValueAccessorButtons = buttonGroup()
+      .on('optionChange', dispatch[event.primaryChartYValueAccessorChange]);
 
-        var primaryChartIndicatorToggle = sc.menu.generator.buttonGroup()
-            .on('optionChange', dispatch[sc.event.primaryChartIndicatorChange]);
+    var primaryChartIndicatorToggle = buttonGroup()
+      .on('optionChange', dispatch[event.primaryChartIndicatorChange]);
 
-        var secondaryChartToggle = sc.menu.generator.buttonGroup()
-            .on('optionChange', dispatch[sc.event.secondaryChartChange]);
+    var secondaryChartToggle = buttonGroup()
+      .on('optionChange', dispatch[event.secondaryChartChange]);
 
-        var side = function(selection) {
-            selection.each(function(model) {
-                var container = d3.select(this);
+    var side = function(selection) {
+        selection.each(function(model) {
+            var container = d3.select(this);
 
-                container.select('.series-buttons')
-                    .datum({options: model.seriesOptions})
-                    .call(primaryChartSeriesButtons);
+            container.select('.series-buttons')
+              .datum({options: model.seriesOptions})
+              .call(primaryChartSeriesButtons);
 
-                container.select('.y-value-accessor-buttons')
-                    .datum({options: model.yValueAccessorOptions})
-                    .call(primaryChartYValueAccessorButtons);
+            container.select('.y-value-accessor-buttons')
+              .datum({options: model.yValueAccessorOptions})
+              .call(primaryChartYValueAccessorButtons);
 
-                container.select('.indicator-buttons')
-                    .datum({options: model.indicatorOptions})
-                    .call(primaryChartIndicatorToggle);
+            container.select('.indicator-buttons')
+              .datum({options: model.indicatorOptions})
+              .call(primaryChartIndicatorToggle);
 
-                container.select('.secondary-chart-buttons')
-                    .datum({options: model.secondaryChartOptions})
-                    .call(secondaryChartToggle);
-            });
-        };
-
-        return d3.rebind(side, dispatch, 'on');
+            container.select('.secondary-chart-buttons')
+              .datum({options: model.secondaryChartOptions})
+              .call(secondaryChartToggle);
+        });
     };
-}(d3, fc, sc));
+
+    return d3.rebind(side, dispatch, 'on');
+};

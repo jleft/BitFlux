@@ -1,5 +1,8 @@
 /* global module, require */
 
+var npm = require('rollup-plugin-npm');
+var commonjs = require('rollup-plugin-commonjs');
+
 module.exports = function(grunt) {
     'use strict';
 
@@ -44,10 +47,6 @@ module.exports = function(grunt) {
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
-                'node_modules/d3fc/node_modules/d3/d3.min.js',
-                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
-                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
-                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
                 // Using minified version of d3fc causes issues when keying by series on multi
                 // https://github.com/ScottLogic/d3fc/issues/791
                 'node_modules/d3fc/dist/d3fc.js',
@@ -87,7 +86,7 @@ module.exports = function(grunt) {
         copy: {
             js: {
                 files: [{
-                    cwd: 'node_modules/d3fc/node_modules/d3/',
+                    cwd: 'node_modules/d3/',
                     src: ['d3.js'],
                     dest: 'dist/assets/js',
                     expand: true
@@ -264,14 +263,37 @@ module.exports = function(grunt) {
             }
         },
 
-        concat: {
+        rollup: {
+            options: {
+                format: 'umd',
+                moduleName: 'd3fc-showcase'
+            },
             development: {
-                src: ['<%= meta.srcJsFiles %>'],
-                dest: 'dist/assets/js/app.js',
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
                 options: {
                     sourceMap: true
                 }
             },
+            production: {
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
+                options: {
+                    plugins: [
+                        npm({
+                            jsnext: true,
+                            main: true,
+                            skip: ['d3'] // See above vendorJsFiles comment.
+                        }),
+                        commonjs()
+                    ]
+                }
+            }
+        },
+
+        concat: {
             production: {
                 src: ['<%= meta.vendorJsFiles %>', 'dist/assets/js/app.min.js'],
                 dest: 'dist/assets/js/app.min.js',
@@ -287,7 +309,7 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.min.js': ['<%= meta.srcJsFiles %>']
+                    'dist/assets/js/app.min.js': ['dist/assets/js/app.js']
                 }
             }
         },
@@ -399,9 +421,10 @@ module.exports = function(grunt) {
     grunt.registerTask('test:phantom', ['karma:phantom']);
 
     grunt.registerTask('build', [
-        'check',
+        // 'check',
         'clean',
         'template:production',
+        'rollup:production',
         'uglify:production',
         'concat:production',
         'svg_sprite',
@@ -410,10 +433,10 @@ module.exports = function(grunt) {
         'copy:icons',
         'copy:mobile']);
     grunt.registerTask('build:development', [
-        'check',
+        // 'check',
         'clean',
         'template:development',
-        'concat:development',
+        'rollup:development',
         'svg_sprite',
         'less:development',
         'copy']);
@@ -440,6 +463,7 @@ module.exports = function(grunt) {
     grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
     grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
     grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
+    grunt.registerTask('rollup-test', ['rollup:production']);
 
     grunt.registerTask('serve', ['connect:dist']);
 };

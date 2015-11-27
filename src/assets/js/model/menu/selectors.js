@@ -1,13 +1,11 @@
-(function(d3, fc, sc) {
-    'use strict';
+import seriesSelector from './seriesSelector';
+import indicatorSelector from './indicatorSelector';
 
-    sc.model.menu.selectors = function() {
+export default function() {
 
-        // TODO: Instantiate series/indicator components outside of menu model?
-        return {
-            seriesSelector: sc.model.menu.seriesSelector(),
-            indicatorSelector: sc.model.menu.indicatorSelector()
-        };
+    // TODO: Instantiate series/indicator components outside of menu model?
+    return {
+        seriesSelector: seriesSelector(),
+        indicatorSelector: indicatorSelector()
     };
-
-}(d3, fc, sc));
+};

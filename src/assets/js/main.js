@@ -1,6 +1,3 @@
-(function(d3, fc, sc) {
-    'use strict';
+import app from './app';
 
-    sc.app().run();
-
-}(d3, fc, sc));
+app().run();

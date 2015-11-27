@@ -1,35 +1,34 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import fc from 'd3fc';
 
-    sc.menu.generator.tabGroup = function() {
-        var dispatch = d3.dispatch('tabClick');
-        var dataJoin = fc.util.dataJoin()
-            .selector('ul')
-            .element('ul');
+export default function() {
+    var dispatch = d3.dispatch('tabClick');
+    var dataJoin = fc.util.dataJoin()
+      .selector('ul')
+      .element('ul');
 
-        function tabGroup(selection) {
-            var selectedIndex = selection.datum().selectedIndex || 0;
+    function tabGroup(selection) {
+        var selectedIndex = selection.datum().selectedIndex || 0;
 
-            var ul = dataJoin(selection, [selection.datum().options]);
+        var ul = dataJoin(selection, [selection.datum().options]);
 
-            ul.enter().append('ul');
+        ul.enter().append('ul');
 
-            var li = ul.selectAll('li')
-                .data(fc.util.fn.identity);
+        var li = ul.selectAll('li')
+          .data(fc.util.fn.identity);
 
-            li.enter()
-                .append('li')
-                .append('a')
-                .attr('href', '#')
-                .on('click', dispatch.tabClick);
+        li.enter()
+          .append('li')
+          .append('a')
+          .attr('href', '#')
+          .on('click', dispatch.tabClick);
 
-            li.classed('active', function(d, i) { return i === selectedIndex; })
-                .select('a')
-                .text(function(option) { return option.displayString; });
-        }
+        li.classed('active', function(d, i) { return i === selectedIndex; })
+          .select('a')
+          .text(function(option) { return option.displayString; });
+    }
 
-        d3.rebind(tabGroup, dispatch, 'on');
-        return tabGroup;
-    };
+    d3.rebind(tabGroup, dispatch, 'on');
+    return tabGroup;
+};
 
-}(d3, fc, sc));
