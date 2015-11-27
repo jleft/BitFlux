@@ -14,6 +14,7 @@ export default function() {
 
     var appContainer = d3.select('#app-container');
     var chartsContainer = appContainer.select('#charts-container');
+    var overlay = appContainer.select('#overlay');
     var containers = {
         app: appContainer,
         charts: chartsContainer,
@@ -21,6 +22,7 @@ export default function() {
         secondaries: chartsContainer.selectAll('.secondary-container'),
         xAxis: chartsContainer.select('#x-axis-container'),
         navbar: chartsContainer.select('#navbar-container'),
+        overlay: overlay,
         legend: appContainer.select('#legend'),
         suspendLayout: function(value) {
             var self = this;
@@ -123,6 +125,13 @@ export default function() {
         containers.app.select('#selectors')
             .datum(selectorsModel)
             .call(selectors);
+
+        containers.overlay
+            .datum({
+                primaryModel: primaryChartModel,
+                secondaryModel: charts.secondaries
+            })
+            .call(overlay);
 
         if (layoutRedrawnInNextRender) {
             containers.suspendLayout(true);
@@ -322,14 +331,30 @@ export default function() {
         updateLayout();
     }
 
+    function initialiseOverlay() {
+        return menu.overlay()
+            .on(event.primaryChartIndicatorChange, function(indicator) {
+                indicator.isSelected = !indicator.isSelected;
+                updatePrimaryChartIndicators();
+                render();
+            })
+            .on(event.secondaryChartChange, function(_chart) {
+                _chart.isSelected = !_chart.isSelected;
+                updateSecondaryCharts();
+                render();
+            });
+    }
+
     app.run = function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
+
 
         var _dataInterface = initialiseDataInterface();
         headMenu = initialiseHeadMenu(_dataInterface);
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
+        overlay = initialiseOverlay();
 
         updateLayout();
         initialiseResize();
