@@ -3,19 +3,29 @@
 
     sc.model.menu.seriesOptions = function() {
 
-        // TODO: Could 'isLine' go on primary chart series model instead?
-        var line = fc.series.line();
-        line.isLine = true;
-
-        var candlestickOption = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var candlestick = sc.series.candlestick();
+        candlestick.id = sc.util.uid();
+        var candlestickOption = sc.menu.option('Candlestick', 'candlestick', candlestick);
         candlestickOption.isSelected = true;
+
+        var ohlc = fc.series.ohlc();
+        ohlc.id = sc.util.uid();
+
+        var line = fc.series.line();
+        line.id = sc.util.uid();
+
+        var point = fc.series.point();
+        point.id = sc.util.uid();
+
+        var area = fc.series.area();
+        area.id = sc.util.uid();
 
         return [
             candlestickOption,
-            sc.menu.option('OHLC', 'ohlc', fc.series.ohlc()),
+            sc.menu.option('OHLC', 'ohlc', ohlc),
             sc.menu.option('Line', 'line', line),
-            sc.menu.option('Point', 'point', fc.series.point()),
-            sc.menu.option('Area', 'area', fc.series.area())
+            sc.menu.option('Point', 'point', point),
+            sc.menu.option('Area', 'area', area)
         ];
     };
 

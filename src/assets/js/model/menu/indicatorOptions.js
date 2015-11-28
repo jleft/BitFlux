@@ -9,10 +9,14 @@
                     .classed('movingAverage', true);
             })
             .yValue(function(d) { return d.movingAverage; });
+        movingAverage.id = sc.util.uid();
+
+        var bollingerBands = fc.indicator.renderer.bollingerBands();
+        bollingerBands.id = sc.util.uid();
 
         return [
             sc.menu.option('Moving Average', 'movingAverage', movingAverage),
-            sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands())
+            sc.menu.option('Bollinger Bands', 'bollinger', bollingerBands)
         ];
     };
 
