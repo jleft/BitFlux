@@ -1,4 +1,5 @@
-(function(d3, fc, sc) {
+/*global window */
+(function(d3, fc, sc, window) {
     'use strict';
 
     sc.app = function() {
@@ -258,11 +259,11 @@
                 });
         }
 
-        function selectOption(option, options) {
+        function selectOption(optionToSelect, options) {
             options.forEach(function(option) {
                 option.isSelected = false;
             });
-            option.isSelected = true;
+            optionToSelect.isSelected = true;
         }
 
         function initialiseSelectors() {
@@ -313,4 +314,4 @@
 
         return app;
     };
-})(d3, fc, sc);
+}(d3, fc, sc, window));

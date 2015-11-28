@@ -8,4 +8,4 @@
         return [yExtent[0] - orderedYExtentDifference * paddingArray[0],
             yExtent[1] + orderedYExtentDifference * paddingArray[1]];
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

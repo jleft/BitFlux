@@ -1,11 +1,12 @@
-(function(d3, fc, sc) {
+/*global window */
+(function(d3, fc, sc, window) {
     'use strict';
     var renderedOnce = false;
 
     sc.util.layout = function(containers, charts) {
 
-        function getSecondaryContainer(i) {
-            return containers.secondaries.filter(function(d, i) {return i === iChart; });
+        function getSecondaryContainer(chartIndex) {
+            return containers.secondaries.filter(function(d, index) { return index === chartIndex; });
         }
 
         var secondaryChartsShown = 0;
@@ -15,10 +16,10 @@
             }
         }
         containers.secondaries
-            .filter(function(d, i) { return i < secondaryChartsShown; })
+            .filter(function(d, index) { return index < secondaryChartsShown; })
             .style('flex', '1');
         containers.secondaries
-            .filter(function(d, i) { return i >= secondaryChartsShown; })
+            .filter(function(d, index) { return index >= secondaryChartsShown; })
             .style('flex', '0');
 
         var headRowHeight = parseInt(containers.app.select('.head-row').style('height'), 10);
@@ -38,8 +39,8 @@
         charts.xAxis.dimensionChanged(containers.xAxis);
         charts.navbar.dimensionChanged(containers.navbar);
         charts.primary.dimensionChanged(containers.primary);
-        for (var iChart = 0; iChart < charts.secondaries.length; iChart++) {
-            charts.secondaries[iChart].option.dimensionChanged(getSecondaryContainer(iChart));
+        for (var i = 0; i < charts.secondaries.length; i++) {
+            charts.secondaries[i].option.dimensionChanged(getSecondaryContainer(i));
         }
     };
-})(d3, fc, sc);
+}(d3, fc, sc, window));

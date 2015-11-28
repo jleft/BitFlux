@@ -18,7 +18,7 @@
             }
         });
 
-        var candlestick =  sc.series.candlestick();
+        var candlestick = sc.series.candlestick();
         candlestick.id = sc.util.uid();
         var _series = sc.model.menu.option('Candlestick', 'candlestick', candlestick);
         Object.defineProperty(model, 'series', {
@@ -51,4 +51,4 @@
         return model;
     };
 
-})(d3, fc, sc);
+}(d3, fc, sc));

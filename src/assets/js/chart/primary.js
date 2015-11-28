@@ -28,19 +28,19 @@
     function findTotalYExtent(visibleData, currentSeries, currentIndicators) {
         var extentAccessor;
         switch (currentSeries.valueString) {
-            case 'candlestick':
-            case 'ohlc':
-                extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
-                break;
-            case 'line':
-            case 'point':
-                extentAccessor = currentSeries.option.yValue();
-                break;
-            case 'area' :
-                extentAccessor = currentSeries.option.y1Value();
-                break;
-            default:
-                throw new Error('Main series given to chart does not have expected interface');
+        case 'candlestick':
+        case 'ohlc':
+            extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
+            break;
+        case 'line':
+        case 'point':
+            extentAccessor = currentSeries.option.yValue();
+            break;
+        case 'area' :
+            extentAccessor = currentSeries.option.y1Value();
+            break;
+        default:
+            throw new Error('Main series given to chart does not have expected interface');
         }
         var extent = fc.util.extent()
             .fields(extentAccessor)(visibleData);
@@ -83,9 +83,9 @@
         var crosshair = fc.tool.crosshair()
              .xLabel('')
              .yLabel('')
-             .on('trackingmove', function(crosshairData) {
-                 if (crosshairData.length > 0) {
-                     dispatch.crosshairChange(crosshairData[0].datum);
+             .on('trackingmove', function(updatedCrosshairData) {
+                 if (updatedCrosshairData.length > 0) {
+                     dispatch.crosshairChange(updatedCrosshairData[0].datum);
                  } else {
                      dispatch.crosshairChange(undefined);
                  }
@@ -108,12 +108,12 @@
             .key(function(series) { return series.id; })
             .mapping(function(series) {
                 switch (series) {
-                    case closeLine:
-                        return [this.data[this.data.length - 1]];
-                    case crosshair:
-                        return crosshairData;
-                    default:
-                        return this.data;
+                case closeLine:
+                    return [this.data[this.data.length - 1]];
+                case crosshair:
+                    return crosshairData;
+                default:
+                    return this.data;
                 }
             });
 
@@ -145,13 +145,13 @@
             bollingerAlgorithm.value(currentYValueAccessor);
             closeLine.value(currentYValueAccessor);
             switch (currentSeries.valueString) {
-                case 'line':
-                case 'point':
-                case 'area':
-                    currentSeries.option.yValue(currentYValueAccessor);
-                    break;
-                default:
-                    break;
+            case 'line':
+            case 'point':
+            case 'area':
+                currentSeries.option.yValue(currentYValueAccessor);
+                break;
+            default:
+                break;
             }
         }
 
@@ -246,9 +246,9 @@
 
         // Call when the main layout is modified
         primary.dimensionChanged = function(container) {
-            zoomWidth = parseInt(container.style('width')) - yAxisWidth;
+            zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
         };
 
         return primary;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

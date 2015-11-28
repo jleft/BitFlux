@@ -1,0 +1,7 @@
+{
+    "globals": {
+        "sc": true,
+        "fc": true,
+        "d3": true
+    }
+}

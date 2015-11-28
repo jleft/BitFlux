@@ -8,9 +8,9 @@
         var price = function(d) { return Number(d.price); };
         var granularity = 60;
 
-        function getBucketStart(date) {
+        function getBucketStart(tradeDate) {
             var granularityInMs = granularity * 1000;
-            return new Date(Math.floor(date.getTime() / granularityInMs) * granularityInMs);
+            return new Date(Math.floor(tradeDate.getTime() / granularityInMs) * granularityInMs);
         }
 
         var collectOhlc = function(data, trade) {
@@ -73,4 +73,4 @@
         return collectOhlc;
     };
 
-})(d3, fc, sc);
+}(d3, fc, sc));

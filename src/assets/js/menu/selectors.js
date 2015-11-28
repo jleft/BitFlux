@@ -21,13 +21,13 @@
 
         var selectors = function(selection) {
             selection.each(function(model) {
-                var selection = d3.select(this);
+                var container = d3.select(this);
 
                 var selectedSeriesIndex = model.seriesSelector.options.map(function(option) {
                     return option.isSelected;
                 }).indexOf(true);
 
-                selection.select('#series-dropdown')
+                container.select('#series-dropdown')
                     .datum({config: model.seriesSelector.config,
                             options: model.seriesSelector.options,
                             selectedIndex: selectedSeriesIndex})
@@ -44,7 +44,7 @@
                         return option;
                     });
 
-                selection.select('#indicator-dropdown')
+                container.select('#indicator-dropdown')
                     .datum({config: model.indicatorSelector.config,
                             options: indicators,
                             selected: selectedIndicatorIndexes})
@@ -55,4 +55,4 @@
 
         return d3.rebind(selectors, dispatch, 'on');
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

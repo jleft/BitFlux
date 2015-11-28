@@ -3,4 +3,4 @@
 
     sc.app().run();
 
-})(d3, fc, sc);
+}(d3, fc, sc));

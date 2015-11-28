@@ -57,28 +57,6 @@ module.exports = function(grunt) {
             coverageDir: 'coverage'
         },
 
-        jscs: {
-            options: {
-                config: '.jscsrc'
-            },
-            failOnError: {
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
-            }
-        },
-
-        jshint: {
-            options: {
-                jshintrc: true
-            },
-            failOnError: {
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
-            }
-        },
-
         watch: {
             files: ['<%= meta.srcFiles %>'],
             tasks: ['build:development'],
@@ -398,19 +376,26 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        eslint: {
+            js: {
+                src: ['<%= meta.ourJsFiles %>']
+
+            }
         }
 
     });
 
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
-            'build',
-            'test:coverage',
-            'mobile:platforms',
-            'mobile:prepare'
-        ]);
+        'build',
+        'test:coverage',
+        'mobile:platforms',
+        'mobile:prepare'
+    ]);
 
-    grunt.registerTask('check', ['jshint:failOnError', 'jscs:failOnError']);
+    grunt.registerTask('check', ['eslint']);
 
     grunt.registerTask('test', ['jasmine:test']);
     grunt.registerTask('test:coverage', ['jasmine:coverage']);
@@ -438,18 +423,18 @@ module.exports = function(grunt) {
     grunt.registerTask('build:android', ['buildAndTest', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['buildAndTest', 'cordovacli:buildIos']);
     grunt.registerTask('mobile:platforms', [
-            'cordovacli:addIos',
-            'cordovacli:addAndroid'
-        ]);
+        'cordovacli:addIos',
+        'cordovacli:addAndroid'
+    ]);
     grunt.registerTask('mobile:prepare', [
-            'cordovacli:prepareIos',
-            'cordovacli:prepareAndroid'
-        ]);
+        'cordovacli:prepareIos',
+        'cordovacli:prepareAndroid'
+    ]);
     grunt.registerTask('mobile:init', [
-            'buildAndTest',
-            'mobile:platforms',
-            'mobile:prepare'
-        ]);
+        'buildAndTest',
+        'mobile:platforms',
+        'mobile:prepare'
+    ]);
 
     grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);

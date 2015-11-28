@@ -10,9 +10,9 @@
 
         function buttonGroup(selection) {
             selection.each(function(model) {
-                var selection = d3.select(this);
+                var container = d3.select(this);
 
-                dataJoin(selection, model.options)
+                dataJoin(container, model.options)
                     .classed('active', function(option) { return (option.isSelected); })
                     .classed('btn btn-primary', true)
                     .text(function(option) { return option.displayString; })
@@ -23,4 +23,4 @@
         d3.rebind(buttonGroup, dispatch, 'on');
         return buttonGroup;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));
