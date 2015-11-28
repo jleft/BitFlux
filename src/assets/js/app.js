@@ -57,14 +57,14 @@
             periods: [minute1, minute5, hour1]
         });
 
-        var primaryChartModel = sc.model.primaryChart(generated);
-        var secondaryChartModel = sc.model.secondaryChart(generated);
+        var primaryChartModel = sc.model.chart.primary(generated);
+        var secondaryChartModel = sc.model.chart.secondary(generated);
         var sideMenuModel = sc.model.menu.side();
-        var xAxisModel = sc.model.xAxis(day1);
-        var navModel = sc.model.nav();
-        var navResetModel = sc.model.navigationReset();
-        var headMenuModel = sc.model.headMenu([generated, bitcoin], generated, day1);
-        var legendModel = sc.model.legend(generated, day1);
+        var xAxisModel = sc.model.chart.xAxis(day1);
+        var navModel = sc.model.chart.nav();
+        var navResetModel = sc.model.chart.navigationReset();
+        var headMenuModel = sc.model.menu.head([generated, bitcoin], generated, day1);
+        var legendModel = sc.model.chart.legend(generated, day1);
 
         var charts = {
             primary: undefined,

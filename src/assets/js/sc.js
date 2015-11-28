@@ -24,6 +24,7 @@
             secondary: {}
         },
         model: {
+            chart: {},
             menu: {}
         },
         series: {},

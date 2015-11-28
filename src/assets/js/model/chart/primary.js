@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.primaryChart = function(initialProduct) {
+    sc.model.chart.primary = function(initialProduct) {
         var model = {
             data: [],
             trackingLatest: true,
