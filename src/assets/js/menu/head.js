@@ -25,7 +25,7 @@
                 var products = model.products;
                 selection.select('#product-dropdown')
                     .datum({
-                        options: products.map(sc.menu.productAdaptor),
+                        options: products.map(sc.model.menu.productAdaptor),
                         selectedIndex: products.indexOf(model.selectedProduct)
                     })
                     .call(dataProductDropdown);
@@ -34,7 +34,7 @@
                 selection.select('#period-selector')
                     .classed('hidden', periods.length <= 1) // TODO: get from model instead?
                     .datum({
-                        options: periods.map(sc.menu.periodAdaptor),
+                        options: periods.map(sc.model.menu.periodAdaptor),
                         selectedIndex: periods.indexOf(model.selectedPeriod)
                     })
                     .call(dataPeriodSelector);

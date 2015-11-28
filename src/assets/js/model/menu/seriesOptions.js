@@ -5,7 +5,7 @@
 
         var candlestick = sc.series.candlestick();
         candlestick.id = sc.util.uid();
-        var candlestickOption = sc.menu.option('Candlestick', 'candlestick', candlestick);
+        var candlestickOption = sc.model.menu.option('Candlestick', 'candlestick', candlestick);
         candlestickOption.isSelected = true;
 
         var ohlc = fc.series.ohlc();
@@ -22,10 +22,10 @@
 
         return [
             candlestickOption,
-            sc.menu.option('OHLC', 'ohlc', ohlc),
-            sc.menu.option('Line', 'line', line),
-            sc.menu.option('Point', 'point', point),
-            sc.menu.option('Area', 'area', area)
+            sc.model.menu.option('OHLC', 'ohlc', ohlc),
+            sc.model.menu.option('Line', 'line', line),
+            sc.model.menu.option('Point', 'point', point),
+            sc.model.menu.option('Area', 'area', area)
         ];
     };
 

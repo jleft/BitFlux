@@ -15,8 +15,8 @@
         bollingerBands.id = sc.util.uid();
 
         return [
-            sc.menu.option('Moving Average', 'movingAverage', movingAverage),
-            sc.menu.option('Bollinger Bands', 'bollinger', bollingerBands)
+            sc.model.menu.option('Moving Average', 'movingAverage', movingAverage),
+            sc.model.menu.option('Bollinger Bands', 'bollinger', bollingerBands)
         ];
     };
 
