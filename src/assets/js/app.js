@@ -25,33 +25,33 @@
             }
         };
 
-        var day1 = sc.model.period({
+        var day1 = sc.model.data.period({
             display: 'Daily',
             seconds: 86400,
             d3TimeInterval: {unit: d3.time.day, value: 1},
             timeFormat: '%b %d'});
-        var hour1 = sc.model.period({
+        var hour1 = sc.model.data.period({
             display: '1 Hr',
             seconds: 3600,
             d3TimeInterval: {unit: d3.time.hour, value: 1},
             timeFormat: '%b %d %Hh'});
-        var minute5 = sc.model.period({
+        var minute5 = sc.model.data.period({
             display: '5 Min',
             seconds: 300,
             d3TimeInterval: {unit: d3.time.minute, value: 5},
             timeFormat: '%H:%M'});
-        var minute1 = sc.model.period({
+        var minute1 = sc.model.data.period({
             display: '1 Min',
             seconds: 60,
             d3TimeInterval: {unit: d3.time.minute, value: 1},
             timeFormat: '%H:%M'});
 
-        var generated = sc.model.product({
+        var generated = sc.model.data.product({
             display: 'Data Generator',
             volumeFormat: '.3s',
             periods: [day1]
         });
-        var bitcoin = sc.model.product({
+        var bitcoin = sc.model.data.product({
             display: 'Bitcoin',
             volumeFormat: '.2f',
             periods: [minute1, minute5, hour1]

@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.period = function(config) {
+    sc.model.data.period = function(config) {
         config = config || {};
         return {
             display: config.display || '1 day',
