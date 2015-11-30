@@ -59,7 +59,7 @@
 
         var primaryChartModel = sc.model.primaryChart(generated);
         var secondaryChartModel = sc.model.secondaryChart(generated);
-        var sideMenuModel = sc.model.menu.side();
+        var selectorsModel = sc.model.menu.selectors();
         var xAxisModel = sc.model.xAxis(day1);
         var navModel = sc.model.nav();
         var navResetModel = sc.model.navigationReset();
@@ -75,8 +75,8 @@
         };
 
         var headMenu;
-        var sideMenu;
         var navReset;
+        var selectors;
 
         function renderInternal() {
             if (layoutRedrawnInNextRender) {
@@ -113,9 +113,9 @@
                 .datum(headMenuModel)
                 .call(headMenu);
 
-            containers.app.select('.sidebar-menu')
-              .datum(sideMenuModel)
-              .call(sideMenu);
+            containers.app.select('#selectors')
+                .datum(selectorsModel)
+                .call(selectors);
 
             if (layoutRedrawnInNextRender) {
                 containers.suspendLayout(true);
@@ -248,10 +248,6 @@
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
                     render();
-                })
-                .on(sc.event.toggleSlideout, function() {
-                    containers.app.selectAll('.row-offcanvas-right').classed('active',
-                        !containers.app.selectAll('.row-offcanvas-right').classed('active'));
                 });
         }
 
@@ -262,30 +258,27 @@
             option.isSelected = true;
         }
 
-        function initialiseSideMenu() {
-            return sc.menu.side()
+        function initialiseSelectors() {
+            return sc.menu.selectors()
                 .on(sc.event.primaryChartSeriesChange, function(series) {
                     primaryChartModel.series = series;
-                    selectOption(series, sideMenuModel.seriesOptions);
-                    render();
-                })
-                .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
-                    primaryChartModel.yValueAccessor = yValueAccessor;
-                    selectOption(yValueAccessor, sideMenuModel.yValueAccessorOptions);
+                    selectOption(series, selectorsModel.seriesSelector.options);
                     render();
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(indicator) {
                     indicator.isSelected = !indicator.isSelected;
-                    primaryChartModel.indicators = sideMenuModel.indicatorOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
+                    primaryChartModel.indicators =
+                        selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
+                            return option.isSelected;
+                        });
                     render();
                 })
                 .on(sc.event.secondaryChartChange, function(chart) {
                     chart.isSelected = !chart.isSelected;
-                    charts.secondaries = sideMenuModel.secondaryChartOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
+                    charts.secondaries =
+                        selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
+                            return option.isSelected;
+                        });
                     // TODO: This doesn't seem to be a concern of menu.
                     charts.secondaries.forEach(function(chartOption) {
                         chartOption.option.on(sc.event.viewChange, onViewChange);
@@ -303,8 +296,8 @@
 
             var dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu(dataInterface);
-            sideMenu = initialiseSideMenu();
             navReset = initialiseNavReset();
+            selectors = initialiseSelectors();
 
             updateLayout();
             initialiseResize();

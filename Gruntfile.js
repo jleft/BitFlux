@@ -94,6 +94,9 @@ module.exports = function(grunt) {
             },
             mobile: {
                 src: ['mobile/www']
+            },
+            sprite: {
+                src: ['sprite']
             }
         },
 
@@ -144,9 +147,9 @@ module.exports = function(grunt) {
             },
             icons: {
                 files: [{
-                    cwd: 'src/assets/icons/',
+                    cwd: 'sprite',
                     src: ['**/*.svg'],
-                    dest: 'dist/assets/icons',
+                    dest: 'dist/assets/css',
                     expand: true
                 }]
             },
@@ -373,6 +376,28 @@ module.exports = function(grunt) {
                     'dist/index.html': ['src/index.html.tpl']
                 }
             }
+        },
+
+        'svg_sprite': {
+            icons: {
+                expand: true,
+                cwd: 'src/assets/icons',
+                src: ['**/*.svg'],
+                dest: 'sprite',
+                options: {
+                    mode: {
+                        css: {
+                            dest: '',
+                            sprite: 'sc-icon-sprite.svg',
+                            prefix: '.sc-icon-%s',
+                            dimensions: true,
+                            render: {
+                                less: true
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     });
@@ -396,6 +421,7 @@ module.exports = function(grunt) {
         'template:production',
         'uglify:production',
         'concat:production',
+        'svg_sprite',
         'less:production',
         'copy:fonts',
         'copy:icons',
@@ -405,6 +431,7 @@ module.exports = function(grunt) {
         'clean',
         'template:development',
         'concat:development',
+        'svg_sprite',
         'less:development',
         'copy']);
 
