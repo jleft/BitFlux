@@ -9,7 +9,6 @@
         dataProductChange: 'dataProductChange',
         dataPeriodChange: 'dataPeriodChange',
         resetToLatest: 'resetToLatest',
-        toggleSlideout: 'toggleSlideout',
         primaryChartSeriesChange: 'primaryChartSeriesChange',
         primaryChartYValueAccessorChange: 'primaryChartYValueAccessorChange',
         primaryChartIndicatorChange: 'primaryChartIndicatorChange',

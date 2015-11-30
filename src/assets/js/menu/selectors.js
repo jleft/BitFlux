@@ -7,10 +7,10 @@
             sc.event.primaryChartIndicatorChange,
             sc.event.secondaryChartChange);
 
-        var primaryChartSeriesButtons = sc.menu.generator.dropdownGroup()
+        var primaryChartSeriesButtons = sc.menu.generator.dropdown()
             .on('optionChange', dispatch[sc.event.primaryChartSeriesChange]);
 
-        var indicatorToggle = sc.menu.generator.dropdownGroup()
+        var indicatorToggle = sc.menu.generator.dropdown()
             .on('optionChange', function(indicator) {
                 if (indicator.valueString.indexOf('secondary') === 0) {
                     dispatch[sc.event.secondaryChartChange](indicator);

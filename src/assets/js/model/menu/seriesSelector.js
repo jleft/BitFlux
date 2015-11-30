@@ -7,8 +7,11 @@
         var line = fc.series.line();
         line.isLine = true;
 
-        var candlestickOption = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick(),
-            'assets/icons/candlestick-series.svg');
+        var candlestickOption = sc.menu.option(
+            'Candlestick',
+            'candlestick',
+            sc.series.candlestick(),
+            'sc-icon-candlestick-series');
         candlestickOption.isSelected = true;
 
         return {
@@ -20,10 +23,10 @@
             },
             options: [
                 candlestickOption,
-                sc.menu.option('OHLC', 'ohlc', fc.series.ohlc(), 'assets/icons/ohlc-series.svg'),
-                sc.menu.option('Line', 'line', line, 'assets/icons/line-series.svg'),
-                sc.menu.option('Point', 'point', fc.series.point(), 'assets/icons/point-series.svg'),
-                sc.menu.option('Area', 'area', fc.series.area(), 'assets/icons/area-series.svg')
+                sc.menu.option('OHLC', 'ohlc', fc.series.ohlc(), 'sc-icon-ohlc-series'),
+                sc.menu.option('Line', 'line', line, 'sc-icon-line-series'),
+                sc.menu.option('Point', 'point', fc.series.point(), 'sc-icon-point-series'),
+                sc.menu.option('Area', 'area', fc.series.area(), 'sc-icon-area-series')
             ]};
     };
 

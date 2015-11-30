@@ -41,6 +41,7 @@
     "grunt-cordovacli": "^0.8.2",
     "grunt-gh-pages": "^1.0.0",
     "grunt-jscs": "^2.3.0",
+    "grunt-svg-sprite": "^1.2.15",
     "grunt-template": "^0.2.3",
     "grunt-template-jasmine-istanbul": "^0.4.0",
     "jit-grunt": "^0.9.1",

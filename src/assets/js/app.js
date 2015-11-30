@@ -248,10 +248,6 @@
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
                     render();
-                })
-                .on(sc.event.toggleSlideout, function() {
-                    containers.app.selectAll('.row-offcanvas-right').classed('active',
-                        !containers.app.selectAll('.row-offcanvas-right').classed('active'));
                 });
         }
 

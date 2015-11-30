@@ -12,9 +12,9 @@
 
         return [
             sc.menu.option('Moving Average', 'movingAverage',
-                movingAverage, 'assets/icons/moving-average-indicator.svg'),
+                movingAverage, 'sc-icon-moving-average-indicator'),
             sc.menu.option('Bollinger Bands', 'bollinger',
-                fc.indicator.renderer.bollingerBands(), 'assets/icons/bollinger-bands-indicator.svg')
+                fc.indicator.renderer.bollingerBands(), 'sc-icon-bollinger-bands-indicator')
         ];
     };
 
