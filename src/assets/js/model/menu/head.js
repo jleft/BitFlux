@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.headMenu = function(initialProducts, initialSelectedProduct, initialSelectedPeriod) {
+    sc.model.menu.head = function(initialProducts, initialSelectedProduct, initialSelectedPeriod) {
         return {
             productConfig: {
                 title: null,

@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.product = function(config) {
+    sc.model.data.product = function(config) {
         return {
             display: config.display || 'Unspecified Product',
             priceFormat: d3.format(config.priceFormat || '.2f'),

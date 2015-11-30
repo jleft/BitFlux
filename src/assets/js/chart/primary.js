@@ -74,7 +74,7 @@
         var yAxisWidth = 60;
         var dispatch = d3.dispatch(sc.event.viewChange, sc.event.crosshairChange);
 
-        var currentSeries = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var currentSeries;
         var currentYValueAccessor = function(d) { return d.close; };
         var currentIndicators = [];
         var zoomWidth;
@@ -93,6 +93,7 @@
              .on('trackingend', function() {
                  dispatch.crosshairChange(undefined);
              });
+        crosshair.id = sc.util.uid();
 
         var gridlines = fc.annotation.gridline()
             .yTicks(5)
@@ -101,15 +102,10 @@
             .orient('horizontal')
             .value(currentYValueAccessor)
             .label('');
+        closeLine.id = sc.util.uid();
 
         var multi = fc.series.multi()
-            .key(function(series, index) {
-                if (series.isLine) {
-                    return index;
-                }
-                return series;
-            })
-            .series([gridlines, currentSeries.option, closeLine, crosshair])
+            .key(function(series) { return series.id; })
             .mapping(function(series) {
                 switch (series) {
                     case closeLine:
@@ -138,12 +134,10 @@
         var movingAverage = fc.indicator.algorithm.movingAverage();
         var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
-        function updateMultiSeries(series) {
+        function updateMultiSeries() {
             var baseChart = [gridlines, currentSeries.option, closeLine];
             var indicators = currentIndicators.map(function(indicator) { return indicator.option; });
-            series(baseChart.concat(indicators));
-            // add crosshair last to have it on top
-            series(series().concat(crosshair));
+            return baseChart.concat(indicators, crosshair);
         }
 
         function updateYValueAccessorUsed() {
@@ -162,15 +156,15 @@
         }
 
         // Call when what to display on the chart is modified (ie series, options)
-        var selectorsChanged = function(model) {
+        function selectorsChanged(model) {
             currentSeries = model.series;
             currentYValueAccessor = model.yValueAccessor.option;
             currentIndicators = model.indicators;
             updateYValueAccessorUsed();
-            updateMultiSeries(multi.series);
+            multi.series(updateMultiSeries());
             primaryChart.yTickFormat(model.product.priceFormat);
             model.selectorsChanged = false;
-        };
+        }
 
         function bandCrosshair(data) {
             var width = currentSeries.option.width(data);

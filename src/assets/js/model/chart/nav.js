@@ -1,8 +1,10 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.navigationReset = function() {
+    sc.model.chart.nav = function() {
         return {
+            data: [],
+            viewDomain: [],
             trackingLatest: true
         };
     };

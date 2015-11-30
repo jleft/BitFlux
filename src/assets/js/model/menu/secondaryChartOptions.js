@@ -3,17 +3,17 @@
 
     sc.model.menu.secondaryChartOptions = function() {
         return [
-            sc.menu.option(
+            sc.model.menu.option(
                 'Relative Strength Index',
                 'secondary-rsi',
                 sc.chart.secondary.rsi(),
                 'sc-icon-rsi-indicator'),
-            sc.menu.option(
+            sc.model.menu.option(
                 'MACD',
                 'secondary-macd',
                 sc.chart.secondary.macd(),
                 'sc-icon-macd-indicator'),
-            sc.menu.option(
+            sc.model.menu.option(
                 'Volume',
                 'secondary-volume',
                 sc.chart.secondary.volume(),
