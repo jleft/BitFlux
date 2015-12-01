@@ -169,6 +169,13 @@
             onViewChange(navTimeDomain);
         }
 
+        function loading(isLoading) {
+            appContainer.select('#loading-message')
+                .classed('hidden', !isLoading);
+            appContainer.select('#charts')
+                .classed('hidden', isLoading);
+        }
+
         function updateModelData(data) {
             primaryChartModel.data = data;
             secondaryChartModel.data = data;
@@ -222,12 +229,14 @@
                     }
                 })
                 .on(sc.event.dataLoaded, function(err, data) {
+                    loading(false);
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
                         updateModelData(data);
                         legendModel.data = null;
                         resetToLatest();
+                        updateLayout();
                     }
                 });
         }
@@ -235,6 +244,7 @@
         function initialiseHeadMenu(dataInterface) {
             return sc.menu.head()
                 .on(sc.event.dataProductChange, function(product) {
+                    loading(true);
                     updateModelSelectedProduct(product.option);
                     updateModelSelectedPeriod(product.option.periods[0]);
                     if (product.option === bitcoin) {
@@ -245,6 +255,7 @@
                     render();
                 })
                 .on(sc.event.dataPeriodChange, function(period) {
+                    loading(true);
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
                     render();
@@ -299,7 +310,6 @@
             navReset = initialiseNavReset();
             selectors = initialiseSelectors();
 
-            updateLayout();
             initialiseResize();
 
             dataInterface.generateDailyData();

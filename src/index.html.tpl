@@ -11,14 +11,17 @@
 </head>
 <body>
 <div class="container" id="app-container">
-    <div class="row row-offcanvas-right head-menu head-row">
+    <div class="row head-menu head-row">
         <div class="col-md-12 head-sub-row">
             <div id="product-dropdown" class="dropdown product-dropdown"></div>
             <div id="period-selector"></div>
         </div>
     </div>
-    <div class="row row-offcanvas-right primary-row">
-        <div class="col-md-12 col-chart">
+    <div class="row primary-row">
+        <div class="col-md-12" id="loading-message">
+            <p class="content">Loading...</p>
+        </div>
+        <div id="charts" class="col-md-12 hidden">
             <div id="selectors">
                 <div id="series-dropdown" class="dropdown selector-dropdown"></div>
                 <div id="indicator-dropdown" class="dropdown selector-dropdown"></div>
