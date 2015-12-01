@@ -12,7 +12,12 @@
                 'MACD',
                 'secondary-macd',
                 sc.chart.secondary.macd(),
-                'sc-icon-macd-indicator')
+                'sc-icon-macd-indicator'),
+            sc.menu.option(
+                'Volume',
+                'secondary-volume',
+                sc.chart.secondary.volume(),
+                'sc-icon-bar-series')
         ];
     };
 

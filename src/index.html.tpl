@@ -31,6 +31,7 @@
                 <svg id="primary-container"></svg>
                 <svg class="secondary-container"></svg>
                 <svg class="secondary-container"></svg>
+                <svg class="secondary-container"></svg>
                 <div id="x-axis-row">
                     <svg id="x-axis-container"></svg>
                 </div>
