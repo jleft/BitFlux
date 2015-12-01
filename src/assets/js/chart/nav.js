@@ -82,32 +82,24 @@
             var yExtent = fc.util.extent()
                 .fields(['low', 'high'])(filteredData);
 
-            var brushHide = false;
-
             navChart.xDomain(fc.util.extent().fields('date')(model.data))
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
-                var brushExtent = (brush.extent()[1][0] - brush.extent()[0][0]);
+                var brushExtentIsEmpty = xEmpty(brush);
 
-                // Hide the bar if the extent has no length
-                if (brushExtent > 0) {
-                    brushHide = false;
-                } else {
-                    brushHide = true;
-                }
+                // Hide the bar if the extent is empty
+                setHide(selection, brushExtentIsEmpty);
 
-                setHide(selection, brushHide);
-
-                if (brushExtent !== 0) {
+                if (!brushExtentIsEmpty) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
             .on('brushend', function() {
-                brushHide = false;
-                setHide(selection, brushHide);
+                var brushExtentIsEmpty = xEmpty(brush);
+                setHide(selection, false);
 
-                if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
+                if (brushExtentIsEmpty) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }
@@ -135,6 +127,10 @@
             selection.select('.plot-area')
                 .selectAll('.e, .w')
                 .classed('hidden', brushHide);
+        }
+
+        function xEmpty(brush) {
+            return ((brush.extent()[0][0] - brush.extent()[1][0]) === 0);
         }
 
         nav.dimensionChanged = function(container) {
