@@ -88,10 +88,10 @@
                 .yDomain(yExtent);
 
             brush.on('brush', function() {
-                var width = selection.select('.plot-area').select('.extent').attr('width');
+                var brushExtent = (brush.extent()[1][0] - brush.extent()[0][0]);
 
                 // Hide the bar if the extent has no length
-                if (width > 0) {
+                if (brushExtent > 0) {
                     brushHide = false;
                 } else {
                     brushHide = true;
@@ -99,7 +99,7 @@
 
                 setHide(selection, brushHide);
 
-                if (!brush.empty()) {
+                if (brushExtent !== 0) {
                     dispatch[sc.event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
                 }
             })
@@ -107,7 +107,7 @@
                 brushHide = false;
                 setHide(selection, brushHide);
 
-                if (brush.empty()) {
+                if (brush.extent()[0][0] - brush.extent()[1][0] === 0) {
                     dispatch[sc.event.viewChange](sc.util.domain.centerOnDate(viewScale.domain(),
                         model.data, brush.extent()[0][0]));
                 }
