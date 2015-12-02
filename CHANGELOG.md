@@ -1,7 +1,29 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
-## [0.7.0] - 17-10-2015
+## [0.8.0] - 02-12-2015
+### Added
+- Loading screen while data is loading
+- SVG sprite generation for icons
+- Release notes
+
+### Changed
+- Navigator handle styling
+- Series/indicator buttons
+- Dropdown/component buttons
+- Removed slide out menu from mobile version
+- Consistency updates for components
+- Faster builds
+
+### Fixed
+- Products now show while data is loading
+- Layout suspended function reapplied to the navigator
+- Navigator focus rectangle displays correctly in Firefox
+- Primary chart render console error fixed for IE
+- Zoom in extent now limited
+- Secondary chart bar series colours
+
+## [0.7.0] - 17-11-2015
 ### Changed
 - Series/indicator stroke widths
 - Series colour
