@@ -1,17 +1,6 @@
 {
     "env": {
-        "browser": true
-    },
-    "globals": {
-        "expect": true,
-        "fc": true,
-        "sc": true,
-        "it": true,
-        "describe": true,
-        "d3": true,
-        "beforeEach": true,
+        "browser": true,
         "jasmine": true
-    },
-    "rules": {
     }
 }

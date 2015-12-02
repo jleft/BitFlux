@@ -2,6 +2,11 @@
     "env": {
         "node": true
     },
+    "globals": {
+        "d3": true,
+        "fc": true,
+        "sc": true
+    },
     "rules": {
         "comma-dangle": 2,
         "no-cond-assign": 2,
