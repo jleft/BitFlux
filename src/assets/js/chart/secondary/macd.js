@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.macd = function() {
+    sc.chart.secondary.macd = function() {
         var dispatch = d3.dispatch(sc.event.viewChange);
         var zeroLine = fc.annotation.line()
             .value(0)
@@ -9,7 +9,7 @@
         var renderer = fc.indicator.renderer.macd();
         var algorithm = fc.indicator.algorithm.macd();
 
-        var chart = sc.chart.secondary()
+        var chart = sc.chart.secondary.base()
             .series([zeroLine, renderer])
             .yTicks(5)
             .mapping(function(series) {

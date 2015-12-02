@@ -4,11 +4,10 @@
     sc.menu.head = function() {
 
         var dispatch = d3.dispatch(
-            sc.event.toggleSlideout,
             sc.event.dataProductChange,
             sc.event.dataPeriodChange);
 
-        var dataProductDropdown = sc.menu.generator.dropdownGroup()
+        var dataProductDropdown = sc.menu.generator.dropdown()
             .on('optionChange', function(product) {
                 dispatch[sc.event.dataProductChange](product);
             });
@@ -25,6 +24,7 @@
                 var products = model.products;
                 selection.select('#product-dropdown')
                     .datum({
+                        config: model.productConfig,
                         options: products.map(sc.menu.productAdaptor),
                         selectedIndex: products.indexOf(model.selectedProduct)
                     })
@@ -38,11 +38,6 @@
                         selectedIndex: periods.indexOf(model.selectedPeriod)
                     })
                     .call(dataPeriodSelector);
-
-                selection.select('#toggle-button')
-                    .on('click', function() {
-                        dispatch[sc.event.toggleSlideout]();
-                    });
             });
         };
 

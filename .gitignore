@@ -28,6 +28,7 @@ node_modules
 
 # Built files
 dist
+sprite
 
 # Jasmine spec runner
 _SpecRunner.html

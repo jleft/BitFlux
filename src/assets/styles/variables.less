@@ -23,6 +23,7 @@
 @font-family: 'Roboto', sans-serif;
 @font-family-sans-serif: @font-family;
 @font-colour: @primary-white;
+@text-color: @font-colour;
 @font-weight-base: 300;
 @line-height-base: 1.5;
 
@@ -84,15 +85,16 @@
 @x-axis-height: 23px;
 
 // Navigator
+// Changes to height or bottom-margin must also be carried over in nav.js variables
 @navigator-height: 100px;
+@navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
 @navigator-extent-colour: @primary-white;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
+@navigator-background-stroke-width: 2px;
 @navigator-stroke: 1px;
+@navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;
-
-// Seperator
-@head-padding-top: 10px;
 
 // Sidebar
 @bootstrap-padding-width: 15px;
@@ -115,10 +117,12 @@
 
 // Head
 @period-selector-font-colour: @primary-blue;
+@head-height: 48px;
 
 // Secondary Chart
 // RSI
 @rsi-line-colour: @tertiary-purple;
+
 // MACD
 @macd-signal-line-colour: @tertiary-red;
 @macd-line-colour: @tertiary-green;

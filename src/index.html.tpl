@@ -11,18 +11,21 @@
 </head>
 <body>
 <div class="container" id="app-container">
-    <div class="row row-offcanvas-right head-menu head-row">
-        <div class="col-xs-12 col-sm-12 col-md-9 head-sub-row">
-            <div id="product-dropdown" class="dropdown">
-                <button id="product-dropdown-button" class="dropdown-toggle" type="button" data-toggle="dropdown"></button>
-            </div>
+    <div class="row head-menu head-row">
+        <div class="col-md-12 head-sub-row">
+            <div id="product-dropdown" class="dropdown product-dropdown"></div>
             <div id="period-selector"></div>
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
-        </div>
     </div>
-    <div class="row row-offcanvas-right primary-row">
-        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+    <div class="row primary-row">
+        <div class="col-md-12" id="loading-message">
+            <p class="content">Loading...</p>
+        </div>
+        <div id="charts" class="col-md-12 hidden">
+            <div id="selectors">
+                <div id="series-dropdown" class="dropdown selector-dropdown"></div>
+                <div id="indicator-dropdown" class="dropdown selector-dropdown"></div>
+            </div>
             <div id="legend"></div>
             <div id="charts-container">
                 <svg id="primary-container"></svg>
@@ -38,14 +41,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
-            <div class="series-buttons btn-group"></div>
-            <div class="y-value-accessor-buttons btn-group"></div>
-            <div class="indicator-buttons btn-group"></div>
-            <div class="secondary-chart-buttons btn-group"></div>
-        </div>
     </div>
 </div>
+<% if (development) { %>
+<% _.forEach(developmentVendorJsFiles, function(filePath) {
+%><script src="<%- filePath %>"></script>
+<%
+}); %>
+<% } %>
 <script src="<%- appJsPath %>"></script>
 <%= liveReload === true ? '<script src="//localhost:35729/livereload.js"></script>' : '' %>
 </body>

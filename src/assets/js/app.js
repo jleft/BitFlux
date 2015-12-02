@@ -13,7 +13,7 @@
             primary: chartsContainer.select('#primary-container'),
             secondaries: chartsContainer.selectAll('.secondary-container'),
             xAxis: chartsContainer.select('#x-axis-container'),
-            navbar: chartsContainer.select('#navbar-row'),
+            navbar: chartsContainer.select('#navbar-container'),
             legend: appContainer.select('#legend'),
             suspendLayout: function(value) {
                 var self = this;
@@ -59,9 +59,10 @@
 
         var primaryChartModel = sc.model.primaryChart(generated);
         var secondaryChartModel = sc.model.secondaryChart(generated);
-        var sideMenuModel = sc.model.menu.side();
+        var selectorsModel = sc.model.menu.selectors();
         var xAxisModel = sc.model.xAxis(day1);
         var navModel = sc.model.nav();
+        var navResetModel = sc.model.navigationReset();
         var headMenuModel = sc.model.headMenu([generated, bitcoin], generated, day1);
         var legendModel = sc.model.legend(generated, day1);
 
@@ -74,7 +75,8 @@
         };
 
         var headMenu;
-        var sideMenu;
+        var navReset;
+        var selectors;
 
         function renderInternal() {
             if (layoutRedrawnInNextRender) {
@@ -103,13 +105,17 @@
             containers.navbar.datum(navModel)
                 .call(charts.navbar);
 
+            containers.app.select('#navbar-reset')
+                .datum(navResetModel)
+                .call(navReset);
+
             containers.app.select('.head-menu')
                 .datum(headMenuModel)
                 .call(headMenu);
 
-            containers.app.select('.sidebar-menu')
-              .datum(sideMenuModel)
-              .call(sideMenu);
+            containers.app.select('#selectors')
+                .datum(selectorsModel)
+                .call(selectors);
 
             if (layoutRedrawnInNextRender) {
                 containers.suspendLayout(true);
@@ -146,6 +152,7 @@
             primaryChartModel.trackingLatest = trackingLatest;
             secondaryChartModel.trackingLatest = trackingLatest;
             navModel.trackingLatest = trackingLatest;
+            navResetModel.trackingLatest = trackingLatest;
             render();
         }
 
@@ -160,6 +167,13 @@
                 .fields('date')(data);
             var navTimeDomain = sc.util.domain.moveToLatest(dataDomain, data, 0.2);
             onViewChange(navTimeDomain);
+        }
+
+        function loading(isLoading) {
+            appContainer.select('#loading-message')
+                .classed('hidden', !isLoading);
+            appContainer.select('#charts')
+                .classed('hidden', isLoading);
         }
 
         function updateModelData(data) {
@@ -189,7 +203,11 @@
 
         function initialiseNav() {
             return sc.chart.nav()
-                .on(sc.event.viewChange, onViewChange)
+                .on(sc.event.viewChange, onViewChange);
+        }
+
+        function initialiseNavReset() {
+            return sc.menu.navigationReset()
                 .on(sc.event.resetToLatest, resetToLatest);
         }
 
@@ -211,12 +229,14 @@
                     }
                 })
                 .on(sc.event.dataLoaded, function(err, data) {
+                    loading(false);
                     if (err) {
                         console.log('Error getting historic data: ' + err);
                     } else {
                         updateModelData(data);
                         legendModel.data = null;
                         resetToLatest();
+                        updateLayout();
                     }
                 });
         }
@@ -224,6 +244,7 @@
         function initialiseHeadMenu(dataInterface) {
             return sc.menu.head()
                 .on(sc.event.dataProductChange, function(product) {
+                    loading(true);
                     updateModelSelectedProduct(product.option);
                     updateModelSelectedPeriod(product.option.periods[0]);
                     if (product.option === bitcoin) {
@@ -234,13 +255,10 @@
                     render();
                 })
                 .on(sc.event.dataPeriodChange, function(period) {
+                    loading(true);
                     updateModelSelectedPeriod(period.option);
                     dataInterface(period.option.seconds);
                     render();
-                })
-                .on(sc.event.toggleSlideout, function() {
-                    containers.app.selectAll('.row-offcanvas-right').classed('active',
-                        !containers.app.selectAll('.row-offcanvas-right').classed('active'));
                 });
         }
 
@@ -251,30 +269,27 @@
             option.isSelected = true;
         }
 
-        function initialiseSideMenu() {
-            return sc.menu.side()
+        function initialiseSelectors() {
+            return sc.menu.selectors()
                 .on(sc.event.primaryChartSeriesChange, function(series) {
                     primaryChartModel.series = series;
-                    selectOption(series, sideMenuModel.seriesOptions);
-                    render();
-                })
-                .on(sc.event.primaryChartYValueAccessorChange, function(yValueAccessor) {
-                    primaryChartModel.yValueAccessor = yValueAccessor;
-                    selectOption(yValueAccessor, sideMenuModel.yValueAccessorOptions);
+                    selectOption(series, selectorsModel.seriesSelector.options);
                     render();
                 })
                 .on(sc.event.primaryChartIndicatorChange, function(indicator) {
                     indicator.isSelected = !indicator.isSelected;
-                    primaryChartModel.indicators = sideMenuModel.indicatorOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
+                    primaryChartModel.indicators =
+                        selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
+                            return option.isSelected;
+                        });
                     render();
                 })
                 .on(sc.event.secondaryChartChange, function(chart) {
                     chart.isSelected = !chart.isSelected;
-                    charts.secondaries = sideMenuModel.secondaryChartOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
+                    charts.secondaries =
+                        selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
+                            return option.isSelected;
+                        });
                     // TODO: This doesn't seem to be a concern of menu.
                     charts.secondaries.forEach(function(chartOption) {
                         chartOption.option.on(sc.event.viewChange, onViewChange);
@@ -292,9 +307,9 @@
 
             var dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu(dataInterface);
-            sideMenu = initialiseSideMenu();
+            navReset = initialiseNavReset();
+            selectors = initialiseSelectors();
 
-            updateLayout();
             initialiseResize();
 
             dataInterface.generateDailyData();

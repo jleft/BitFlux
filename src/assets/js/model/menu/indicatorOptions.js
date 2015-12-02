@@ -11,8 +11,10 @@
             .yValue(function(d) { return d.movingAverage; });
 
         return [
-            sc.menu.option('Moving Average', 'movingAverage', movingAverage),
-            sc.menu.option('Bollinger Bands', 'bollinger', fc.indicator.renderer.bollingerBands())
+            sc.menu.option('Moving Average', 'movingAverage',
+                movingAverage, 'sc-icon-moving-average-indicator'),
+            sc.menu.option('Bollinger Bands', 'bollinger',
+                fc.indicator.renderer.bollingerBands(), 'sc-icon-bollinger-bands-indicator')
         ];
     };
 

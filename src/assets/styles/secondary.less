@@ -27,6 +27,13 @@
     stroke-width: @stroke-width;
   }
 
+  .macd-divergence {
+    .bar {
+      stroke: @primary-blue;
+      fill: @secondary-grey;
+    }
+  }
+
   .macd-signal {
     .line {
       stroke: @macd-signal-line-colour;
@@ -45,6 +52,11 @@
     .annotation line {
       visibility: hidden;
     }
+  }
+
+  .bar {
+    stroke: @primary-blue;
+    fill: @secondary-grey;
   }
 }
 

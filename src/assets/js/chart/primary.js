@@ -84,7 +84,11 @@
              .xLabel('')
              .yLabel('')
              .on('trackingmove', function(crosshairData) {
-                 dispatch.crosshairChange(crosshairData[0].datum);
+                 if (crosshairData.length > 0) {
+                     dispatch.crosshairChange(crosshairData[0].datum);
+                 } else {
+                     dispatch.crosshairChange(undefined);
+                 }
              })
              .on('trackingend', function() {
                  dispatch.crosshairChange(undefined);
@@ -172,32 +176,15 @@
             var width = currentSeries.option.width(data);
 
             crosshair.decorate(function(selection) {
-                selection.enter()
-                    .classed('band', true);
+                selection.classed('band', true);
 
-                selection.enter()
-                    .selectAll('line')
-                    // TODO: hide horizontal annotation in styles, when classes are added in d3fc
-                    .classed('hidden', function() {
-                        if (this.hasAttribute('x2')) {
-                            return true;
-                        } else if (this.hasAttribute('y2')) {
-                            return false;
-                        }
-                    });
-
-                selection.selectAll('line')
-                    .style('stroke-width', function() {
-                        if (this.hasAttribute('y2')) {
-                            return width;
-                        }
-                    });
+                selection.selectAll('.vertical > line')
+                    .style('stroke-width', width);
             });
         }
 
         function lineCrosshair(selection) {
-            selection.enter()
-                .classed('band', false)
+            selection.classed('band', false)
                 .selectAll('line')
                 .style('stroke-width', null);
         }

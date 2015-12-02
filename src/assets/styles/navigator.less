@@ -5,7 +5,7 @@
 
     .extent {
       fill: @navigator-extent-colour;
-      stroke: @navigator-selection-border-colour;
+      stroke: none;
       fill-opacity: 0.125;
       shape-rendering: crispEdges;
     }
@@ -13,7 +13,7 @@
     .background {
       fill: @navigator-background-colour;
       stroke: @gridline-colour;
-      stroke-width: 3px;
+      stroke-width: @navigator-background-stroke-width;
     }
 
     .plot-area {
@@ -24,6 +24,24 @@
         path {
           stroke: @navigator-colour;
           stroke-width: @navigator-stroke;
+        }
+      }
+      .n, .s, .ne, .nw, .se, .sw {
+        display: none;   // Removed cursor set by brush. Gave false impression of resizing ability
+      }
+      .e, .w {
+        > rect {
+          fill: @navigator-stroke-colour;
+          stroke-width: 0;
+          visibility: visible !important;
+        }
+        .outer-handle {
+          stroke: @primary-white;
+          fill: @primary-dark-blue;
+        }
+        .inner-handle {
+          stroke: @primary-white;
+          fill: @primary-white;
         }
       }
     }

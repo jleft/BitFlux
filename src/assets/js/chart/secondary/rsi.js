@@ -1,13 +1,13 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.chart.rsi = function() {
+    sc.chart.secondary.rsi = function() {
         var dispatch = d3.dispatch(sc.event.viewChange);
         var renderer = fc.indicator.renderer.relativeStrengthIndex();
         var algorithm = fc.indicator.algorithm.relativeStrengthIndex();
         var tickValues = [renderer.lowerValue(), 50, renderer.upperValue()];
 
-        var chart = sc.chart.secondary()
+        var chart = sc.chart.secondary.base()
             .series([renderer])
             .yTickValues(tickValues)
             .on(sc.event.viewChange, function(domain) {
