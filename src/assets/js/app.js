@@ -66,11 +66,11 @@ export default function app() {
 
     var primaryChartModel = model.chart.primary(generated);
     var secondaryChartModel = model.chart.secondary(generated);
-    var selectorsModel = model.selectors();
+    var selectorsModel = model.menu.selectors();
     var xAxisModel = model.chart.xAxis(day1);
     var navModel = model.chart.nav();
     var navResetModel = model.chart.navigationReset();
-    var headMenuModel = model.chart.headMenu([generated, bitcoin], generated, day1);
+    var headMenuModel = model.menu.head([generated, bitcoin], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
 
     var charts = {

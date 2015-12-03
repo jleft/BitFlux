@@ -1,11 +1,11 @@
 import fc from 'd3fc';
 import option from './option';
-import candlestick from '../../series/candlestick';
+import candlestickSeries from '../../series/candlestick';
 import util from '../../util/util';
 
 export default function() {
 
-    var candlestick = candlestick();
+    var candlestick = candlestickSeries();
     candlestick.id = util.uid();
     var candlestickOption = option(
       'Candlestick',

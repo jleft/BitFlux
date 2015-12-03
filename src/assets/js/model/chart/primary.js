@@ -1,4 +1,4 @@
-import candlestick from '../../series/candlestick';
+import candlestickSeries from '../../series/candlestick';
 import option from '../menu/option';
 import util from '../../util/util';
 
@@ -19,7 +19,7 @@ export default function(initialProduct) {
         }
     });
 
-    var candlestick = candlestick();
+    var candlestick = candlestickSeries();
     candlestick.id = util.uid();
     var _series = option('Candlestick', 'candlestick', candlestick);
     Object.defineProperty(model, 'series', {

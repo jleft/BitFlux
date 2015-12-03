@@ -10,7 +10,7 @@ export default function() {
     var callbackGenerator = callbackInvalidator();
     var dataGenerator = fc.data.random.financial();
     var coinbaseWebSocket = webSocket();
-    var collectOhlc = collectOhlc()
+    var _collectOhlc = collectOhlc()
       .date(function(d) {return new Date(d.time);})
       .volume(function(d) {return Number(d.size);});
     var dispatch = d3.dispatch(event.newTrade, event.dataLoaded,
@@ -32,7 +32,7 @@ export default function() {
         invalidate();
         historicFeed.granularity(granularity);
         updateHistoricFeedDateRangeToPresent(granularity);
-        collectOhlc.granularity(granularity);
+        _collectOhlc.granularity(granularity);
 
         historicFeed(callbackGenerator(function(error, newData) {
             if (!error) {
@@ -43,7 +43,7 @@ export default function() {
             }
         }));
         coinbaseWebSocket.on('message', function(trade) {
-            collectOhlc(data, trade);
+            _collectOhlc(data, trade);
             dispatch[event.newTrade](data);
         });
         coinbaseWebSocket.on('error', function(error) {
