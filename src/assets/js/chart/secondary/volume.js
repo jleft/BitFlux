@@ -15,9 +15,12 @@
 
         function volume(selection) {
             selection.each(function(model) {
-                var maxYExtent = d3.max(model.data, function(d) { return d3.max([d.volume]); });
-                var minYExtent = d3.min(model.data, function(d) { return d3.min([d.volume]); });
-                var paddedYExtent = sc.util.domain.padYDomain([minYExtent, maxYExtent], 0.04);
+                var paddedYExtent = fc.util.extent()
+                    .fields('volume')
+                    .pad(0.08)(model.data);
+                if (paddedYExtent[0] < 0) {
+                    paddedYExtent[0] = 0;
+                }
                 chart.yTickFormat(model.product.volumeFormat)
                     .trackingLatest(model.trackingLatest)
                     .xDomain(model.viewDomain)
