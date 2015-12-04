@@ -9,12 +9,16 @@
                     .classed('movingAverage', true);
             })
             .yValue(function(d) { return d.movingAverage; });
+        movingAverage.id = sc.util.uid();
+
+        var bollingerBands = fc.indicator.renderer.bollingerBands();
+        bollingerBands.id = sc.util.uid();
 
         return [
-            sc.menu.option('Moving Average', 'movingAverage',
+            sc.model.menu.option('Moving Average', 'movingAverage',
                 movingAverage, 'sc-icon-moving-average-indicator'),
-            sc.menu.option('Bollinger Bands', 'bollinger',
-                fc.indicator.renderer.bollingerBands(), 'sc-icon-bollinger-bands-indicator')
+            sc.model.menu.option('Bollinger Bands', 'bollinger',
+                bollingerBands, 'sc-icon-bollinger-bands-indicator')
         ];
     };
 

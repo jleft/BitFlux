@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.legend = function(initialProduct, initialPeriod) {
+    sc.model.chart.legend = function(initialProduct, initialPeriod) {
         return {
             data: undefined,
             product: initialProduct,

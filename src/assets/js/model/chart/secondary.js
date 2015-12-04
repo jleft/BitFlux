@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.secondaryChart = function(initialProduct) {
+    sc.model.chart.secondary = function(initialProduct) {
         return {
             data: [],
             viewDomain: [],

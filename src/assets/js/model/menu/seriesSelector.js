@@ -3,16 +3,26 @@
 
     sc.model.menu.seriesSelector = function() {
 
-        // TODO: Could 'isLine' go on primary chart series model instead?
-        var line = fc.series.line();
-        line.isLine = true;
-
-        var candlestickOption = sc.menu.option(
+        var candlestick = sc.series.candlestick();
+        candlestick.id = sc.util.uid();
+        var candlestickOption = sc.model.menu.option(
             'Candlestick',
             'candlestick',
-            sc.series.candlestick(),
+            candlestick,
             'sc-icon-candlestick-series');
         candlestickOption.isSelected = true;
+
+        var ohlc = fc.series.ohlc();
+        ohlc.id = sc.util.uid();
+
+        var line = fc.series.line();
+        line.id = sc.util.uid();
+
+        var point = fc.series.point();
+        point.id = sc.util.uid();
+
+        var area = fc.series.area();
+        area.id = sc.util.uid();
 
         return {
             config: {
@@ -23,11 +33,12 @@
             },
             options: [
                 candlestickOption,
-                sc.menu.option('OHLC', 'ohlc', fc.series.ohlc(), 'sc-icon-ohlc-series'),
-                sc.menu.option('Line', 'line', line, 'sc-icon-line-series'),
-                sc.menu.option('Point', 'point', fc.series.point(), 'sc-icon-point-series'),
-                sc.menu.option('Area', 'area', fc.series.area(), 'sc-icon-area-series')
-            ]};
+                sc.model.menu.option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series'),
+                sc.model.menu.option('Line', 'line', line, 'sc-icon-line-series'),
+                sc.model.menu.option('Point', 'point', point, 'sc-icon-point-series'),
+                sc.model.menu.option('Area', 'area', area, 'sc-icon-area-series')
+            ]
+        };
     };
 
 })(d3, fc, sc);

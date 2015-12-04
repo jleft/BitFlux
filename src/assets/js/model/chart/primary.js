@@ -1,7 +1,7 @@
 (function(d3, fc, sc) {
     'use strict';
 
-    sc.model.primaryChart = function(initialProduct) {
+    sc.model.chart.primary = function(initialProduct) {
         var model = {
             data: [],
             trackingLatest: true,
@@ -18,7 +18,9 @@
             }
         });
 
-        var _series = sc.menu.option('Candlestick', 'candlestick', sc.series.candlestick());
+        var candlestick =  sc.series.candlestick();
+        candlestick.id = sc.util.uid();
+        var _series = sc.model.menu.option('Candlestick', 'candlestick', candlestick);
         Object.defineProperty(model, 'series', {
             get: function() { return _series; },
             set: function(newValue) {
