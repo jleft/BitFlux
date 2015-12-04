@@ -29,7 +29,7 @@
                 <svg class="secondary-container"></svg>
                 <svg class="secondary-container"></svg>
                 <svg class="secondary-container"></svg>
-                <div id="x-axis-row">
+                <div class="x-axis-row">
                     <svg id="x-axis-container"></svg>
                 </div>
                 <div id="navbar-row" class="hidden-xs hidden-sm">
@@ -39,14 +39,14 @@
             </div>
             <div id="overlay">
                 <div id="overlay-primary-container">
-                    <div id="overlay-head">
+                    <div id="overlay-primary-head">
                         <div id="selectors">
                             <div id="series-dropdown" class="dropdown selector-dropdown"></div>
                             <div id="indicator-dropdown" class="dropdown selector-dropdown"></div>
                         </div>
                         <div id="legend" class="hidden-xs hidden-sm"></div>
                     </div>
-                    <div class="overlay-bottom">
+                    <div id="overlay-primary-bottom">
                         <div class="edit-indicator-container"></div>
                     </div>
                 </div>
@@ -59,8 +59,8 @@
                 <div class="overlay-secondary-container">
                     <div class="edit-indicator-container"></div>
                 </div>
-                <div id="overlay-x-axis-row"></div>
-                <div id="overlay-navbar-container"></div>
+                <div class="x-axis-row"></div>
+                <div id="overlay-navbar-row" class="hidden-xs hidden-sm"></div>
             </div>
         </div>
     </div>
