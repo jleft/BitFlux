@@ -58,11 +58,17 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            files: ['<%= meta.srcFiles %>'],
-            tasks: ['build:development'],
             options: {
                 atBegin: true,
                 livereload: true
+            },
+            dev: {
+                files: ['<%= meta.srcFiles %>'],
+                tasks: ['build:development']
+            },
+            devTest: {
+                files: ['<%= meta.ourJsFiles %>'],
+                tasks: ['build:development', 'karma:chromeBackground:run']
             }
         },
 
@@ -286,43 +292,35 @@ module.exports = function(grunt) {
             }
         },
 
-        jasmine: {
+        karma: {
             options: {
-                specs: '<%= meta.testJsFiles %>',
-                vendor: '<%= meta.vendorJsFiles %>',
-                keepRunner: true
-            },
-            test: {
-                src: [
+                configFile: 'karma.conf.js',
+                exclude: ['src/assets/js/main.js'],
+                files: [
+                    '<%= meta.vendorJsFiles %>',
                     '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
+                    '<%= meta.testJsFiles %>'
                 ]
             },
-            coverage: {
-                src: [
-                    '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
-                ],
-                options: {
-                    template: require('grunt-template-jasmine-istanbul'),
-                    templateOptions: {
-                        coverage: '<%= meta.coverageDir %>/coverage.json',
-                        report: [
-                            {
-                                type: 'html',
-                                options: {
-                                    dir: '<%= meta.coverageDir %>/html'
-                                }
-                            },
-                            {
-                                type: 'text-summary'
-                            },
-                            {
-                                type: 'text'
-                            }
-                        ]
-                    }
-                }
+            phantom: {
+                browsers: ['PhantomJS'],
+                autoWatch: false,
+                singleRun: true
+            },
+            chrome: {
+                browsers: ['Chrome'],
+                autoWatch: true,
+                singleRun: false
+            },
+            chromeBackground: {
+                browsers: ['Chrome'],
+                background: true,
+                singleRun: false
+            },
+            all: {
+                browsers: ['Chrome', 'Firefox', 'IE', 'PhantomJS'],
+                autoWatch: true,
+                singleRun: false
             }
         },
 
@@ -381,7 +379,6 @@ module.exports = function(grunt) {
         eslint: {
             js: {
                 src: ['<%= meta.ourJsFiles %>']
-
             }
         }
 
@@ -390,15 +387,16 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
         'build',
-        'test:coverage',
+        'test:phantom',
         'mobile:platforms',
         'mobile:prepare'
     ]);
 
     grunt.registerTask('check', ['eslint']);
 
-    grunt.registerTask('test', ['jasmine:test']);
-    grunt.registerTask('test:coverage', ['jasmine:coverage']);
+    grunt.registerTask('test', ['karma:all']);
+    grunt.registerTask('test:chrome', ['karma:chrome']);
+    grunt.registerTask('test:phantom', ['karma:phantom']);
 
     grunt.registerTask('build', [
         'check',
@@ -439,8 +437,9 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
-    grunt.registerTask('buildAndTest', ['build', 'test']);
-    grunt.registerTask('dev', ['connect:watch', 'watch']);
+    grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
+    grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
+    grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
 
     grunt.registerTask('serve', ['connect:dist']);
 };
