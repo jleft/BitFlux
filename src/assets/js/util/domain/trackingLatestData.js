@@ -6,4 +6,4 @@
         var latestDatumTime = d3.max(data, function(d) { return d.date.getTime(); });
         return latestViewedTime === latestDatumTime;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

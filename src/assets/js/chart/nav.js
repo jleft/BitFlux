@@ -71,6 +71,17 @@
             });
         var layoutWidth;
 
+
+        function setHide(selection, brushHide) {
+            selection.select('.plot-area')
+                .selectAll('.e, .w')
+                .classed('hidden', brushHide);
+        }
+
+        function xEmpty(navBrush) {
+            return ((navBrush.extent()[0][0] - navBrush.extent()[1][0]) === 0);
+        }
+
         function nav(selection) {
             var model = selection.datum();
 
@@ -123,21 +134,11 @@
 
         d3.rebind(nav, dispatch, 'on');
 
-        function setHide(selection, brushHide) {
-            selection.select('.plot-area')
-                .selectAll('.e, .w')
-                .classed('hidden', brushHide);
-        }
-
-        function xEmpty(brush) {
-            return ((brush.extent()[0][0] - brush.extent()[1][0]) === 0);
-        }
-
         nav.dimensionChanged = function(container) {
-            layoutWidth = parseInt(container.style('width'));
+            layoutWidth = parseInt(container.style('width'), 10);
             viewScale.range([0, layoutWidth]);
         };
 
         return nav;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

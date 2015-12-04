@@ -7,7 +7,7 @@
         var formatTime;
         var lastDataPointDisplayed;
 
-        var legendItems =  [
+        var legendItems = [
             'T',
             function(d) { return formatTime(d.date); },
             'O',
@@ -40,11 +40,19 @@
                         .append('span')
                         .attr('class', function(d, i) { return i % 2 === 0 ? 'legendLabel' : 'legendValue'; });
 
-                    span.text(function(d, i) { return i % 2 === 0 ? d : model.data ? d(model.data) : ''; });
+                    span.text(function(d, i) {
+                        var text = '';
+                        if (i % 2 === 0) {
+                            return d;
+                        } else if (model.data) {
+                            return d(model.data);
+                        }
+                        return text;
+                    });
                 }
             });
         }
 
         return legend;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

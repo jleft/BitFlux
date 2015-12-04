@@ -23,4 +23,4 @@
         return [d3.time.second.offset(centeredDataDomain[0], timeShift),
             d3.time.second.offset(centeredDataDomain[1], timeShift)];
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

@@ -24,9 +24,9 @@
         }
 
         xAxisChart.dimensionChanged = function(container) {
-            xScale.range([0, parseInt(container.style('width'))]);
+            xScale.range([0, parseInt(container.style('width'), 10)]);
         };
 
         return xAxisChart;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

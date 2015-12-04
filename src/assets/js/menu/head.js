@@ -19,10 +19,10 @@
 
         var head = function(selection) {
             selection.each(function(model) {
-                var selection = d3.select(this);
+                var container = d3.select(this);
 
                 var products = model.products;
-                selection.select('#product-dropdown')
+                container.select('#product-dropdown')
                     .datum({
                         config: model.productConfig,
                         options: products.map(sc.model.menu.productAdaptor),
@@ -31,7 +31,7 @@
                     .call(dataProductDropdown);
 
                 var periods = model.selectedProduct.periods;
-                selection.select('#period-selector')
+                container.select('#period-selector')
                     .classed('hidden', periods.length <= 1) // TODO: get from model instead?
                     .datum({
                         options: periods.map(sc.model.menu.periodAdaptor),
@@ -43,4 +43,4 @@
 
         return d3.rebind(head, dispatch, 'on');
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

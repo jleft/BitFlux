@@ -89,23 +89,24 @@
         it('should pad the end of the data' +
             ' when the date range\'s start date is not at the start of the data\'s date extent',
             function() {
-            var domain = [thursday, friday];
-            var reversedDomain = [friday, thursday];
+                var domain = [thursday, friday];
+                var reversedDomain = [friday, thursday];
 
-            var filteredData = sc.util.domain.filterDataInDateRange(domain, data);
+                var filteredData = sc.util.domain.filterDataInDateRange(domain, data);
 
-            expect(filteredData.length).toEqual(3);
-            expect(filteredData[0].date).toEqual(wednesday);
-            expect(filteredData[1].date).toEqual(thursday);
-            expect(filteredData[2].date).toEqual(friday);
+                expect(filteredData.length).toEqual(3);
+                expect(filteredData[0].date).toEqual(wednesday);
+                expect(filteredData[1].date).toEqual(thursday);
+                expect(filteredData[2].date).toEqual(friday);
 
-            var shuffledFilteredData = sc.util.domain.filterDataInDateRange(reversedDomain, shuffledData);
+                var shuffledFilteredData = sc.util.domain.filterDataInDateRange(reversedDomain, shuffledData);
 
-            expect(shuffledFilteredData.length).toEqual(3);
-            expect(shuffledFilteredData[0].date).toEqual(wednesday);
-            expect(shuffledFilteredData[1].date).toEqual(thursday);
-            expect(shuffledFilteredData[2].date).toEqual(friday);
-        });
+                expect(shuffledFilteredData.length).toEqual(3);
+                expect(shuffledFilteredData[0].date).toEqual(wednesday);
+                expect(shuffledFilteredData[1].date).toEqual(thursday);
+                expect(shuffledFilteredData[2].date).toEqual(friday);
+            }
+        );
 
         it('should return the first date when a date range is specified before the first datum\'s date', function() {
             var domain = [d3.time.day.offset(monday, -2), d3.time.day.offset(monday, -1)];

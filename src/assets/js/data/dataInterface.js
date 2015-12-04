@@ -58,8 +58,8 @@
             var millisecondsPerDay = 24 * 60 * 60 * 1000;
             dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
 
-            var data = dataGenerator(candlesOfData);
-            dispatch[sc.event.dataLoaded](data);
+            var generatedData = dataGenerator(candlesOfData);
+            dispatch[sc.event.dataLoaded](generatedData);
         };
 
         function invalidate() {
@@ -68,8 +68,8 @@
             callbackGenerator.invalidateCallback();
         }
 
-        function dateSort(data) {
-            return data.sort(function(a, b) {
+        function dateSort(dataToSort) {
+            return dataToSort.sort(function(a, b) {
                 return a.date - b.date;
             });
         }
@@ -78,4 +78,4 @@
 
         return dataInterface;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));

@@ -1,3 +1,4 @@
+/*global WebSocket */
 (function(d3, fc, sc) {
     'use strict';
 
@@ -65,4 +66,4 @@
 
         return webSocket;
     };
-})(d3, fc, sc);
+}(d3, fc, sc));
