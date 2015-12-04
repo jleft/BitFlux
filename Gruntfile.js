@@ -58,11 +58,17 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            files: ['<%= meta.srcFiles %>'],
-            tasks: ['build:development'],
             options: {
                 atBegin: true,
                 livereload: true
+            },
+            dev: {
+                files: ['<%= meta.srcFiles %>'],
+                tasks: ['build:development']
+            },
+            devTest: {
+                files: ['<%= meta.ourJsFiles %>'],
+                tasks: ['build:development', 'karma:chromeBackground:run']
             }
         },
 
@@ -306,6 +312,11 @@ module.exports = function(grunt) {
                 autoWatch: true,
                 singleRun: false
             },
+            chromeBackground: {
+                browsers: ['Chrome'],
+                background: true,
+                singleRun: false
+            },
             all: {
                 browsers: ['Chrome', 'Firefox', 'IE', 'PhantomJS'],
                 autoWatch: true,
@@ -368,7 +379,6 @@ module.exports = function(grunt) {
         eslint: {
             js: {
                 src: ['<%= meta.ourJsFiles %>']
-
             }
         }
 
@@ -428,7 +438,8 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
     grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
-    grunt.registerTask('dev', ['connect:watch', 'watch']);
+    grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
+    grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
 
     grunt.registerTask('serve', ['connect:dist']);
 };
