@@ -32,10 +32,10 @@ export default function() {
         var model = selection.datum();
         algorithm(model.data);
 
-            var paddedYExtent = fc.util.extent()
-                .fields('macd')
-                .symmetricalAbout(0)
-                .pad(0.08)(model.data.map(function(d) { return d.macd; }));
+        var paddedYExtent = fc.util.extent()
+            .fields('macd')
+            .symmetricalAbout(0)
+            .pad(0.08)(model.data.map(function(d) { return d.macd; }));
         chart.trackingLatest(model.trackingLatest)
           .xDomain(model.viewDomain)
           .yDomain(paddedYExtent);
@@ -51,4 +51,4 @@ export default function() {
     };
 
     return macd;
-};
+}

@@ -40,4 +40,4 @@ export default function() {
             option('Point', 'point', point, 'sc-icon-point-series'),
             option('Area', 'area', area, 'sc-icon-area-series')
         ]};
-};
+}

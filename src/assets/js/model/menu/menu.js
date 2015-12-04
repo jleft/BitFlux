@@ -8,4 +8,4 @@ export default {
     head: head,
     periodAdaptor: periodAdaptor,
     productAdaptor: productAdaptor
-}
+};

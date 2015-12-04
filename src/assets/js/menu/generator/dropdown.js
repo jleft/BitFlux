@@ -71,4 +71,4 @@ export default function() {
     d3.rebind(dropdown, dispatch, 'on');
 
     return dropdown;
-};
+}

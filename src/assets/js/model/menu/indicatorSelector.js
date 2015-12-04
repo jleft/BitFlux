@@ -12,4 +12,4 @@ export default function() {
         indicatorOptions: indicatorOptions,
         secondaryChartOptions: secondaryChartOptions
     };
-};
+}

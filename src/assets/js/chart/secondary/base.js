@@ -54,8 +54,8 @@ export default function() {
     d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'yTicks', 'xDomain', 'yDomain');
 
     secondary.dimensionChanged = function(container) {
-            zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+        zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
     };
 
     return secondary;
-};
+}

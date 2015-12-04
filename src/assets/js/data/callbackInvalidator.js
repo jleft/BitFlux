@@ -15,5 +15,4 @@ export default function() {
     };
 
     return callbackInvalidator;
-};
-
+}

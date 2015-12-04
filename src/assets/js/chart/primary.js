@@ -33,19 +33,19 @@ function produceAnnotatedTickValues(scale, annotation) {
 function findTotalYExtent(visibleData, currentSeries, currentIndicators) {
     var extentAccessor;
     switch (currentSeries.valueString) {
-        case 'candlestick':
-        case 'ohlc':
-            extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
-            break;
-        case 'line':
-        case 'point':
-            extentAccessor = currentSeries.option.yValue();
-            break;
-        case 'area' :
-            extentAccessor = currentSeries.option.y1Value();
-            break;
-        default:
-            throw new Error('Main series given to chart does not have expected interface');
+    case 'candlestick':
+    case 'ohlc':
+        extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
+        break;
+    case 'line':
+    case 'point':
+        extentAccessor = currentSeries.option.yValue();
+        break;
+    case 'area' :
+        extentAccessor = currentSeries.option.y1Value();
+        break;
+    default:
+        throw new Error('Main series given to chart does not have expected interface');
     }
     var extent = fc.util.extent()
       .fields(extentAccessor)(visibleData);
@@ -79,7 +79,7 @@ export default function() {
     var yAxisWidth = 60;
     var dispatch = d3.dispatch(event.viewChange, event.crosshairChange);
 
-        var currentSeries;
+    var currentSeries;
     var currentYValueAccessor = function(d) { return d.close; };
     var currentIndicators = [];
     var zoomWidth;
@@ -107,20 +107,20 @@ export default function() {
       .orient('horizontal')
       .value(currentYValueAccessor)
       .label('');
-        closeLine.id = util.uid();
+    closeLine.id = util.uid();
 
     var multi = fc.series.multi()
-            .key(function(series) { return series.id; })
-      .mapping(function(series) {
-          switch (series) {
-                case closeLine:
-                    return [this.data[this.data.length - 1]];
-                case crosshair:
-                    return crosshairData;
-                default:
-                    return this.data;
-          }
-      });
+        .key(function(series) { return series.id; })
+        .mapping(function(series) {
+            switch (series) {
+            case closeLine:
+                return [this.data[this.data.length - 1]];
+            case crosshair:
+                return crosshairData;
+            default:
+                return this.data;
+            }
+        });
 
     var xScale = fc.scale.dateTime();
     var yScale = d3.scale.linear();
@@ -139,10 +139,10 @@ export default function() {
     var movingAverage = fc.indicator.algorithm.movingAverage();
     var bollingerAlgorithm = fc.indicator.algorithm.bollingerBands();
 
-        function updateMultiSeries() {
+    function updateMultiSeries() {
         var baseChart = [gridlines, currentSeries.option, closeLine];
         var indicators = currentIndicators.map(function(indicator) { return indicator.option; });
-            return baseChart.concat(indicators, crosshair);
+        return baseChart.concat(indicators, crosshair);
     }
 
     function updateYValueAccessorUsed() {
@@ -150,26 +150,26 @@ export default function() {
         bollingerAlgorithm.value(currentYValueAccessor);
         closeLine.value(currentYValueAccessor);
         switch (currentSeries.valueString) {
-            case 'line':
-            case 'point':
-            case 'area':
-                currentSeries.option.yValue(currentYValueAccessor);
-                break;
-            default:
-                break;
+        case 'line':
+        case 'point':
+        case 'area':
+            currentSeries.option.yValue(currentYValueAccessor);
+            break;
+        default:
+            break;
         }
     }
 
     // Call when what to display on the chart is modified (ie series, options)
-        function selectorsChanged(model) {
+    function selectorsChanged(model) {
         currentSeries = model.series;
         currentYValueAccessor = model.yValueAccessor.option;
         currentIndicators = model.indicators;
         updateYValueAccessorUsed();
-            multi.series(updateMultiSeries());
+        multi.series(updateMultiSeries());
         primaryChart.yTickFormat(model.product.priceFormat);
         model.selectorsChanged = false;
-        }
+    }
 
     function bandCrosshair(data) {
         var width = currentSeries.option.width(data);
@@ -250,8 +250,8 @@ export default function() {
 
     // Call when the main layout is modified
     primary.dimensionChanged = function(container) {
-            zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+        zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
     };
 
     return primary;
-};
+}

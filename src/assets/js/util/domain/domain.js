@@ -10,4 +10,4 @@ export default {
     moveToLatest: moveToLatest,
     padYDomain: padYDomain,
     trackingLatestData: trackingLatestData
-}
+};

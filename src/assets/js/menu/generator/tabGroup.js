@@ -30,5 +30,5 @@ export default function() {
 
     d3.rebind(tabGroup, dispatch, 'on');
     return tabGroup;
-};
+}
 

@@ -1,54 +1,57 @@
-export default function() {
-    var product = 'BTC-USD';
-    var msgType = 'match';
-    var coinbaseSocket = null;
+/*global WebSocket */
+import d3 from 'd3';
 
-    function webSocket(cb) {
-        webSocket.close();
-        coinbaseSocket = new WebSocket('wss://ws-feed.exchange.coinbase.com');
-        var msg = {
-            type: 'subscribe',
+// https://docs.exchange.coinbase.com/#websocket-feed
+
+export default function() {
+
+    var product = 'BTC-USD';
+    var dispatch = d3.dispatch('open', 'close', 'error', 'message');
+    var messageType = 'match';
+    var socket;
+
+    var webSocket = function(url, subscribe) {
+        url = url || 'wss://ws-feed.exchange.coinbase.com';
+        subscribe = subscribe || {
+            'type': 'subscribe',
             'product_id': product
         };
 
-        coinbaseSocket.onopen = function(event) {
-            coinbaseSocket.send(JSON.stringify(msg));
-            cb(event, null);
-        };
+        socket = new WebSocket(url);
 
-        coinbaseSocket.onmessage = function(event) {
-            var messageData = JSON.parse(event.data);
-            if (messageData.type === msgType) {
-                var datum = {};
-                datum.date = new Date(messageData.time);
-                datum.price = parseFloat(messageData.price);
-                datum.volume = parseFloat(messageData.size);
-                cb(event, datum);
+        socket.onopen = function(event) {
+            socket.send(JSON.stringify(subscribe));
+            dispatch.open(event);
+        };
+        socket.onerror = function(event) {
+            dispatch.error(event);
+        };
+        socket.onclose = function(event) {
+            dispatch.close(event);
+        };
+        socket.onmessage = function(event) {
+            var msg = JSON.parse(event.data);
+            if (msg.type === messageType) {
+                dispatch.message(msg);
+            } else if (msg.type === 'error') {
+                dispatch.error(msg);
             }
         };
+    };
 
-        coinbaseSocket.onerror = function(event) {
-            cb(event, null);
-        };
-
-        coinbaseSocket.onclose = function(event) {
-            cb(event, null);
-        };
-
-    }
+    d3.rebind(webSocket, dispatch, 'on');
 
     webSocket.close = function() {
-        if (coinbaseSocket) {
-            coinbaseSocket.close();
+        if (socket) {
+            socket.close();
         }
-        return webSocket;
     };
 
     webSocket.messageType = function(x) {
         if (!arguments.length) {
-            return msgType;
+            return messageType;
         }
-        msgType = x;
+        messageType = x;
         return webSocket;
     };
 
@@ -61,4 +64,5 @@ export default function() {
     };
 
     return webSocket;
-};
+}
+

@@ -18,19 +18,19 @@ export default function() {
 
     function volume(selection) {
         selection.each(function(model) {
-                var paddedYExtent = fc.util.extent()
-                    .fields('volume')
-                    .pad(0.08)(model.data);
-                if (paddedYExtent[0] < 0) {
-                    paddedYExtent[0] = 0;
-                }
+            var paddedYExtent = fc.util.extent()
+                .fields('volume')
+                .pad(0.08)(model.data);
+            if (paddedYExtent[0] < 0) {
+                paddedYExtent[0] = 0;
+            }
             chart.yTickFormat(model.product.volumeFormat)
-              .trackingLatest(model.trackingLatest)
-              .xDomain(model.viewDomain)
-              .yDomain(paddedYExtent);
+                .trackingLatest(model.trackingLatest)
+                .xDomain(model.viewDomain)
+                .yDomain(paddedYExtent);
 
             selection.datum(model.data)
-              .call(chart);
+                .call(chart);
         });
     }
 
@@ -41,4 +41,4 @@ export default function() {
     };
 
     return volume;
-};
+}

@@ -8,4 +8,4 @@ export default function(config) {
         d3TimeInterval: config.d3TimeInterval || {unit: d3.time.day, value: 1},
         timeFormat: d3.time.format(config.timeFormat || '%b %d')
     };
-};
+}

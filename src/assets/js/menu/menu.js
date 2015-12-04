@@ -6,4 +6,4 @@ export default {
     head: head,
     selectors: selectors,
     navigationReset: navigationReset
-}
+};

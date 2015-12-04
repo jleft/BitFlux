@@ -5,5 +5,4 @@ export default function(yExtent, paddingPercentage) {
 
     return [yExtent[0] - orderedYExtentDifference * paddingArray[0],
         yExtent[1] + orderedYExtentDifference * paddingArray[1]];
-};
-
+}

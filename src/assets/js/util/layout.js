@@ -40,4 +40,4 @@ export default function(containers, charts) {
     for (var i = 0; i < charts.secondaries.length; i++) {
         charts.secondaries[i].option.dimensionChanged(getSecondaryContainer(i));
     }
-};
+}

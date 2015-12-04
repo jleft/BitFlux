@@ -24,8 +24,8 @@ export default function() {
     }
 
     xAxisChart.dimensionChanged = function(container) {
-            xScale.range([0, parseInt(container.style('width'), 10)]);
+        xScale.range([0, parseInt(container.style('width'), 10)]);
     };
 
     return xAxisChart;
-};
+}

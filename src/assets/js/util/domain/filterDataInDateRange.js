@@ -15,5 +15,4 @@ export default function(domain, data) {
       Math.min(bisector.right(dataSortedByDate, endDate) + 1, dataSortedByDate.length)
     );
     return filteredData;
-};
-
+}

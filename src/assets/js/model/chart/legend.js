@@ -4,4 +4,4 @@ export default function(initialProduct, initialPeriod) {
         product: initialProduct,
         period: initialPeriod
     };
-};
+}

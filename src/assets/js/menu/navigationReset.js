@@ -24,4 +24,4 @@ export default function() {
     d3.rebind(navReset, dispatch, 'on');
 
     return navReset;
-};
+}

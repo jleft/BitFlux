@@ -3,4 +3,4 @@ export default function(initialPeriod) {
         viewDomain: [],
         period: initialPeriod
     };
-};
+}

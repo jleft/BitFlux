@@ -114,4 +114,4 @@ export default function(width) {
     d3.rebind(zoom, dispatch, 'on');
 
     return zoom;
-};
+}

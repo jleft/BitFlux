@@ -1,4 +1,4 @@
-export default function (initialProducts, initialSelectedProduct, initialSelectedPeriod) {
+export default function(initialProducts, initialSelectedProduct, initialSelectedPeriod) {
     return {
         productConfig: {
             title: null,
@@ -10,4 +10,4 @@ export default function (initialProducts, initialSelectedProduct, initialSelecte
         selectedProduct: initialSelectedProduct,
         selectedPeriod: initialSelectedPeriod
     };
-};
+}

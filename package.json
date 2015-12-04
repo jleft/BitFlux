@@ -28,6 +28,8 @@
     "d3": "^3.5.4"
   },
   "devDependencies": {
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.3.13",
+    "babelify": "^7.2.0",
     "cordova": "^5.4.0",
     "grunt": "^0.4.5",
     "grunt-contrib-clean": "^0.7.0",
@@ -48,13 +50,14 @@
     "jit-grunt": "^0.9.1",
     "jquery": "^2.1.4",
     "karma": "^0.13.15",
+    "karma-browserify": "^4.4.2",
     "karma-chrome-launcher": "^0.2.2",
-    "rollup-plugin-commonjs": "^1.4.0",
-    "rollup-plugin-npm": "^1.1.0",
     "karma-firefox-launcher": "^0.1.7",
     "karma-ie-launcher": "^0.2.0",
     "karma-jasmine": "^0.3.6",
     "karma-phantomjs-launcher": "^0.2.1",
+    "rollup-plugin-commonjs": "^1.4.0",
+    "rollup-plugin-npm": "^1.1.0",
     "time-grunt": "^1.2.2"
   }
 }

@@ -4,4 +4,4 @@ export default function(product) {
         displayString: product.display,
         option: product
     };
-};
+}

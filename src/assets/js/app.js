@@ -8,7 +8,7 @@ import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 
-export default function app() {
+export default function() {
 
     var app = {};
 
@@ -244,29 +244,29 @@ export default function app() {
             });
     }
 
-    function initialiseHeadMenu(dataInterface) {
+    function initialiseHeadMenu(_dataInterface) {
         return menu.head()
             .on(event.dataProductChange, function(product) {
                 loading(true);
                 updateModelSelectedProduct(product.option);
                 updateModelSelectedPeriod(product.option.periods[0]);
                 if (product.option === bitcoin) {
-                    dataInterface(product.option.periods[0].seconds);
+                    _dataInterface(product.option.periods[0].seconds);
                 } else if (product.option === generated) {
-                    dataInterface.generateDailyData();
+                    _dataInterface.generateDailyData();
                 }
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
                 loading(true);
                 updateModelSelectedPeriod(period.option);
-                dataInterface(period.option.seconds);
+                _dataInterface(period.option.seconds);
                 render();
             });
     }
     function selectOption(option, options) {
-        options.forEach(function(option) {
-            option.isSelected = false;
+        options.forEach(function(_option) {
+            _option.isSelected = false;
         });
         option.isSelected = true;
     }
@@ -286,8 +286,8 @@ export default function app() {
                     });
                 render();
             })
-            .on(event.secondaryChartChange, function(chart) {
-                chart.isSelected = !chart.isSelected;
+            .on(event.secondaryChartChange, function(_chart) {
+                _chart.isSelected = !_chart.isSelected;
                 charts.secondaries =
                     selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
                         return option.isSelected;
@@ -306,16 +306,16 @@ export default function app() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
-        var dataInterface = initialiseDataInterface();
-        headMenu = initialiseHeadMenu(dataInterface);
+        var _dataInterface = initialiseDataInterface();
+        headMenu = initialiseHeadMenu(_dataInterface);
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
 
         updateLayout();
         initialiseResize();
 
-        dataInterface.generateDailyData();
+        _dataInterface.generateDailyData();
     };
 
     return app;
-};
+}

@@ -6,4 +6,4 @@ export default {
     domain: domain,
     layout: layout,
     uid: uid
-}
+};

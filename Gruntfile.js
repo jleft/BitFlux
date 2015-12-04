@@ -1,8 +1,5 @@
 /* global module, require */
 
-var npm = require('rollup-plugin-npm');
-var commonjs = require('rollup-plugin-commonjs');
-
 module.exports = function(grunt) {
     'use strict';
 
@@ -17,20 +14,10 @@ module.exports = function(grunt) {
                 'src/**/*'
             ],
             srcJsFiles: [
-                'src/assets/js/sc.js',
-                'src/assets/js/event.js',
-                'src/assets/js/model/**/*.js',
-                'src/assets/js/chart/**/*.js',
-                'src/assets/js/menu/**/*.js',
-                'src/assets/js/util/**/*.js',
-                'src/assets/js/data/**/*.js',
-                'src/assets/js/behavior/**/*.js',
-                'src/assets/js/series/**/*.js',
-                'src/assets/js/app.js',
-                'src/assets/js/main.js'
+                'src/assets/js/**/*.js'
             ],
             testJsFiles: [
-                'test/**/*Spec.js'
+                'test/**/*.js'
             ],
             ourJsFiles: [
                 'Gruntfile.js',
@@ -47,9 +34,6 @@ module.exports = function(grunt) {
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
-                // Using minified version of d3fc causes issues when keying by series on multi
-                // https://github.com/ScottLogic/d3fc/issues/791
-                'node_modules/d3fc/dist/d3fc.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
@@ -266,7 +250,7 @@ module.exports = function(grunt) {
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'd3fc-showcase'
+                moduleName: 'd3fcShowcase'
             },
             development: {
                 files: {
@@ -281,13 +265,13 @@ module.exports = function(grunt) {
                     'dist/assets/js/app.js': ['src/assets/js/main.js']
                 },
                 options: {
+                    useStrict: false, // 'use-strict' is not supported by D3. d3#1755
                     plugins: [
-                        npm({
+                        require('rollup-plugin-npm')({
                             jsnext: true,
-                            main: true,
-                            skip: ['d3'] // See above vendorJsFiles comment.
+                            main: true
                         }),
-                        commonjs()
+                        require('rollup-plugin-commonjs')()
                     ]
                 }
             }
@@ -317,12 +301,22 @@ module.exports = function(grunt) {
         karma: {
             options: {
                 configFile: 'karma.conf.js',
+                preprocessors: {
+                    'src/assets/js/**/*.js': ['browserify'],
+                    'test/**/*.js': ['browserify']
+                },
                 exclude: ['src/assets/js/main.js'],
                 files: [
                     '<%= meta.vendorJsFiles %>',
                     '<%= meta.srcJsFiles %>',
                     '<%= meta.testJsFiles %>'
-                ]
+                ],
+                browserify: {
+                    debug: true,
+                    transform: [['babelify', {
+                        plugins: ['transform-es2015-modules-commonjs']
+                    }]]
+                }
             },
             phantom: {
                 browsers: ['PhantomJS'],
@@ -421,7 +415,7 @@ module.exports = function(grunt) {
     grunt.registerTask('test:phantom', ['karma:phantom']);
 
     grunt.registerTask('build', [
-        // 'check',
+        'check',
         'clean',
         'template:production',
         'rollup:production',
@@ -433,7 +427,7 @@ module.exports = function(grunt) {
         'copy:icons',
         'copy:mobile']);
     grunt.registerTask('build:development', [
-        // 'check',
+        'check',
         'clean',
         'template:development',
         'rollup:development',
@@ -463,7 +457,6 @@ module.exports = function(grunt) {
     grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
     grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
     grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
-    grunt.registerTask('rollup-test', ['rollup:production']);
 
     grunt.registerTask('serve', ['connect:dist']);
 };

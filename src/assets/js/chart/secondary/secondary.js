@@ -8,4 +8,4 @@ export default {
     macd: macd,
     rsi: rsi,
     volume: volume
-}
+};

@@ -22,5 +22,4 @@ export default function(domain, data, centerDate) {
 
     return [d3.time.second.offset(centeredDataDomain[0], timeShift),
         d3.time.second.offset(centeredDataDomain[1], timeShift)];
-};
-
+}

@@ -6,4 +6,4 @@ export default function(config) {
         volumeFormat: d3.format(config.volumeFormat || 's'),
         periods: config.periods || []
     };
-};
+}

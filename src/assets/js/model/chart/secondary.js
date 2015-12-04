@@ -5,4 +5,4 @@ export default function(initialProduct) {
         trackingLatest: true,
         product: initialProduct
     };
-};
+}

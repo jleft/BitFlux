@@ -6,4 +6,4 @@ export default {
     menu: menu,
     chart: chart,
     data: data
-}
+};

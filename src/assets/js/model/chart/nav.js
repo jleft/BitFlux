@@ -4,4 +4,4 @@ export default function() {
         viewDomain: [],
         trackingLatest: true
     };
-};
+}

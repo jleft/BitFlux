@@ -81,4 +81,4 @@ export default function() {
     d3.rebind(dataInterface, dispatch, 'on');
 
     return dataInterface;
-};
+}

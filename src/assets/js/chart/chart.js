@@ -10,4 +10,4 @@ export default {
     primary: primary,
     xAxis: xAxis,
     secondary: secondary
-}
+};

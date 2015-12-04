@@ -102,22 +102,22 @@ export default function() {
           .yDomain(yExtent);
 
         brush.on('brush', function() {
-              var brushExtentIsEmpty = xEmpty(brush);
+            var brushExtentIsEmpty = xEmpty(brush);
 
-              // Hide the bar if the extent is empty
-              setHide(selection, brushExtentIsEmpty);
-              if (!brushExtentIsEmpty) {
-                  dispatch[event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
-              }
-          })
-          .on('brushend', function() {
-              var brushExtentIsEmpty = xEmpty(brush);
-              setHide(selection, false);
-              if (brushExtentIsEmpty) {
-                  dispatch[event.viewChange](util.domain.centerOnDate(viewScale.domain(),
-                    model.data, brush.extent()[0][0]));
-              }
-          });
+            // Hide the bar if the extent is empty
+            setHide(selection, brushExtentIsEmpty);
+            if (!brushExtentIsEmpty) {
+                dispatch[event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
+            }
+        })
+            .on('brushend', function() {
+                var brushExtentIsEmpty = xEmpty(brush);
+                setHide(selection, false);
+                if (brushExtentIsEmpty) {
+                    dispatch[event.viewChange](util.domain.centerOnDate(viewScale.domain(),
+                        model.data, brush.extent()[0][0]));
+                }
+            });
 
         navChart.plotArea(navMulti);
         selection.call(navChart);
@@ -143,4 +143,4 @@ export default function() {
     };
 
     return nav;
-};
+}

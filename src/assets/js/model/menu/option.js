@@ -6,4 +6,4 @@ export default function(displayString, valueString, option, icon) {
         isSelected: false,
         icon: icon
     };
-};
+}

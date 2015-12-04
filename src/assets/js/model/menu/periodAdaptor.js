@@ -4,4 +4,4 @@ export default function(period) {
         displayString: period.display,
         option: period
     };
-};
+}
