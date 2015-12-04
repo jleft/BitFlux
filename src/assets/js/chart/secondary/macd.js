@@ -29,8 +29,10 @@
             var model = selection.datum();
             algorithm(model.data);
 
-            var maxYExtent = d3.max(model.data, function(d) { return Math.abs(d.macd.macd); });
-            var paddedYExtent = sc.util.domain.padYDomain([-maxYExtent, maxYExtent], 0.04);
+            var paddedYExtent = fc.util.extent()
+                .fields('macd')
+                .symmetricalAbout(0)
+                .pad(0.08)(model.data.map(function(d) { return d.macd; }));
             chart.trackingLatest(model.trackingLatest)
                 .xDomain(model.viewDomain)
                 .yDomain(paddedYExtent);
