@@ -34,6 +34,7 @@ module.exports = function(grunt) {
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
+                'node_modules/d3/d3.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
@@ -265,11 +266,11 @@ module.exports = function(grunt) {
                     'dist/assets/js/app.js': ['src/assets/js/main.js']
                 },
                 options: {
-                    useStrict: false, // 'use-strict' is not supported by D3. d3#1755
                     plugins: [
                         require('rollup-plugin-npm')({
                             jsnext: true,
-                            main: true
+                            main: true,
+                            skip: ['d3'] // d3fc extends d3.selection.prototype
                         }),
                         require('rollup-plugin-commonjs')()
                     ]
