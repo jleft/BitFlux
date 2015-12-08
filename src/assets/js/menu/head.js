@@ -1,46 +1,53 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import productAdaptor from '../model/menu/productAdaptor';
+import periodAdaptor from '../model/menu/periodAdaptor';
+import dropdown from './generator/dropdown';
+import tabGroup from './generator/tabGroup';
+import event from '../event';
 
-    sc.menu.head = function() {
+export default function() {
 
-        var dispatch = d3.dispatch(
-            sc.event.dataProductChange,
-            sc.event.dataPeriodChange);
+    var dispatch = d3.dispatch(
+      event.dataProductChange,
+      event.dataPeriodChange);
 
-        var dataProductDropdown = sc.menu.generator.dropdown()
-            .on('optionChange', function(product) {
-                dispatch[sc.event.dataProductChange](product);
-            });
+    var dataProductDropdown = dropdown()
+      .on('optionChange', function(product) {
+          dispatch[event.dataProductChange](product);
+      });
 
-        var dataPeriodSelector = sc.menu.generator.tabGroup()
-            .on('tabClick', function(period) {
-                dispatch[sc.event.dataPeriodChange](period);
-            });
+    var dataPeriodSelector = tabGroup()
+      .on('tabClick', function(period) {
+          dispatch[event.dataPeriodChange](period);
+      });
 
-        var head = function(selection) {
-            selection.each(function(model) {
-                var container = d3.select(this);
+    var head = function(selection) {
+        selection.each(function(model) {
+            var container = d3.select(this);
 
-                var products = model.products;
-                container.select('#product-dropdown')
-                    .datum({
-                        config: model.productConfig,
-                        options: products.map(sc.model.menu.productAdaptor),
-                        selectedIndex: products.indexOf(model.selectedProduct)
-                    })
-                    .call(dataProductDropdown);
+            var products = model.products;
+            container.select('#product-dropdown')
+                .datum({
+                    config: model.productConfig,
+                    options: products.map(productAdaptor),
+                    selectedIndex: products.indexOf(model.selectedProduct)
+                })
+                .call(dataProductDropdown);
+            var periods = model.selectedProduct.periods;
+            container.select('#period-selector')
+                .classed('hidden', periods.length <= 1) // TODO: get from model instead?
+                .datum({
+                    options: periods.map(periodAdaptor),
+                    selectedIndex: periods.indexOf(model.selectedPeriod)
+                })
+                .call(dataPeriodSelector);
 
-                var periods = model.selectedProduct.periods;
-                container.select('#period-selector')
-                    .classed('hidden', periods.length <= 1) // TODO: get from model instead?
-                    .datum({
-                        options: periods.map(sc.model.menu.periodAdaptor),
-                        selectedIndex: periods.indexOf(model.selectedPeriod)
-                    })
-                    .call(dataPeriodSelector);
-            });
-        };
-
-        return d3.rebind(head, dispatch, 'on');
+            selection.select('#toggle-button')
+                .on('click', function() {
+                    dispatch[event.toggleSlideout]();
+                });
+        });
     };
-}(d3, fc, sc));
+
+    return d3.rebind(head, dispatch, 'on');
+}

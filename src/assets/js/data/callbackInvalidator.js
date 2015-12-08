@@ -1,22 +1,18 @@
-(function(d3, fc, sc) {
-    'use strict';
+export default function() {
+    var n = 0;
 
-    sc.data.callbackInvalidator = function() {
-        var n = 0;
-
-        function callbackInvalidator(callback) {
-            var id = ++n;
-            return function(err, data) {
-                if (id < n) { return; }
-                callback(err, data);
-            };
-        }
-
-        callbackInvalidator.invalidateCallback = function() {
-            n++;
-            return callbackInvalidator;
+    function callbackInvalidator(callback) {
+        var id = ++n;
+        return function(err, data) {
+            if (id < n) { return; }
+            callback(err, data);
         };
+    }
 
+    callbackInvalidator.invalidateCallback = function() {
+        n++;
         return callbackInvalidator;
     };
-}(d3, fc, sc));
+
+    return callbackInvalidator;
+}

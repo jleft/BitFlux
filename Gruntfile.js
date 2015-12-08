@@ -14,20 +14,10 @@ module.exports = function(grunt) {
                 'src/**/*'
             ],
             srcJsFiles: [
-                'src/assets/js/sc.js',
-                'src/assets/js/event.js',
-                'src/assets/js/model/**/*.js',
-                'src/assets/js/chart/**/*.js',
-                'src/assets/js/menu/**/*.js',
-                'src/assets/js/util/**/*.js',
-                'src/assets/js/data/**/*.js',
-                'src/assets/js/behavior/**/*.js',
-                'src/assets/js/series/**/*.js',
-                'src/assets/js/app.js',
-                'src/assets/js/main.js'
+                'src/assets/js/**/*.js'
             ],
             testJsFiles: [
-                'test/**/*Spec.js'
+                'test/**/*.js'
             ],
             ourJsFiles: [
                 'Gruntfile.js',
@@ -44,13 +34,7 @@ module.exports = function(grunt) {
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
-                'node_modules/d3fc/node_modules/d3/d3.min.js',
-                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
-                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
-                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
-                // Using minified version of d3fc causes issues when keying by series on multi
-                // https://github.com/ScottLogic/d3fc/issues/791
-                'node_modules/d3fc/dist/d3fc.js',
+                'node_modules/d3/d3.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
@@ -87,7 +71,7 @@ module.exports = function(grunt) {
         copy: {
             js: {
                 files: [{
-                    cwd: 'node_modules/d3fc/node_modules/d3/',
+                    cwd: 'node_modules/d3/',
                     src: ['d3.js'],
                     dest: 'dist/assets/js',
                     expand: true
@@ -264,14 +248,37 @@ module.exports = function(grunt) {
             }
         },
 
-        concat: {
+        rollup: {
+            options: {
+                format: 'umd',
+                moduleName: 'd3fcShowcase'
+            },
             development: {
-                src: ['<%= meta.srcJsFiles %>'],
-                dest: 'dist/assets/js/app.js',
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
                 options: {
                     sourceMap: true
                 }
             },
+            production: {
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
+                options: {
+                    plugins: [
+                        require('rollup-plugin-npm')({
+                            jsnext: true,
+                            main: true,
+                            skip: ['d3'] // d3fc extends d3.selection.prototype
+                        }),
+                        require('rollup-plugin-commonjs')()
+                    ]
+                }
+            }
+        },
+
+        concat: {
             production: {
                 src: ['<%= meta.vendorJsFiles %>', 'dist/assets/js/app.min.js'],
                 dest: 'dist/assets/js/app.min.js',
@@ -287,7 +294,7 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.min.js': ['<%= meta.srcJsFiles %>']
+                    'dist/assets/js/app.min.js': ['dist/assets/js/app.js']
                 }
             }
         },
@@ -295,12 +302,22 @@ module.exports = function(grunt) {
         karma: {
             options: {
                 configFile: 'karma.conf.js',
+                preprocessors: {
+                    'src/assets/js/**/*.js': ['browserify'],
+                    'test/**/*.js': ['browserify']
+                },
                 exclude: ['src/assets/js/main.js'],
                 files: [
                     '<%= meta.vendorJsFiles %>',
                     '<%= meta.srcJsFiles %>',
                     '<%= meta.testJsFiles %>'
-                ]
+                ],
+                browserify: {
+                    debug: true,
+                    transform: [['babelify', {
+                        plugins: ['transform-es2015-modules-commonjs']
+                    }]]
+                }
             },
             phantom: {
                 browsers: ['PhantomJS'],
@@ -402,6 +419,7 @@ module.exports = function(grunt) {
         'check',
         'clean',
         'template:production',
+        'rollup:production',
         'uglify:production',
         'concat:production',
         'svg_sprite',
@@ -413,7 +431,7 @@ module.exports = function(grunt) {
         'check',
         'clean',
         'template:development',
-        'concat:development',
+        'rollup:development',
         'svg_sprite',
         'less:development',
         'copy']);

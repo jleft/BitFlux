@@ -2,10 +2,8 @@
     "env": {
         "node": true
     },
-    "globals": {
-        "d3": true,
-        "fc": true,
-        "sc": true
+    "ecmaFeatures": {
+        "modules": true
     },
     "rules": {
         "comma-dangle": 2,
