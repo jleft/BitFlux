@@ -6,6 +6,12 @@ export default function(initialProducts, initialSelectedProduct, initialSelected
             listIcons: false,
             icon: false
         },
+        mobilePeriodConfig: {
+            title: null,
+            careted: false,
+            listIcons: false,
+            icon: false
+        },
         products: initialProducts,
         selectedProduct: initialSelectedProduct,
         selectedPeriod: initialSelectedPeriod

@@ -50,12 +50,7 @@ export default function() {
             container.select('#mobile-period-selector')
                 .classed('hidden', periods.length <= 1)
                 .datum({
-                    config: {
-                        title: null,
-                        careted: false,
-                        listIcons: false,
-                        icon: false
-                    },
+                    config: model.mobilePeriodConfig,
                     options: periods.map(periodAdaptor),
                     selectedIndex: periods.indexOf(model.selectedPeriod)
                 })
