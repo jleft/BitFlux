@@ -21,6 +21,11 @@ export default function() {
           dispatch[event.dataPeriodChange](period);
       });
 
+    var dropdownPeriodSelector = dropdown()
+      .on('optionChange', function(period) {
+          dispatch[event.dataPeriodChange](period);
+      });
+
     var head = function(selection) {
         selection.each(function(model) {
             var container = d3.select(this);
@@ -41,6 +46,20 @@ export default function() {
                     selectedIndex: periods.indexOf(model.selectedPeriod)
                 })
                 .call(dataPeriodSelector);
+
+            container.select('#mobile-period-selector')
+                .classed('hidden', periods.length <= 1)
+                .datum({
+                    config: {
+                        title: null,
+                        careted: false,
+                        listIcons: false,
+                        icon: false
+                    },
+                    options: periods.map(periodAdaptor),
+                    selectedIndex: periods.indexOf(model.selectedPeriod)
+                })
+                .call(dropdownPeriodSelector);
 
             selection.select('#toggle-button')
                 .on('click', function() {
