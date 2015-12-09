@@ -35,7 +35,7 @@
                 <div id="x-axis-row">
                     <svg id="x-axis-container"></svg>
                 </div>
-                <div id="navbar-row">
+                <div id="navbar-row" class="hidden-xs hidden-sm">
                     <svg id="navbar-container"></svg>
                     <svg id="navbar-reset"></svg>
                 </div>
