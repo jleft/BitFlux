@@ -16,6 +16,7 @@
             <div id="product-dropdown" class="dropdown product-dropdown"></div>
             <div id="period-selector" class="hidden-xs hidden-sm"></div>
             <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div>
+            <span id="clear-indicators" class="icon sc-icon-delete delete-button hidden-md hidden-lg"></span>
         </div>
     </div>
     <div class="row primary-row">

@@ -262,14 +262,25 @@ export default function() {
                 updateModelSelectedPeriod(period.option);
                 _dataInterface(period.option.seconds);
                 render();
+            })
+            .on(event.clearAllPrimaryChartIndicatorsAndSecondaryCharts, function() {
+                primaryChartModel.indicators.forEach(deselectOption);
+                charts.secondaries.forEach(deselectOption);
+
+                updatePrimaryChartIndicators();
+                updateSecondaryCharts();
+                render();
             });
     }
+
     function selectOption(option, options) {
         options.forEach(function(_option) {
             _option.isSelected = false;
         });
         option.isSelected = true;
     }
+
+    function deselectOption(option) { option.isSelected = false; }
 
     function initialiseSelectors() {
         return menu.selectors()
@@ -280,28 +291,37 @@ export default function() {
             })
             .on(event.primaryChartIndicatorChange, function(indicator) {
                 indicator.isSelected = !indicator.isSelected;
-                primaryChartModel.indicators =
-                    selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
+                updatePrimaryChartIndicators();
                 render();
             })
             .on(event.secondaryChartChange, function(_chart) {
                 _chart.isSelected = !_chart.isSelected;
-                charts.secondaries =
-                    selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
-                        return option.isSelected;
-                    });
-                // TODO: This doesn't seem to be a concern of menu.
-                charts.secondaries.forEach(function(chartOption) {
-                    chartOption.option.on(event.viewChange, onViewChange);
-                });
-                // TODO: Remove .remove! (could a secondary chart group component manage this?).
-                containers.secondaries.selectAll('*').remove();
-                updateLayout();
+                updateSecondaryCharts();
                 render();
             });
     }
+
+    function updatePrimaryChartIndicators() {
+        primaryChartModel.indicators =
+            selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
+                return option.isSelected;
+            });
+    }
+
+    function updateSecondaryCharts() {
+        charts.secondaries =
+            selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
+                return option.isSelected;
+            });
+        // TODO: This doesn't seem to be a concern of menu.
+        charts.secondaries.forEach(function(chartOption) {
+            chartOption.option.on(event.viewChange, onViewChange);
+        });
+        // TODO: Remove .remove! (could a secondary chart group component manage this?).
+        containers.secondaries.selectAll('*').remove();
+        updateLayout();
+    }
+
     app.run = function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
