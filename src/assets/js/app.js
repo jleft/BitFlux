@@ -8,6 +8,10 @@ import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
+import coinbaseAdaptor from './data/adaptor/coinbase';
+import dataGeneratorAdaptor from './data/adaptor/dataGenerator';
+import quandlAdaptor from './data/adaptor/quandl';
+import webSocket from './data/coinbase/webSocket';
 
 export default function() {
 
@@ -41,6 +45,11 @@ export default function() {
         seconds: 86400,
         d3TimeInterval: {unit: d3.time.day, value: 1},
         timeFormat: '%b %d'});
+    var week1 = model.data.period({
+        display: 'Weekly',
+        seconds: 60 * 60 * 24 * 7,
+        d3TimeInterval: {unit: d3.time.week, value: 1},
+        timeFormat: '%b %d'});
     var hour1 = model.data.period({
         display: '1 Hr',
         seconds: 3600,
@@ -56,11 +65,29 @@ export default function() {
         seconds: 60,
         d3TimeInterval: {unit: d3.time.minute, value: 1},
         timeFormat: '%H:%M'});
+
+    var generatedSource = model.data.source(dataGeneratorAdaptor());
+    var bitcoinSource = model.data.source(coinbaseAdaptor(), webSocket());
+    var quandlSource = model.data.source(quandlAdaptor());
+
     var generated = model.data.product({
-        family: 'generated',
         display: 'Data Generator',
         volumeFormat: '.3s',
-        periods: [day1]
+        periods: [day1],
+        source: generatedSource
+    });
+
+    // var bitcoin = model.data.product({
+    //     display: 'Bitcoin',
+    //     volumeFormat: '.2f',
+    //     periods: [minute1, minute5, hour1],
+    //     source: bitcoinSource
+    // });
+    var quandl = model.data.product({
+        display: 'Quandl',
+        volumeFormat: '.2f',
+        periods: [day1, week1],
+        source: quandlSource
     });
 
     var primaryChartModel = model.chart.primary(generated);
@@ -69,7 +96,7 @@ export default function() {
     var xAxisModel = model.chart.xAxis(day1);
     var navModel = model.chart.nav();
     var navResetModel = model.chart.navigationReset();
-    var headMenuModel = model.menu.head([generated], generated, day1);
+    var headMenuModel = model.menu.head([generated, quandl], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
     var overlayModel = model.menu.overlay();
 
@@ -244,17 +271,17 @@ export default function() {
                     onViewChange(newDomain);
                 }
             })
-            .on(event.dataLoaded, function(data) {
+            .on(event.historicDataLoaded, function(data) {
                 loading(false);
                 updateModelData(data);
                 legendModel.data = null;
                 resetToLatest();
                 updateLayout();
             })
-            .on(event.dataLoadError, function(err) {
+            .on(event.historicFeedError, function(err) {
                 console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
             })
-            .on(event.webSocketError, function(err) {
+            .on(event.streamingFeedError, function(err) {
                 console.log('Error loading data from websocket: ' + err);
             });
     }
@@ -265,12 +292,7 @@ export default function() {
                 loading(true);
                 updateModelSelectedProduct(product.option);
                 updateModelSelectedPeriod(product.option.periods[0]);
-                if (product.option.family === 'bitcoin') {
-                    _dataInterface.setNewProduct(product.option.display);
-                    _dataInterface(product.option.periods[0].seconds);
-                } else if (product.option.family === 'generated') {
-                    _dataInterface.generateDailyData();
-                }
+                _dataInterface(product.option.periods[0].seconds, product.option);
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
@@ -299,7 +321,7 @@ export default function() {
     function deselectOption(option) { option.isSelected = false; }
 
     function initialiseCoinbaseProducts() {
-        coinbaseProducts(minute1, minute5, hour1, day1, insertProductsIntoHeadMenuModel);
+        coinbaseProducts(bitcoinSource, minute1, minute5, hour1, day1, insertProductsIntoHeadMenuModel);
     }
 
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
@@ -368,7 +390,7 @@ export default function() {
         updateLayout();
         initialiseResize();
 
-        _dataInterface.generateDailyData();
+        _dataInterface(generated.periods[0].seconds, generated);
         initialiseCoinbaseProducts();
     };
 
