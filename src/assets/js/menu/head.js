@@ -8,18 +8,17 @@ import event from '../event';
 export default function() {
 
     var dispatch = d3.dispatch(
-      event.dataProductChange,
-      event.dataPeriodChange);
+        event.dataProductChange,
+        event.dataPeriodChange);
 
     var dataProductDropdown = dropdown()
-      .on('optionChange', function(product) {
-          dispatch[event.dataProductChange](product);
-      });
+        .on('optionChange', dispatch[event.dataProductChange]);
 
     var dataPeriodSelector = tabGroup()
-      .on('tabClick', function(period) {
-          dispatch[event.dataPeriodChange](period);
-      });
+        .on('tabClick', dispatch[event.dataPeriodChange]);
+
+    var dropdownPeriodSelector = dropdown()
+        .on('optionChange', dispatch[event.dataPeriodChange]);
 
     var head = function(selection) {
         selection.each(function(model) {
@@ -41,6 +40,15 @@ export default function() {
                     selectedIndex: periods.indexOf(model.selectedPeriod)
                 })
                 .call(dataPeriodSelector);
+
+            container.select('#mobile-period-selector')
+                .classed('hidden', periods.length <= 1)
+                .datum({
+                    config: model.mobilePeriodConfig,
+                    options: periods.map(periodAdaptor),
+                    selectedIndex: periods.indexOf(model.selectedPeriod)
+                })
+                .call(dropdownPeriodSelector);
 
             selection.select('#toggle-button')
                 .on('click', function() {

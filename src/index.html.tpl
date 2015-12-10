@@ -14,7 +14,8 @@
     <div class="row head-menu head-row">
         <div class="col-md-12 head-sub-row">
             <div id="product-dropdown" class="dropdown product-dropdown"></div>
-            <div id="period-selector"></div>
+            <div id="period-selector" class="hidden-xs hidden-sm"></div>
+            <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div>
         </div>
     </div>
     <div class="row primary-row">
@@ -26,7 +27,7 @@
                 <div id="series-dropdown" class="dropdown selector-dropdown"></div>
                 <div id="indicator-dropdown" class="dropdown selector-dropdown"></div>
             </div>
-            <div id="legend"></div>
+            <div id="legend" class="hidden-xs hidden-sm"></div>
             <div id="charts-container">
                 <svg id="primary-container"></svg>
                 <svg class="secondary-container"></svg>
