@@ -6,6 +6,14 @@
     display: flex;
     padding-right: ((@grid-gutter-width / 2) + @y-axis-width);
 
+    #product-dropdown {
+      flex-grow: 1;
+
+      button {
+        border: none !important;
+      }
+    }
+
     #period-selector {
       align-self: flex-end;
       flex-grow: 1;
@@ -46,12 +54,7 @@
     }
 
     #mobile-period-selector {
-      position: absolute;
-      right: (@y-axis-width + @option-group-padding);
-      top: 25%;
-      border: 1px solid #3C4F53;
-      border-radius: 2px;
-      color: #7B9FA1;
+      align-self: center;
     }
   }
 }

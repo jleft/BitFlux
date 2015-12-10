@@ -26,9 +26,7 @@ export default function() {
     var listItemsDataJoin = fc.util.dataJoin()
         .selector('li')
         .element('li')
-        .key(function(d) {
-            return d.displayString;
-        });
+        .key(function(d) { return d.displayString; });
 
     function dropdown(selection) {
         var model = selection.datum();
@@ -66,13 +64,9 @@ export default function() {
             .attr('class', 'name');
 
         listItems.selectAll('.icon')
-            .attr('class', function(d) {
-                return 'icon ' + d.icon;
-            });
+            .attr('class', function(d) { return 'icon ' + d.icon; });
         listItems.selectAll('.name')
-            .text(function(d) {
-                return d.displayString;
-            });
+            .text(function(d) { return d.displayString; });
     }
 
     d3.rebind(dropdown, dispatch, 'on');

@@ -175,7 +175,7 @@ export default function() {
         var width = currentSeries.option.width(data);
 
         crosshair.decorate(function(selection) {
-            selection.classed('band', true);
+            selection.classed('band hidden-xs hidden-sm', true);
 
             selection.selectAll('.vertical > line')
               .style('stroke-width', width);
@@ -184,6 +184,7 @@ export default function() {
 
     function lineCrosshair(selection) {
         selection.classed('band', false)
+            .classed('hidden-xs hidden-sm', true)
             .selectAll('line')
             .style('stroke-width', null);
     }
