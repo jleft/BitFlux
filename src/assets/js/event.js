@@ -8,6 +8,7 @@ export default {
     dataProductChange: 'dataProductChange',
     dataPeriodChange: 'dataPeriodChange',
     resetToLatest: 'resetToLatest',
+    clearAllPrimaryChartIndicatorsAndSecondaryCharts: 'clearAllPrimaryChartIndicatorsAndSecondaryCharts',
     primaryChartSeriesChange: 'primaryChartSeriesChange',
     primaryChartYValueAccessorChange: 'primaryChartYValueAccessorChange',
     primaryChartIndicatorChange: 'primaryChartIndicatorChange',

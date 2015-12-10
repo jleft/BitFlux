@@ -9,7 +9,8 @@ export default function() {
 
     var dispatch = d3.dispatch(
         event.dataProductChange,
-        event.dataPeriodChange);
+        event.dataPeriodChange,
+        event.clearAllPrimaryChartIndicatorsAndSecondaryCharts);
 
     var dataProductDropdown = dropdown()
         .on('optionChange', dispatch[event.dataProductChange]);
@@ -32,6 +33,7 @@ export default function() {
                     selectedIndex: products.indexOf(model.selectedProduct)
                 })
                 .call(dataProductDropdown);
+
             var periods = model.selectedProduct.periods;
             container.select('#period-selector')
                 .classed('hidden', periods.length <= 1) // TODO: get from model instead?
@@ -49,6 +51,9 @@ export default function() {
                     selectedIndex: periods.indexOf(model.selectedPeriod)
                 })
                 .call(dropdownPeriodSelector);
+
+            container.select('#clear-indicators')
+                .on('click', dispatch[event.clearAllPrimaryChartIndicatorsAndSecondaryCharts]);
 
             selection.select('#toggle-button')
                 .on('click', function() {
