@@ -14,6 +14,7 @@ export default function() {
 
     var appContainer = d3.select('#app-container');
     var chartsContainer = appContainer.select('#charts-container');
+    var overlay = appContainer.select('#overlay');
     var containers = {
         app: appContainer,
         charts: chartsContainer,
@@ -21,6 +22,8 @@ export default function() {
         secondaries: chartsContainer.selectAll('.secondary-container'),
         xAxis: chartsContainer.select('#x-axis-container'),
         navbar: chartsContainer.select('#navbar-container'),
+        overlay: overlay,
+        overlaySecondaries: overlay. selectAll('.overlay-secondary-container'),
         legend: appContainer.select('#legend'),
         suspendLayout: function(value) {
             var self = this;
@@ -72,6 +75,7 @@ export default function() {
     var navResetModel = model.chart.navigationReset();
     var headMenuModel = model.menu.head([generated, bitcoin], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
+    var overlayModel = model.menu.overlay();
 
     var charts = {
         primary: undefined,
@@ -124,6 +128,9 @@ export default function() {
             .datum(selectorsModel)
             .call(selectors);
 
+        containers.overlay.datum(overlayModel)
+            .call(overlay);
+
         if (layoutRedrawnInNextRender) {
             containers.suspendLayout(true);
             layoutRedrawnInNextRender = false;
@@ -160,6 +167,34 @@ export default function() {
         secondaryChartModel.trackingLatest = trackingLatest;
         navModel.trackingLatest = trackingLatest;
         navResetModel.trackingLatest = trackingLatest;
+        render();
+    }
+
+    function onPrimaryIndicatorChange(indicator) {
+        indicator.isSelected = !indicator.isSelected;
+        primaryChartModel.indicators =
+            selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
+                return option.isSelected;
+            });
+        overlayModel.primaryIndicators = primaryChartModel.indicators;
+        render();
+    }
+
+    function onSecondaryChartChange(_chart) {
+        _chart.isSelected = !_chart.isSelected;
+        charts.secondaries =
+            selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
+                return option.isSelected;
+            });
+        // TODO: This doesn't seem to be a concern of menu.
+        charts.secondaries.forEach(function(chartOption) {
+            chartOption.option.on(event.viewChange, onViewChange);
+        });
+        overlayModel.secondaryIndicators = charts.secondaries;
+
+        // TODO: Remove .remove! (could a secondary chart group component manage this?).
+        containers.secondaries.selectAll('*').remove();
+        updateLayout();
         render();
     }
 
@@ -289,16 +324,8 @@ export default function() {
                 selectOption(series, selectorsModel.seriesSelector.options);
                 render();
             })
-            .on(event.primaryChartIndicatorChange, function(indicator) {
-                indicator.isSelected = !indicator.isSelected;
-                updatePrimaryChartIndicators();
-                render();
-            })
-            .on(event.secondaryChartChange, function(_chart) {
-                _chart.isSelected = !_chart.isSelected;
-                updateSecondaryCharts();
-                render();
-            });
+            .on(event.primaryChartIndicatorChange, onPrimaryIndicatorChange)
+            .on(event.secondaryChartChange, onSecondaryChartChange);
     }
 
     function updatePrimaryChartIndicators() {
@@ -322,14 +349,22 @@ export default function() {
         updateLayout();
     }
 
+    function initialiseOverlay() {
+        return menu.overlay()
+            .on(event.primaryChartIndicatorChange, onPrimaryIndicatorChange)
+            .on(event.secondaryChartChange, onSecondaryChartChange);
+    }
+
     app.run = function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
+
 
         var _dataInterface = initialiseDataInterface();
         headMenu = initialiseHeadMenu(_dataInterface);
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
+        overlay = initialiseOverlay();
 
         updateLayout();
         initialiseResize();
