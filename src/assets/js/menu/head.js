@@ -62,5 +62,7 @@ export default function() {
         });
     };
 
-    return d3.rebind(head, dispatch, 'on');
+    d3.rebind(head, dispatch, 'on');
+
+    return head;
 }

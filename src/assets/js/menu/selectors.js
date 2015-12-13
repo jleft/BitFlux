@@ -55,5 +55,7 @@ export default function() {
         });
     };
 
-    return d3.rebind(selectors, dispatch, 'on');
+    d3.rebind(selectors, dispatch, 'on');
+
+    return selectors;
 }

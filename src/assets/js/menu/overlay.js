@@ -17,13 +17,13 @@ export default function() {
 
     var overlay = function(selection) {
         selection.each(function(model) {
-            var sel = d3.select(this);
+            var container = d3.select(this);
 
-            sel.select('#overlay-primary-container').select('.edit-indicator-container')
+            container.select('#overlay-primary-container .edit-indicator-container')
                 .datum({selectedIndicators: model.primaryIndicators})
                 .call(primaryChartIndicatorToggle);
 
-            sel.selectAll('.overlay-secondary-container')
+            container.selectAll('.overlay-secondary-container')
                 .each(function(d, i) {
                     var currentSelection = d3.select(this);
 
@@ -33,9 +33,10 @@ export default function() {
                         .datum({selectedIndicators: selectedIndicators})
                         .call(secondaryChartToggle);
                 });
-
         });
     };
 
-    return d3.rebind(overlay, dispatch, 'on');
+    d3.rebind(overlay, dispatch, 'on');
+
+    return overlay;
 }
