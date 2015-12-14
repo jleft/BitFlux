@@ -95,10 +95,10 @@ export default function() {
         }
 
         containers.primary.datum(primaryChartModel)
-          .call(charts.primary);
+            .call(charts.primary);
 
         containers.legend.datum(legendModel)
-          .call(charts.legend);
+            .call(charts.legend);
 
         containers.secondaries.datum(secondaryChartModel)
             // TODO: Add component: group of secondary charts.
@@ -161,8 +161,8 @@ export default function() {
         navModel.viewDomain = viewDomain;
 
         var trackingLatest = util.domain.trackingLatestData(
-          primaryChartModel.viewDomain,
-          primaryChartModel.data);
+            primaryChartModel.viewDomain,
+            primaryChartModel.data);
         primaryChartModel.trackingLatest = trackingLatest;
         secondaryChartModel.trackingLatest = trackingLatest;
         navModel.trackingLatest = trackingLatest;
@@ -172,29 +172,13 @@ export default function() {
 
     function onPrimaryIndicatorChange(indicator) {
         indicator.isSelected = !indicator.isSelected;
-        primaryChartModel.indicators =
-            selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
-                return option.isSelected;
-            });
-        overlayModel.primaryIndicators = primaryChartModel.indicators;
+        updatePrimaryChartIndicators();
         render();
     }
 
     function onSecondaryChartChange(_chart) {
         _chart.isSelected = !_chart.isSelected;
-        charts.secondaries =
-            selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
-                return option.isSelected;
-            });
-        // TODO: This doesn't seem to be a concern of menu.
-        charts.secondaries.forEach(function(chartOption) {
-            chartOption.option.on(event.viewChange, onViewChange);
-        });
-        overlayModel.secondaryIndicators = charts.secondaries;
-
-        // TODO: Remove .remove! (could a secondary chart group component manage this?).
-        containers.secondaries.selectAll('*').remove();
-        updateLayout();
+        updateSecondaryCharts();
         render();
     }
 
@@ -206,7 +190,7 @@ export default function() {
     function resetToLatest() {
         var data = primaryChartModel.data;
         var dataDomain = fc.util.extent()
-          .fields('date')(data);
+            .fields('date')(data);
         var navTimeDomain = util.domain.moveToLatest(dataDomain, data, 0.2);
         onViewChange(navTimeDomain);
     }
@@ -259,8 +243,8 @@ export default function() {
                 updateModelData(data);
                 if (primaryChartModel.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
-                      primaryChartModel.viewDomain,
-                      primaryChartModel.data);
+                        primaryChartModel.viewDomain,
+                        primaryChartModel.data);
                     onViewChange(newDomain);
                 }
             })
@@ -333,6 +317,8 @@ export default function() {
             selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
                 return option.isSelected;
             });
+
+        overlayModel.primaryIndicators = primaryChartModel.indicators;
     }
 
     function updateSecondaryCharts() {
@@ -344,6 +330,8 @@ export default function() {
         charts.secondaries.forEach(function(chartOption) {
             chartOption.option.on(event.viewChange, onViewChange);
         });
+
+        overlayModel.secondaryIndicators = charts.secondaries;
         // TODO: Remove .remove! (could a secondary chart group component manage this?).
         containers.secondaries.selectAll('*').remove();
         updateLayout();
