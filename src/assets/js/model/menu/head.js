@@ -14,6 +14,7 @@ export default function(initialProducts, initialSelectedProduct, initialSelected
         },
         products: initialProducts,
         selectedProduct: initialSelectedProduct,
-        selectedPeriod: initialSelectedPeriod
+        selectedPeriod: initialSelectedPeriod,
+        alertMessages: []
     };
 }

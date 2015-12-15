@@ -11,6 +11,7 @@
 </head>
 <body>
 <div class="container" id="app-container">
+    <div id="notifications"></div>
     <div class="row head-menu head-row">
         <div class="col-md-12 head-sub-row">
             <div id="product-dropdown" class="dropdown product-dropdown"></div>
@@ -20,7 +21,7 @@
         </div>
     </div>
     <div class="row primary-row">
-        <div class="col-md-12" id="loading-message">
+        <div class="col-md-12" id="loading-status-message">
             <p class="content">Loading...</p>
         </div>
         <div id="charts" class="col-md-12 hidden">

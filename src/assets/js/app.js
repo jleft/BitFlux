@@ -8,11 +8,14 @@ import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
-import coinbaseAdaptor from './data/adaptor/coinbase';
-import dataGeneratorAdaptor from './data/adaptor/dataGenerator';
-import quandlAdaptor from './data/adaptor/quandl';
+import coinbaseAdaptor from './data/coinbase/historicFeedAdaptor';
+import coinbaseErrorResponseFormatter from './data/coinbase/errorResponseFormatter';
+import dataGeneratorAdaptor from './data/generator/historicFeedAdaptor';
+import quandlAdaptor from './data/quandl/historicFeedAdaptor';
+import quandlErrorResponseFormatter from './data/quandl/errorResponseFormatter';
 import webSocket from './data/coinbase/webSocket';
 import formatProducts from './data/coinbase/formatProducts';
+import notification from './notification/notification';
 
 export default function() {
 
@@ -67,9 +70,9 @@ export default function() {
         d3TimeInterval: {unit: d3.time.minute, value: 1},
         timeFormat: '%H:%M'});
 
-    var generatedSource = model.data.source(dataGeneratorAdaptor());
-    var bitcoinSource = model.data.source(coinbaseAdaptor(), webSocket());
-    var quandlSource = model.data.source(quandlAdaptor());
+    var generatedSource = model.data.source(dataGeneratorAdaptor(), null);
+    var bitcoinSource = model.data.source(coinbaseAdaptor(), coinbaseErrorResponseFormatter, webSocket());
+    var quandlSource = model.data.source(quandlAdaptor(), quandlErrorResponseFormatter, null);
 
     var generated = model.data.product({
         id: null,
@@ -95,6 +98,7 @@ export default function() {
     var headMenuModel = model.menu.head([generated, quandl], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
     var overlayModel = model.menu.overlay();
+    var notificationMessagesModel = model.notification.messages();
 
     var charts = {
         primary: undefined,
@@ -107,6 +111,7 @@ export default function() {
     var headMenu;
     var navReset;
     var selectors;
+    var toastNotifications;
 
     function renderInternal() {
         if (layoutRedrawnInNextRender) {
@@ -146,6 +151,10 @@ export default function() {
         containers.app.select('#selectors')
             .datum(selectorsModel)
             .call(selectors);
+
+        containers.app.select('#notifications')
+            .datum(notificationMessagesModel)
+            .call(toastNotifications);
 
         containers.overlay.datum(overlayModel)
             .call(overlay);
@@ -214,11 +223,13 @@ export default function() {
         onViewChange(navTimeDomain);
     }
 
-    function loading(isLoading) {
-        appContainer.select('#loading-message')
-            .classed('hidden', !isLoading);
+    function loading(isLoading, error) {
+        appContainer.select('#loading-status-message')
+            .classed('hidden', !(isLoading || error))
+            .select('.content')
+            .text(error ? error : 'Loading...');
         appContainer.select('#charts')
-            .classed('hidden', isLoading);
+            .classed('hidden', isLoading || error);
     }
 
     function updateModelData(data) {
@@ -258,7 +269,7 @@ export default function() {
 
     function initialiseDataInterface() {
         return dataInterface()
-            .on(event.newTrade, function(data) {
+            .on(event.newTrade, function(data, source) {
                 updateModelData(data);
                 if (primaryChartModel.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
@@ -267,18 +278,40 @@ export default function() {
                     onViewChange(newDomain);
                 }
             })
-            .on(event.historicDataLoaded, function(data) {
+            .on(event.historicDataLoaded, function(data, source) {
                 loading(false);
                 updateModelData(data);
                 legendModel.data = null;
                 resetToLatest();
                 updateLayout();
             })
-            .on(event.historicFeedError, function(err) {
-                console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
+            .on(event.historicFeedError, function(err, source) {
+                loading(false, 'Error loading data. Please make your selection again, or refresh the page.');
+                var responseText = '';
+                try {
+                    var responseObject = JSON.parse(err.responseText);
+                    responseText = '. ' + source.historicNotificationFormatter(responseObject);
+                } catch (e) {
+                    responseText = '';
+                }
+                var statusText = err.statusText || 'Unkown reason.';
+                var message = 'Error getting historic data: ' + statusText + responseText;
+
+                notificationMessagesModel.messages.unshift(model.notification.message(message));
+                render();
             })
-            .on(event.streamingFeedError, function(err) {
-                console.log('Error loading data from websocket: ' + err); // TODO: something more useful for the user!
+            .on(event.streamingFeedError, function(error, source) {
+                // The WebSocket's error event doesn't contain much useful information,
+                // so the close event is used to report errors instead
+            })
+            .on(event.streamingFeedClose, function(closeEvent, source) {
+                // 1000 is normal closure
+                if (closeEvent.wasClean === false && closeEvent.code !== 1000 && closeEvent.code !== 1006) {
+                    var reason = closeEvent.reason || 'Unkown reason.';
+                    var message = 'Disconnected from live stream: ' + closeEvent.code + reason;
+                    notificationMessagesModel.messages.unshift(model.notification.message(message));
+                    render();
+                }
             });
     }
 
@@ -322,15 +355,17 @@ export default function() {
 
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
-            console.log('Error getting Coinbase products: ' + error); // TODO: something more useful for the user!
+            var statusText = error.statusText || 'Unkown reason.';
+            var message = 'Error getting Coinbase products: ' + statusText;
+            notificationMessagesModel.messages.unshift(model.notification.message(message));
         } else {
             var defaultPeriods = [hour1, day1];
             var productPeriodOverrides = d3.map();
             productPeriodOverrides.set('BTC-USD', [minute1, minute5, hour1, day1]);
             var formattedProducts = formatProducts(bitcoinProducts, bitcoinSource, defaultPeriods, productPeriodOverrides);
             headMenuModel.products = headMenuModel.products.concat(formattedProducts);
-            render();
         }
+        render();
     }
 
     function initialiseSelectors() {
@@ -375,6 +410,16 @@ export default function() {
             .on(event.secondaryChartChange, onSecondaryChartChange);
     }
 
+    function onNotificationClose(id) {
+        notificationMessagesModel.messages = notificationMessagesModel.messages.filter(function(message) { return message.id !== id; });
+        render();
+    }
+
+    function initialiseNotifications() {
+        return notification.toast()
+            .on(event.notificationClose, onNotificationClose);
+    }
+
     app.run = function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
@@ -385,6 +430,7 @@ export default function() {
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
+        toastNotifications = initialiseNotifications();
 
         updateLayout();
         initialiseResize();

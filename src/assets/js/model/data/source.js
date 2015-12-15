@@ -1,6 +1,7 @@
-export default function(historicFeed, streamingFeed) {
+export default function(historicFeed, historicNotificationFormatter, streamingFeed) {
     return {
-        historic: historicFeed,
-        streaming: streamingFeed
+        historicFeed: historicFeed,
+        historicNotificationFormatter: historicNotificationFormatter,
+        streamingFeed: streamingFeed
     };
 }
