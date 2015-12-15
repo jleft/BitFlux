@@ -7,7 +7,8 @@ export default function() {
         allowedPeriods = [60 * 60 * 24],
         candles,
         end,
-        granularity;
+        granularity,
+        product;
 
     var dataGeneratorAdaptor = function(cb) {
         end.setHours(0, 0, 0, 0);
@@ -43,6 +44,17 @@ export default function() {
              + 'Random Financial Data Generator only supports daily data.');
         }
         granularity = x;
+        return dataGeneratorAdaptor;
+    };
+
+    dataGeneratorAdaptor.product = function(x) {
+        if (!arguments.length) {
+            return dataGeneratorAdaptor;
+        }
+        if (x !== undefined) {
+            throw new Error('Random Financial Data Generator does not support products.');
+        }
+        product = x;
         return dataGeneratorAdaptor;
     };
 

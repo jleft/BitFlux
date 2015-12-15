@@ -48,7 +48,8 @@ export default function() {
 
         var now = new Date();
 
-        historicFeed.end(now)
+        historicFeed.product(product.display)
+            .end(now)
             .candles(candlesOfData)
             .granularity(granularity);
 
@@ -64,14 +65,15 @@ export default function() {
         }));
 
         if (streamingFeed != null) {
-            streamingFeed.on('message', function(trade) {
-                _collectOhlc(data, trade);
-                dispatch[event.newTrade](data);
-            });
-            streamingFeed.on('error', function(error) {
-                // TODO: The 'close' event is potentially more useful for error info.
-                dispatch[event.streamingFeedError](error);
-            });
+            streamingFeed.product(streamingFeed.product.display)
+                .on('message', function(trade) {
+                    _collectOhlc(data, trade);
+                    dispatch[event.newTrade](data);
+                })
+                .on('error', function(error) {
+                    // TODO: The 'close' event is potentially more useful for error info.
+                    dispatch[event.streamingFeedError](error);
+                });
             streamingFeed();
         }
     }

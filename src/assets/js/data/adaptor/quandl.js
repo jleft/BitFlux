@@ -38,7 +38,10 @@ export default function() {
         return quandlAdaptor;
     };
 
-    d3.rebind(quandlAdaptor, historicFeed, 'end');
+    fc.util.rebind(quandlAdaptor, historicFeed, {
+        end: 'end',
+        product: 'dataset'
+    });
 
     return quandlAdaptor;
 }
