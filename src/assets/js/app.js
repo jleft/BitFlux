@@ -7,7 +7,7 @@ import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
-import coinbaseProducts from './data/feed/coinbase/getProducts';
+import coinbaseProducts from './data/coinbase/getProducts';
 
 export default function() {
 
@@ -305,10 +305,11 @@ export default function() {
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
             console.log('Error getting coinbase products: ' + error); // TODO: something more useful for the user!
+        } else {
+            // Add the newly received products to the product list
+            headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
+            render();
         }
-        // Add the newly received products to the product list
-        headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
-        render();
     }
 
     function initialiseSelectors() {

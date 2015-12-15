@@ -1,11 +1,11 @@
-import formatProducts from '../../src/assets/js/data/feed/coinbase/formatProducts';
+import formatProducts from '../../src/assets/js/data/coinbase/formatProducts';
 
 var min1 = 60;
 var min5 = 300;
 var hr1 = 3600;
 var day1 = 86400;
 
-describe('data/coinbase/products', function() {
+describe('data/coinbase/formatProducts', function() {
     it('should assign the correct periods to BTC-USD', function() {
         var btcusd = [{ id: 'BTC-USD' }];
         var productResponse = formatProducts(min1, min5, hr1, day1, btcusd);

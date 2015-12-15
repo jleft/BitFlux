@@ -1,5 +1,5 @@
 import d3 from 'd3';
-import model from '../../../model/model';
+import model from '../../model/model';
 import formatProducts from './formatProducts';
 
 export default function(minute1, minute5, hour1, day1, callback) {

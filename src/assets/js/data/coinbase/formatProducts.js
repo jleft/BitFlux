@@ -1,4 +1,4 @@
-import model from '../../../model/model';
+import model from '../../model/model';
 
 export default function(minute1, minute5, hour1, day1, response) {
     var products = response.map(function(product) {
