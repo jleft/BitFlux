@@ -7,7 +7,7 @@ import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
-import coinbaseProducts from './data/feed/coinbase/products';
+import coinbaseProducts from './data/feed/coinbase/getProducts';
 
 export default function() {
 
@@ -309,10 +309,6 @@ export default function() {
         // Add the newly received products to the product list
         headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
         render();
-
-        containers.app.select('.head-menu')
-            .datum(headMenuModel)
-            .call(headMenu);
     }
 
     function initialiseSelectors() {
