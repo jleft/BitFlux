@@ -24,8 +24,10 @@ export default function() {
           .on('click', dispatch.tabClick);
 
         li.classed('active', function(d, i) { return i === selectedIndex; })
-          .select('a')
-          .text(function(option) { return option.displayString; });
+            .select('a')
+            .text(function(option) { return option.displayString; });
+
+        li.exit().remove();
     }
 
     d3.rebind(tabGroup, dispatch, 'on');
