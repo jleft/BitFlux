@@ -66,6 +66,11 @@ export default function() {
         dispatch[event.dataLoaded](generatedData);
     };
 
+    dataInterface.setNewProduct = function(newProduct) {
+        historicFeed.product(newProduct);
+        coinbaseWebSocket.product(newProduct);
+    };
+
     function invalidate() {
         coinbaseWebSocket.close();
         data = [];

@@ -7,6 +7,7 @@ import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
+import coinbaseProducts from './data/feed/coinbase/products';
 
 export default function() {
 
@@ -55,16 +56,11 @@ export default function() {
         seconds: 60,
         d3TimeInterval: {unit: d3.time.minute, value: 1},
         timeFormat: '%H:%M'});
-
     var generated = model.data.product({
+        family: 'generated',
         display: 'Data Generator',
         volumeFormat: '.3s',
         periods: [day1]
-    });
-    var bitcoin = model.data.product({
-        display: 'Bitcoin',
-        volumeFormat: '.2f',
-        periods: [minute1, minute5, hour1]
     });
 
     var primaryChartModel = model.chart.primary(generated);
@@ -73,7 +69,7 @@ export default function() {
     var xAxisModel = model.chart.xAxis(day1);
     var navModel = model.chart.nav();
     var navResetModel = model.chart.navigationReset();
-    var headMenuModel = model.menu.head([generated, bitcoin], generated, day1);
+    var headMenuModel = model.menu.head([generated], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
     var overlayModel = model.menu.overlay();
 
@@ -269,9 +265,10 @@ export default function() {
                 loading(true);
                 updateModelSelectedProduct(product.option);
                 updateModelSelectedPeriod(product.option.periods[0]);
-                if (product.option === bitcoin) {
+                if (product.option.family === 'bitcoin') {
+                    _dataInterface.setNewProduct(product.option.display);
                     _dataInterface(product.option.periods[0].seconds);
-                } else if (product.option === generated) {
+                } else if (product.option.family === 'generated') {
                     _dataInterface.generateDailyData();
                 }
                 render();
@@ -300,6 +297,23 @@ export default function() {
     }
 
     function deselectOption(option) { option.isSelected = false; }
+
+    function initialiseCoinbaseProducts() {
+        coinbaseProducts(minute1, minute5, hour1, day1, insertProductsIntoHeadMenuModel);
+    }
+
+    function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
+        if (error) {
+            console.log('Error getting coinbase products: ' + error); // TODO: something more useful for the user!
+        }
+        // Add the newly received products to the product list
+        headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
+        render();
+
+        containers.app.select('.head-menu')
+            .datum(headMenuModel)
+            .call(headMenu);
+    }
 
     function initialiseSelectors() {
         return menu.selectors()
@@ -358,6 +372,7 @@ export default function() {
         initialiseResize();
 
         _dataInterface.generateDailyData();
+        initialiseCoinbaseProducts();
     };
 
     return app;
