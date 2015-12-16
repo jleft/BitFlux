@@ -278,7 +278,7 @@ export default function() {
                 console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
             })
             .on(event.streamingFeedError, function(err) {
-                console.log('Error loading data from websocket: ' + err);
+                console.log('Error loading data from websocket: ' + err); // TODO: something more useful for the user!
             });
     }
 
