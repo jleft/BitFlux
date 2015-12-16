@@ -1,24 +1,23 @@
 import model from '../../model/model';
 
-export default function(minute1, minute5, hour1, day1, response) {
-    var products = response.map(function(product) {
-        if (product.id !== 'BTC-USD') {
+export default function(products, source, defaults, exceptions) {
+    var formattedProducts = products.map(function(product) {
+        if (exceptions.has(product.id)) {
             return {
-                family: 'bitcoin',
+                id: product.id,
                 display: product.id,
-                volumeFormat: '.2f',
-                periods: [hour1, day1]
+                periods: exceptions.get(product.id),
+                source: source
             };
         } else {
             return {
-                family: 'bitcoin',
+                id: product.id,
                 display: product.id,
-                volumeFormat: '.2f',
-                periods: [minute1, minute5, hour1, day1]
+                periods: defaults,
+                source: source
             };
         }
     });
 
-    // Format the new products correctly
-    return products.map(model.data.product);
+    return formattedProducts.map(model.data.product);
 }

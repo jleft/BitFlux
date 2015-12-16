@@ -12,25 +12,26 @@ export default function() {
 
         var ul = dataJoin(selection, [selection.datum().options]);
 
-        ul.enter().append('ul');
+        ul.enter()
+            .append('ul');
 
         var li = ul.selectAll('li')
-          .data(fc.util.fn.identity);
+            .data(fc.util.fn.identity);
 
         li.enter()
-          .append('li')
-          .append('a')
-          .attr('href', '#')
-          .on('click', dispatch.tabClick);
+            .append('li')
+            .append('a')
+            .attr('href', '#')
+            .on('click', dispatch.tabClick);
 
         li.classed('active', function(d, i) { return i === selectedIndex; })
             .select('a')
             .text(function(option) { return option.displayString; });
 
-        li.exit().remove();
+        li.exit()
+            .remove();
     }
 
     d3.rebind(tabGroup, dispatch, 'on');
     return tabGroup;
 }
-
