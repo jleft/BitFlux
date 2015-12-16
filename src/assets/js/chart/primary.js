@@ -30,48 +30,14 @@ function produceAnnotatedTickValues(scale, annotation) {
     return annotatedTickValues;
 }
 
-function findTotalYExtent(visibleData, currentSeries, currentIndicators) {
-    var extentAccessor;
-    switch (currentSeries.valueString) {
-    case 'candlestick':
-    case 'ohlc':
-        extentAccessor = [currentSeries.option.yLowValue(), currentSeries.option.yHighValue()];
-        break;
-    case 'line':
-    case 'point':
-        extentAccessor = currentSeries.option.yValue();
-        break;
-    case 'area' :
-        extentAccessor = currentSeries.option.y1Value();
-        break;
-    default:
-        throw new Error('Main series given to chart does not have expected interface');
-    }
-    var extent = fc.util.extent()
-      .fields(extentAccessor)(visibleData);
-
-    if (currentIndicators.length) {
-        var indicators = currentIndicators.map(function(indicator) { return indicator.valueString; });
-        var movingAverageShown = (indicators.indexOf('movingAverage') !== -1);
-        var bollingerBandsShown = (indicators.indexOf('bollinger') !== -1);
-        if (bollingerBandsShown) {
-            var bollingerBandsVisibleDataObject = visibleData.map(function(d) { return d.bollingerBands; });
-            var bollingerBandsExtent = fc.util.extent()
-              .fields(['lower', 'upper'])(bollingerBandsVisibleDataObject);
-            extent[0] = d3.min([bollingerBandsExtent[0], extent[0]]);
-            extent[1] = d3.max([bollingerBandsExtent[1], extent[1]]);
+function getExtentAccessors(multiSeries) {
+    return multiSeries.reduce(function(extentAccessors, series) {
+        if (series.extentAccessor) {
+            return extentAccessors.concat(series.extentAccessor);
+        } else {
+            return extentAccessors;
         }
-        if (movingAverageShown) {
-            var movingAverageExtent = fc.util.extent()
-              .fields('movingAverage')(visibleData);
-            extent[0] = d3.min([movingAverageExtent[0], extent[0]]);
-            extent[1] = d3.max([movingAverageExtent[1], extent[1]]);
-        }
-        if (!(movingAverageShown || bollingerBandsShown)) {
-            throw new Error('Unexpected indicator type');
-        }
-    }
-    return extent;
+    }, []);
 }
 
 export default function() {
@@ -213,9 +179,11 @@ export default function() {
 
         // Scale y axis
         var visibleData = util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
-        var yExtent = findTotalYExtent(visibleData, currentSeries, currentIndicators);
         // Add percentage padding either side of extreme high/lows
-        var paddedYExtent = util.domain.padYDomain(yExtent, 0.04);
+        var extentAccessors = getExtentAccessors(multi.series());
+        var paddedYExtent = fc.util.extent()
+            .fields(extentAccessors)
+            .pad(0.08)(visibleData);
         primaryChart.yDomain(paddedYExtent);
 
         // Find current tick values and add close price to this list, then set it explicitly below
