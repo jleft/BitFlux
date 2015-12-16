@@ -41,24 +41,24 @@ export default function() {
         }
     };
 
-    var day1 = model.data.period({
-        display: 'Daily',
-        seconds: 86400,
-        d3TimeInterval: {unit: d3.time.day, value: 1},
-        timeFormat: '%b %d'});
     var week1 = model.data.period({
         display: 'Weekly',
         seconds: 60 * 60 * 24 * 7,
         d3TimeInterval: {unit: d3.time.week, value: 1},
         timeFormat: '%b %d'});
+    var day1 = model.data.period({
+        display: 'Daily',
+        seconds: 60 * 60 * 24,
+        d3TimeInterval: {unit: d3.time.day, value: 1},
+        timeFormat: '%b %d'});
     var hour1 = model.data.period({
         display: '1 Hr',
-        seconds: 3600,
+        seconds: 60 * 60,
         d3TimeInterval: {unit: d3.time.hour, value: 1},
         timeFormat: '%b %d %Hh'});
     var minute5 = model.data.period({
         display: '5 Min',
-        seconds: 300,
+        seconds: 60 * 5,
         d3TimeInterval: {unit: d3.time.minute, value: 5},
         timeFormat: '%H:%M'});
     var minute1 = model.data.period({
