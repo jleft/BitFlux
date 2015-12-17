@@ -1,0 +1,61 @@
+#overlay {
+  height: 100%;
+  position:absolute;
+  top:0;
+  pointer-events: none;
+  padding-right: @bootstrap-padding-width;
+
+  #overlay-primary-container {
+    display: flex;
+    flex-direction: column;
+
+    #overlay-primary-head {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 40px;
+    }
+
+    #overlay-primary-bottom {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+    }
+  }
+
+  .edit-indicator-container {
+    display: flex;
+    margin-bottom: 8px;
+  }
+
+  .overlay-secondary-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .edit-indicator {
+    background-color: fadeout(@overlay-background-colour, 25%);
+    border-radius: 2px;
+    margin-left: 3px;
+    margin-right: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+
+    .icon {
+      pointer-events: visiblePainted;
+      visibility: visible;
+      display: inline-block;
+      cursor: pointer;
+      vertical-align: middle;
+      background-color: @overlay-background-colour;
+      border-radius: 4px;
+    }
+
+    .indicator-label {
+      color: @edit-indicator-text-colour;
+      font-size: @font-size-tiny;
+      vertical-align: middle;
+      margin-left: 6px;
+    }
+  }
+}

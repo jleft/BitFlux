@@ -14,20 +14,10 @@ module.exports = function(grunt) {
                 'src/**/*'
             ],
             srcJsFiles: [
-                'src/assets/js/sc.js',
-                'src/assets/js/event.js',
-                'src/assets/js/model/**/*.js',
-                'src/assets/js/chart/**/*.js',
-                'src/assets/js/menu/**/*.js',
-                'src/assets/js/util/**/*.js',
-                'src/assets/js/data/**/*.js',
-                'src/assets/js/behavior/**/*.js',
-                'src/assets/js/series/**/*.js',
-                'src/assets/js/app.js',
-                'src/assets/js/main.js'
+                'src/assets/js/**/*.js'
             ],
             testJsFiles: [
-                'test/**/*Spec.js'
+                'test/**/*.js'
             ],
             ourJsFiles: [
                 'Gruntfile.js',
@@ -44,47 +34,25 @@ module.exports = function(grunt) {
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
-                'node_modules/d3fc/node_modules/d3/d3.min.js',
-                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
-                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
-                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
-                // Using minified version of d3fc causes issues when keying by series on multi
-                // https://github.com/ScottLogic/d3fc/issues/791
-                'node_modules/d3fc/dist/d3fc.js',
+                'node_modules/d3/d3.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
             coverageDir: 'coverage'
         },
 
-        jscs: {
-            options: {
-                config: '.jscsrc'
-            },
-            failOnError: {
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
-            }
-        },
-
-        jshint: {
-            options: {
-                jshintrc: true
-            },
-            failOnError: {
-                files: {
-                    src: ['<%= meta.ourJsFiles %>']
-                }
-            }
-        },
-
         watch: {
-            files: ['<%= meta.srcFiles %>'],
-            tasks: ['build:development'],
             options: {
                 atBegin: true,
                 livereload: true
+            },
+            dev: {
+                files: ['<%= meta.srcFiles %>'],
+                tasks: ['build:development']
+            },
+            devTest: {
+                files: ['<%= meta.ourJsFiles %>'],
+                tasks: ['build:development', 'karma:chromeBackground:run']
             }
         },
 
@@ -103,7 +71,7 @@ module.exports = function(grunt) {
         copy: {
             js: {
                 files: [{
-                    cwd: 'node_modules/d3fc/node_modules/d3/',
+                    cwd: 'node_modules/d3/',
                     src: ['d3.js'],
                     dest: 'dist/assets/js',
                     expand: true
@@ -280,14 +248,37 @@ module.exports = function(grunt) {
             }
         },
 
-        concat: {
+        rollup: {
+            options: {
+                format: 'umd',
+                moduleName: 'd3fcShowcase'
+            },
             development: {
-                src: ['<%= meta.srcJsFiles %>'],
-                dest: 'dist/assets/js/app.js',
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
                 options: {
                     sourceMap: true
                 }
             },
+            production: {
+                files: {
+                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                },
+                options: {
+                    plugins: [
+                        require('rollup-plugin-npm')({
+                            jsnext: true,
+                            main: true,
+                            skip: ['d3'] // d3fc extends d3.selection.prototype
+                        }),
+                        require('rollup-plugin-commonjs')()
+                    ]
+                }
+            }
+        },
+
+        concat: {
             production: {
                 src: ['<%= meta.vendorJsFiles %>', 'dist/assets/js/app.min.js'],
                 dest: 'dist/assets/js/app.min.js',
@@ -303,48 +294,50 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.min.js': ['<%= meta.srcJsFiles %>']
+                    'dist/assets/js/app.min.js': ['dist/assets/js/app.js']
                 }
             }
         },
 
-        jasmine: {
+        karma: {
             options: {
-                specs: '<%= meta.testJsFiles %>',
-                vendor: '<%= meta.vendorJsFiles %>',
-                keepRunner: true
-            },
-            test: {
-                src: [
+                configFile: 'karma.conf.js',
+                preprocessors: {
+                    'src/assets/js/**/*.js': ['browserify'],
+                    'test/**/*.js': ['browserify']
+                },
+                exclude: ['src/assets/js/main.js'],
+                files: [
+                    '<%= meta.vendorJsFiles %>',
                     '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
-                ]
-            },
-            coverage: {
-                src: [
-                    '<%= meta.srcJsFiles %>',
-                    '!src/assets/js/main.js'
+                    '<%= meta.testJsFiles %>'
                 ],
-                options: {
-                    template: require('grunt-template-jasmine-istanbul'),
-                    templateOptions: {
-                        coverage: '<%= meta.coverageDir %>/coverage.json',
-                        report: [
-                            {
-                                type: 'html',
-                                options: {
-                                    dir: '<%= meta.coverageDir %>/html'
-                                }
-                            },
-                            {
-                                type: 'text-summary'
-                            },
-                            {
-                                type: 'text'
-                            }
-                        ]
-                    }
+                browserify: {
+                    debug: true,
+                    transform: [['babelify', {
+                        plugins: ['transform-es2015-modules-commonjs']
+                    }]]
                 }
+            },
+            phantom: {
+                browsers: ['PhantomJS'],
+                autoWatch: false,
+                singleRun: true
+            },
+            chrome: {
+                browsers: ['Chrome'],
+                autoWatch: true,
+                singleRun: false
+            },
+            chromeBackground: {
+                browsers: ['Chrome'],
+                background: true,
+                singleRun: false
+            },
+            all: {
+                browsers: ['Chrome', 'Firefox', 'IE', 'PhantomJS'],
+                autoWatch: true,
+                singleRun: false
             }
         },
 
@@ -398,27 +391,35 @@ module.exports = function(grunt) {
                     }
                 }
             }
+        },
+
+        eslint: {
+            js: {
+                src: ['<%= meta.ourJsFiles %>']
+            }
         }
 
     });
 
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
-            'build',
-            'test:coverage',
-            'mobile:platforms',
-            'mobile:prepare'
-        ]);
+        'build',
+        'test:phantom',
+        'mobile:platforms',
+        'mobile:prepare'
+    ]);
 
-    grunt.registerTask('check', ['jshint:failOnError', 'jscs:failOnError']);
+    grunt.registerTask('check', ['eslint']);
 
-    grunt.registerTask('test', ['jasmine:test']);
-    grunt.registerTask('test:coverage', ['jasmine:coverage']);
+    grunt.registerTask('test', ['karma:all']);
+    grunt.registerTask('test:chrome', ['karma:chrome']);
+    grunt.registerTask('test:phantom', ['karma:phantom']);
 
     grunt.registerTask('build', [
         'check',
         'clean',
         'template:production',
+        'rollup:production',
         'uglify:production',
         'concat:production',
         'svg_sprite',
@@ -430,7 +431,7 @@ module.exports = function(grunt) {
         'check',
         'clean',
         'template:development',
-        'concat:development',
+        'rollup:development',
         'svg_sprite',
         'less:development',
         'copy']);
@@ -438,24 +439,25 @@ module.exports = function(grunt) {
     grunt.registerTask('build:android', ['buildAndTest', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['buildAndTest', 'cordovacli:buildIos']);
     grunt.registerTask('mobile:platforms', [
-            'cordovacli:addIos',
-            'cordovacli:addAndroid'
-        ]);
+        'cordovacli:addIos',
+        'cordovacli:addAndroid'
+    ]);
     grunt.registerTask('mobile:prepare', [
-            'cordovacli:prepareIos',
-            'cordovacli:prepareAndroid'
-        ]);
+        'cordovacli:prepareIos',
+        'cordovacli:prepareAndroid'
+    ]);
     grunt.registerTask('mobile:init', [
-            'buildAndTest',
-            'mobile:platforms',
-            'mobile:prepare'
-        ]);
+        'buildAndTest',
+        'mobile:platforms',
+        'mobile:prepare'
+    ]);
 
     grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
-    grunt.registerTask('buildAndTest', ['build', 'test']);
-    grunt.registerTask('dev', ['connect:watch', 'watch']);
+    grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
+    grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
+    grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
 
     grunt.registerTask('serve', ['connect:dist']);
 };

@@ -1,33 +1,43 @@
-(function(d3, fc, sc) {
-    'use strict';
+import fc from 'd3fc';
+import option from './option';
+import candlestickSeries from '../../series/candlestick';
+import util from '../../util/util';
 
-    sc.model.menu.seriesSelector = function() {
+export default function() {
 
-        // TODO: Could 'isLine' go on primary chart series model instead?
-        var line = fc.series.line();
-        line.isLine = true;
+    var candlestick = candlestickSeries();
+    candlestick.id = util.uid();
+    var candlestickOption = option(
+      'Candlestick',
+      'candlestick',
+      candlestick,
+      'sc-icon-candlestick-series');
+    candlestickOption.isSelected = true;
 
-        var candlestickOption = sc.menu.option(
-            'Candlestick',
-            'candlestick',
-            sc.series.candlestick(),
-            'sc-icon-candlestick-series');
-        candlestickOption.isSelected = true;
+    var ohlc = fc.series.ohlc();
+    ohlc.id = util.uid();
 
-        return {
-            config: {
-                title: null,
-                careted: false,
-                listIcons: true,
-                icon: true
-            },
-            options: [
-                candlestickOption,
-                sc.menu.option('OHLC', 'ohlc', fc.series.ohlc(), 'sc-icon-ohlc-series'),
-                sc.menu.option('Line', 'line', line, 'sc-icon-line-series'),
-                sc.menu.option('Point', 'point', fc.series.point(), 'sc-icon-point-series'),
-                sc.menu.option('Area', 'area', fc.series.area(), 'sc-icon-area-series')
-            ]};
-    };
+    var line = fc.series.line();
+    line.id = util.uid();
 
-})(d3, fc, sc);
+    var point = fc.series.point();
+    point.id = util.uid();
+
+    var area = fc.series.area();
+    area.id = util.uid();
+
+    return {
+        config: {
+            title: null,
+            careted: false,
+            listIcons: true,
+            icon: true
+        },
+        options: [
+            candlestickOption,
+            option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series'),
+            option('Line', 'line', line, 'sc-icon-line-series'),
+            option('Point', 'point', point, 'sc-icon-point-series'),
+            option('Area', 'area', area, 'sc-icon-area-series')
+        ]};
+}

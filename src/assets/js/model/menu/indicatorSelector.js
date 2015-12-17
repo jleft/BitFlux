@@ -1,17 +1,15 @@
-(function(d3, fc, sc) {
-    'use strict';
+import indicatorOptions from './indicatorOptions';
+import secondaryChartOptions from './secondaryChartOptions';
 
-    sc.model.menu.indicatorSelector = function() {
-        return {
-            config: {
-                title: 'Add Indicator',
-                careted: false,
-                listIcons: true,
-                icon: false
-            },
-            indicatorOptions: sc.model.menu.indicatorOptions(),
-            secondaryChartOptions: sc.model.menu.secondaryChartOptions()
-        };
+export default function() {
+    return {
+        config: {
+            title: 'Add Indicator',
+            careted: false,
+            listIcons: true,
+            icon: false
+        },
+        indicatorOptions: indicatorOptions,
+        secondaryChartOptions: secondaryChartOptions
     };
-
-})(d3, fc, sc);
+}

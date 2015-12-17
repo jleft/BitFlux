@@ -1,24 +1,20 @@
-(function(d3, fc, sc) {
-    'use strict';
+import secondary from '../../chart/secondary/secondary';
+import option from './option';
 
-    sc.model.menu.secondaryChartOptions = function() {
-        return [
-            sc.menu.option(
-                'Relative Strength Index',
-                'secondary-rsi',
-                sc.chart.secondary.rsi(),
-                'sc-icon-rsi-indicator'),
-            sc.menu.option(
-                'MACD',
-                'secondary-macd',
-                sc.chart.secondary.macd(),
-                'sc-icon-macd-indicator'),
-            sc.menu.option(
-                'Volume',
-                'secondary-volume',
-                sc.chart.secondary.volume(),
-                'sc-icon-bar-series')
-        ];
-    };
-
-})(d3, fc, sc);
+export default [
+    option(
+        'Relative Strength Index',
+        'secondary-rsi',
+        secondary.rsi(),
+        'sc-icon-rsi-indicator'),
+    option(
+        'MACD',
+        'secondary-macd',
+        secondary.macd(),
+        'sc-icon-macd-indicator'),
+    option(
+        'Volume',
+        'secondary-volume',
+        secondary.volume(),
+        'sc-icon-bar-series')
+];

@@ -1,39 +1,44 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import fc from 'd3fc';
+import util from '../../util/util';
+import event from '../../event';
+import base from './base';
 
-    sc.chart.secondary.volume = function() {
-        var dispatch = d3.dispatch(sc.event.viewChange);
-        var volumeBar = fc.series.bar()
-            .yValue(function(d) { return d.volume; });
+export default function() {
+    var dispatch = d3.dispatch(event.viewChange);
+    var volumeBar = fc.series.bar()
+      .yValue(function(d) { return d.volume; });
 
-        var chart = sc.chart.secondary.base()
-            .series([volumeBar])
-            .yTicks(4)
-            .on(sc.event.viewChange, function(domain) {
-                dispatch[sc.event.viewChange](domain);
-            });
+    var chart = base()
+      .series([volumeBar])
+      .yTicks(4)
+      .on(event.viewChange, function(domain) {
+          dispatch[event.viewChange](domain);
+      });
 
-        function volume(selection) {
-            selection.each(function(model) {
-                var maxYExtent = d3.max(model.data, function(d) { return d3.max([d.volume]); });
-                var minYExtent = d3.min(model.data, function(d) { return d3.min([d.volume]); });
-                var paddedYExtent = sc.util.domain.padYDomain([minYExtent, maxYExtent], 0.04);
-                chart.yTickFormat(model.product.volumeFormat)
-                    .trackingLatest(model.trackingLatest)
-                    .xDomain(model.viewDomain)
-                    .yDomain(paddedYExtent);
+    function volume(selection) {
+        selection.each(function(model) {
+            var paddedYExtent = fc.util.extent()
+                .fields('volume')
+                .pad(0.08)(model.data);
+            if (paddedYExtent[0] < 0) {
+                paddedYExtent[0] = 0;
+            }
+            chart.yTickFormat(model.product.volumeFormat)
+                .trackingLatest(model.trackingLatest)
+                .xDomain(model.viewDomain)
+                .yDomain(paddedYExtent);
 
-                selection.datum(model.data)
-                    .call(chart);
-            });
-        }
+            selection.datum(model.data)
+                .call(chart);
+        });
+    }
 
-        d3.rebind(volume, dispatch, 'on');
+    d3.rebind(volume, dispatch, 'on');
 
-        volume.dimensionChanged = function(container) {
-            chart.dimensionChanged(container);
-        };
-
-        return volume;
+    volume.dimensionChanged = function(container) {
+        chart.dimensionChanged(container);
     };
-})(d3, fc, sc);
+
+    return volume;
+}

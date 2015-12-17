@@ -1,73 +1,89 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import fc from 'd3fc';
+import callbackInvalidator from './callbackInvalidator';
+import collectOhlc from './collectOhlc';
+import webSocket from './coinbase/webSocket';
+import event from '../event';
 
-    sc.data.dataInterface = function() {
-        var historicFeed = fc.data.feed.coinbase();
-        var callbackGenerator = sc.data.callbackInvalidator();
-        var ohlcConverter = sc.data.feed.coinbase.ohlcWebSocketAdaptor();
-        var dataGenerator = fc.data.random.financial();
-        var dispatch = d3.dispatch(sc.event.messageReceived, sc.event.dataLoaded);
-        var candlesOfData = 200;
+export default function() {
+    var historicFeed = fc.data.feed.coinbase();
+    var callbackGenerator = callbackInvalidator();
+    var dataGenerator = fc.data.random.financial();
+    var coinbaseWebSocket = webSocket();
+    var _collectOhlc = collectOhlc()
+      .date(function(d) {return new Date(d.time);})
+      .volume(function(d) {return Number(d.size);});
+    var dispatch = d3.dispatch(event.newTrade, event.dataLoaded,
+      event.dataLoadError, event.webSocketError);
+    var candlesOfData = 200;
+    var data = [];
 
-        function updateHistoricFeedDateRangeToPresent(period) {
-            var currDate = new Date();
-            var startDate = d3.time.second.offset(currDate, -candlesOfData * period);
-            historicFeed.start(startDate)
-                .end(currDate);
-        }
+    // TODO: configurable product.
 
-        function newBasketReceived(basket, data) {
-            if (data[data.length - 1].date.getTime() !== basket.date.getTime()) {
-                data.push(basket);
+    function updateHistoricFeedDateRangeToPresent(granularity) {
+        var currDate = new Date();
+        var startDate = d3.time.second.offset(currDate, -candlesOfData * granularity);
+        historicFeed
+          .start(startDate)
+          .end(currDate);
+    }
+
+    function dataInterface(granularity) {
+        invalidate();
+        historicFeed.granularity(granularity);
+        updateHistoricFeedDateRangeToPresent(granularity);
+        _collectOhlc.granularity(granularity);
+
+        historicFeed(callbackGenerator(function(error, newData) {
+            if (!error) {
+                data = newData;
+                dispatch[event.dataLoaded](dateSort(data));
             } else {
-                data[data.length - 1] = basket;
+                dispatch[event.dataLoadError](error);
             }
-        }
+        }));
+        coinbaseWebSocket.on('message', function(trade) {
+            _collectOhlc(data, trade);
+            dispatch[event.newTrade](data);
+        });
+        coinbaseWebSocket.on('error', function(error) {
+            // TODO: The 'close' event is potentially more useful for error info.
+            dispatch[event.webSocketError](error);
+        });
+        coinbaseWebSocket();
+    }
 
-        function liveCallback(data) {
-            return function(socketEvent, latestBasket) {
-                if (socketEvent.type === 'message' && latestBasket) {
-                    newBasketReceived(latestBasket, data);
-                }
-                dispatch[sc.event.messageReceived](socketEvent, data);
-            };
-        }
+    // TODO: remove? - #407
+    dataInterface.generateDailyData = function() {
+        invalidate();
 
-        function dataInterface(period) {
-            dataInterface.invalidate();
-            historicFeed.granularity(period);
-            ohlcConverter.period(period);
-            updateHistoricFeedDateRangeToPresent(period);
-            var currentData = [];
-            historicFeed(callbackGenerator(function(err, data) {
-                if (!err) {
-                    currentData = data.reverse();
-                    ohlcConverter(liveCallback(currentData), currentData[currentData.length - 1]);
-                }
-                dispatch[sc.event.dataLoaded](err, currentData);
-            }));
-        }
+        var now = new Date();
+        now.setHours(0, 0, 0, 0);
+        var millisecondsPerDay = 24 * 60 * 60 * 1000;
+        dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
 
-        dataInterface.generateDailyData = function() {
-            dataInterface.invalidate();
-
-            var now = new Date();
-            now.setHours(0, 0, 0, 0);
-            var millisecondsPerDay = 24 * 60 * 60 * 1000;
-            dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
-
-            var dataGenerated = dataGenerator(candlesOfData);
-            dispatch[sc.event.dataLoaded](null, dataGenerated);
-        };
-
-        dataInterface.invalidate = function() {
-            ohlcConverter.close();
-            callbackGenerator.invalidateCallback();
-            return dataInterface;
-        };
-
-        d3.rebind(dataInterface, dispatch, 'on');
-
-        return dataInterface;
+        var generatedData = dataGenerator(candlesOfData);
+        dispatch[event.dataLoaded](generatedData);
     };
-})(d3, fc, sc);
+
+    dataInterface.setNewProduct = function(newProduct) {
+        historicFeed.product(newProduct);
+        coinbaseWebSocket.product(newProduct);
+    };
+
+    function invalidate() {
+        coinbaseWebSocket.close();
+        data = [];
+        callbackGenerator.invalidateCallback();
+    }
+
+    function dateSort(dataToSort) {
+        return dataToSort.sort(function(a, b) {
+            return a.date - b.date;
+        });
+    }
+
+    d3.rebind(dataInterface, dispatch, 'on');
+
+    return dataInterface;
+}

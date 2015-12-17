@@ -1,46 +1,68 @@
-(function(d3, fc, sc) {
-    'use strict';
+import d3 from 'd3';
+import productAdaptor from '../model/menu/productAdaptor';
+import periodAdaptor from '../model/menu/periodAdaptor';
+import dropdown from './generator/dropdown';
+import tabGroup from './generator/tabGroup';
+import event from '../event';
 
-    sc.menu.head = function() {
+export default function() {
 
-        var dispatch = d3.dispatch(
-            sc.event.dataProductChange,
-            sc.event.dataPeriodChange);
+    var dispatch = d3.dispatch(
+        event.dataProductChange,
+        event.dataPeriodChange,
+        event.clearAllPrimaryChartIndicatorsAndSecondaryCharts);
 
-        var dataProductDropdown = sc.menu.generator.dropdown()
-            .on('optionChange', function(product) {
-                dispatch[sc.event.dataProductChange](product);
-            });
+    var dataProductDropdown = dropdown()
+        .on('optionChange', dispatch[event.dataProductChange]);
 
-        var dataPeriodSelector = sc.menu.generator.tabGroup()
-            .on('tabClick', function(period) {
-                dispatch[sc.event.dataPeriodChange](period);
-            });
+    var dataPeriodSelector = tabGroup()
+        .on('tabClick', dispatch[event.dataPeriodChange]);
 
-        var head = function(selection) {
-            selection.each(function(model) {
-                var selection = d3.select(this);
+    var dropdownPeriodSelector = dropdown()
+        .on('optionChange', dispatch[event.dataPeriodChange]);
 
-                var products = model.products;
-                selection.select('#product-dropdown')
-                    .datum({
-                        config: model.productConfig,
-                        options: products.map(sc.menu.productAdaptor),
-                        selectedIndex: products.indexOf(model.selectedProduct)
-                    })
-                    .call(dataProductDropdown);
+    var head = function(selection) {
+        selection.each(function(model) {
+            var container = d3.select(this);
 
-                var periods = model.selectedProduct.periods;
-                selection.select('#period-selector')
-                    .classed('hidden', periods.length <= 1) // TODO: get from model instead?
-                    .datum({
-                        options: periods.map(sc.menu.periodAdaptor),
-                        selectedIndex: periods.indexOf(model.selectedPeriod)
-                    })
-                    .call(dataPeriodSelector);
-            });
-        };
+            var products = model.products;
+            container.select('#product-dropdown')
+                .datum({
+                    config: model.productConfig,
+                    options: products.map(productAdaptor),
+                    selectedIndex: products.indexOf(model.selectedProduct)
+                })
+                .call(dataProductDropdown);
 
-        return d3.rebind(head, dispatch, 'on');
+            var periods = model.selectedProduct.periods;
+            container.select('#period-selector')
+                .classed('hidden', periods.length <= 1) // TODO: get from model instead?
+                .datum({
+                    options: periods.map(periodAdaptor),
+                    selectedIndex: periods.indexOf(model.selectedPeriod)
+                })
+                .call(dataPeriodSelector);
+
+            container.select('#mobile-period-selector')
+                .classed('hidden', periods.length <= 1)
+                .datum({
+                    config: model.mobilePeriodConfig,
+                    options: periods.map(periodAdaptor),
+                    selectedIndex: periods.indexOf(model.selectedPeriod)
+                })
+                .call(dropdownPeriodSelector);
+
+            container.select('#clear-indicators')
+                .on('click', dispatch[event.clearAllPrimaryChartIndicatorsAndSecondaryCharts]);
+
+            selection.select('#toggle-button')
+                .on('click', function() {
+                    dispatch[event.toggleSlideout]();
+                });
+        });
     };
-})(d3, fc, sc);
+
+    d3.rebind(head, dispatch, 'on');
+
+    return head;
+}
