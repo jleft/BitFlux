@@ -27,7 +27,7 @@ build/Release
 node_modules
 
 # Built files
-dist
+/dist
 sprite
 
 # Jasmine spec runner
