@@ -1,6 +1,25 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [0.9.0] - 16-12-2015
+### Added
+- Component to retrieve Coinbase products
+- Indicator removal labels
+- ESLint, removing JSHint and JSCS
+- Karma
+
+### Changed
+- Moved to ES6 modules and Rollup
+- Re-evaluated data components
+- Navigator hidden on mobile
+- Clear all indicator button on mobile
+- Period selector dropdown on mobile
+- Method of keying on renderers
+
+### Fixed
+- Issue where primary chart was not visible when navigating to app in IE
+- Volume chart gap between axis and bars removed
+
 ## [0.8.0] - 02-12-2015
 ### Added
 - Loading screen while data is loading
