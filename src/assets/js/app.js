@@ -325,9 +325,9 @@ export default function() {
             console.log('Error getting Coinbase products: ' + error); // TODO: something more useful for the user!
         } else {
             var defaultPeriods = [hour1, day1];
-            var exceptionPeriods = d3.map();
-            exceptionPeriods.set('BTC-USD', [minute1, minute5, hour1, day1]);
-            var formattedProducts = formatProducts(bitcoinProducts, bitcoinSource, defaultPeriods, exceptionPeriods);
+            var productPeriodOverrides = d3.map();
+            productPeriodOverrides.set('BTC-USD', [minute1, minute5, hour1, day1]);
+            var formattedProducts = formatProducts(bitcoinProducts, bitcoinSource, defaultPeriods, productPeriodOverrides);
             headMenuModel.products = headMenuModel.products.concat(formattedProducts);
             render();
         }

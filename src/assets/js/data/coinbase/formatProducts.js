@@ -1,19 +1,19 @@
 import model from '../../model/model';
 
-export default function(products, source, defaults, exceptions) {
+export default function(products, source, defaultPeriods, productPeriodOverrides) {
     var formattedProducts = products.map(function(product) {
-        if (exceptions.has(product.id)) {
+        if (productPeriodOverrides.has(product.id)) {
             return {
                 id: product.id,
                 display: product.id,
-                periods: exceptions.get(product.id),
+                periods: productPeriodOverrides.get(product.id),
                 source: source
             };
         } else {
             return {
                 id: product.id,
                 display: product.id,
-                periods: defaults,
+                periods: defaultPeriods,
                 source: source
             };
         }
