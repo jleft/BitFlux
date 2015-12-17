@@ -8,6 +8,11 @@ import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
+import coinbaseAdaptor from './data/adaptor/coinbase';
+import dataGeneratorAdaptor from './data/adaptor/dataGenerator';
+import quandlAdaptor from './data/adaptor/quandl';
+import webSocket from './data/coinbase/webSocket';
+import formatProducts from './data/coinbase/formatProducts';
 
 export default function() {
 
@@ -36,19 +41,24 @@ export default function() {
         }
     };
 
+    var week1 = model.data.period({
+        display: 'Weekly',
+        seconds: 60 * 60 * 24 * 7,
+        d3TimeInterval: {unit: d3.time.week, value: 1},
+        timeFormat: '%b %d'});
     var day1 = model.data.period({
         display: 'Daily',
-        seconds: 86400,
+        seconds: 60 * 60 * 24,
         d3TimeInterval: {unit: d3.time.day, value: 1},
         timeFormat: '%b %d'});
     var hour1 = model.data.period({
         display: '1 Hr',
-        seconds: 3600,
+        seconds: 60 * 60,
         d3TimeInterval: {unit: d3.time.hour, value: 1},
         timeFormat: '%b %d %Hh'});
     var minute5 = model.data.period({
         display: '5 Min',
-        seconds: 300,
+        seconds: 60 * 5,
         d3TimeInterval: {unit: d3.time.minute, value: 5},
         timeFormat: '%H:%M'});
     var minute1 = model.data.period({
@@ -56,11 +66,24 @@ export default function() {
         seconds: 60,
         d3TimeInterval: {unit: d3.time.minute, value: 1},
         timeFormat: '%H:%M'});
+
+    var generatedSource = model.data.source(dataGeneratorAdaptor());
+    var bitcoinSource = model.data.source(coinbaseAdaptor(), webSocket());
+    var quandlSource = model.data.source(quandlAdaptor());
+
     var generated = model.data.product({
-        family: 'generated',
+        id: null,
         display: 'Data Generator',
         volumeFormat: '.3s',
-        periods: [day1]
+        periods: [day1],
+        source: generatedSource
+    });
+    var quandl = model.data.product({
+        id: 'GOOG',
+        display: 'GOOG',
+        volumeFormat: '.2f',
+        periods: [day1, week1],
+        source: quandlSource
     });
 
     var primaryChartModel = model.chart.primary(generated);
@@ -69,7 +92,7 @@ export default function() {
     var xAxisModel = model.chart.xAxis(day1);
     var navModel = model.chart.nav();
     var navResetModel = model.chart.navigationReset();
-    var headMenuModel = model.menu.head([generated], generated, day1);
+    var headMenuModel = model.menu.head([generated, quandl], generated, day1);
     var legendModel = model.chart.legend(generated, day1);
     var overlayModel = model.menu.overlay();
 
@@ -244,18 +267,18 @@ export default function() {
                     onViewChange(newDomain);
                 }
             })
-            .on(event.dataLoaded, function(data) {
+            .on(event.historicDataLoaded, function(data) {
                 loading(false);
                 updateModelData(data);
                 legendModel.data = null;
                 resetToLatest();
                 updateLayout();
             })
-            .on(event.dataLoadError, function(err) {
+            .on(event.historicFeedError, function(err) {
                 console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
             })
-            .on(event.webSocketError, function(err) {
-                console.log('Error loading data from websocket: ' + err);
+            .on(event.streamingFeedError, function(err) {
+                console.log('Error loading data from websocket: ' + err); // TODO: something more useful for the user!
             });
     }
 
@@ -265,12 +288,7 @@ export default function() {
                 loading(true);
                 updateModelSelectedProduct(product.option);
                 updateModelSelectedPeriod(product.option.periods[0]);
-                if (product.option.family === 'bitcoin') {
-                    _dataInterface.setNewProduct(product.option.display);
-                    _dataInterface(product.option.periods[0].seconds);
-                } else if (product.option.family === 'generated') {
-                    _dataInterface.generateDailyData();
-                }
+                _dataInterface(product.option.periods[0].seconds, product.option);
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
@@ -298,16 +316,19 @@ export default function() {
 
     function deselectOption(option) { option.isSelected = false; }
 
-    function initialiseCoinbaseProducts() {
-        coinbaseProducts(minute1, minute5, hour1, day1, insertProductsIntoHeadMenuModel);
+    function fetchCoinbaseProducts() {
+        coinbaseProducts(insertProductsIntoHeadMenuModel);
     }
 
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
-            console.log('Error getting coinbase products: ' + error); // TODO: something more useful for the user!
+            console.log('Error getting Coinbase products: ' + error); // TODO: something more useful for the user!
         } else {
-            // Add the newly received products to the product list
-            headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
+            var defaultPeriods = [hour1, day1];
+            var productPeriodOverrides = d3.map();
+            productPeriodOverrides.set('BTC-USD', [minute1, minute5, hour1, day1]);
+            var formattedProducts = formatProducts(bitcoinProducts, bitcoinSource, defaultPeriods, productPeriodOverrides);
+            headMenuModel.products = headMenuModel.products.concat(formattedProducts);
             render();
         }
     }
@@ -368,8 +389,8 @@ export default function() {
         updateLayout();
         initialiseResize();
 
-        _dataInterface.generateDailyData();
-        initialiseCoinbaseProducts();
+        _dataInterface(generated.periods[0].seconds, generated);
+        fetchCoinbaseProducts();
     };
 
     return app;
