@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e # exit with nonzero exit code if anything fails
 
+cd site
 rm -rf temp || exit 0;
 mkdir temp;
 cd temp
@@ -16,15 +17,15 @@ cd ../develop
 npm install
 grunt ci
 
-cd ../..
+cd ../../dist
 
 rm -rf master
 mkdir master
 rm -rf develop
 mkdir develop
-cp -r temp/master/dist/* master
-cp -r temp/develop/dist/* develop
-rm -rf temp || exit 0;
+cp -r ../temp/master/dist/* master
+cp -r ../temp/develop/dist/* develop
+rm -rf ../temp || exit 0;
 
 # create a *new* Git repo
 git init
