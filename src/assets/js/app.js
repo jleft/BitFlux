@@ -8,12 +8,13 @@ import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
-import coinbaseAdaptor from './data/coinbase/historicFeedAdaptor';
-import coinbaseErrorResponseFormatter from './data/coinbase/errorResponseFormatter';
-import dataGeneratorAdaptor from './data/generator/historicFeedAdaptor';
-import quandlAdaptor from './data/quandl/historicFeedAdaptor';
-import quandlErrorResponseFormatter from './data/quandl/errorResponseFormatter';
-import webSocket from './data/coinbase/webSocket';
+import coinbaseAdaptor from './data/coinbase/historic/feedAdaptor';
+import coinbaseHistoricErrorResponseFormatter from './data/coinbase/historic/errorResponseFormatter';
+import dataGeneratorAdaptor from './data/generator/historic/feedAdaptor';
+import quandlAdaptor from './data/quandl/historic/feedAdaptor';
+import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
+import webSocket from './data/coinbase/live/webSocket';
+import coinbaseLiveErrorResponseFormatter from './data/coinbase/live/errorResponseFormatter';
 import formatProducts from './data/coinbase/formatProducts';
 import notification from './notification/notification';
 
@@ -70,9 +71,9 @@ export default function() {
         d3TimeInterval: {unit: d3.time.minute, value: 1},
         timeFormat: '%H:%M'});
 
-    var generatedSource = model.data.source(dataGeneratorAdaptor(), null);
-    var bitcoinSource = model.data.source(coinbaseAdaptor(), coinbaseErrorResponseFormatter, webSocket());
-    var quandlSource = model.data.source(quandlAdaptor(), quandlErrorResponseFormatter, null);
+    var generatedSource = model.data.source(dataGeneratorAdaptor(), null, null);
+    var bitcoinSource = model.data.source(coinbaseAdaptor(), coinbaseHistoricErrorResponseFormatter, webSocket(), coinbaseLiveErrorResponseFormatter);
+    var quandlSource = model.data.source(quandlAdaptor(), quandlHistoricErrorResponseFormatter, null, null);
 
     var generated = model.data.product({
         id: null,
@@ -305,10 +306,8 @@ export default function() {
                 // so the close event is used to report errors instead
             })
             .on(event.streamingFeedClose, function(closeEvent, source) {
-                // 1000 is normal closure
-                if (closeEvent.wasClean === false && closeEvent.code !== 1000 && closeEvent.code !== 1006) {
-                    var reason = closeEvent.reason || 'Unkown reason.';
-                    var message = 'Disconnected from live stream: ' + closeEvent.code + reason;
+                var message = source.streamingNotificationFormatter(closeEvent);
+                if (message) {
                     notificationMessagesModel.messages.unshift(model.notification.message(message));
                     render();
                 }

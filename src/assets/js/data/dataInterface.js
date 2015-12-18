@@ -17,14 +17,13 @@ export default function() {
         .volume(function(d) {return Number(d.size); });
 
     var source,
-        streamingFeed,
         callbackGenerator = callbackInvalidator(),
         candlesOfData = 200,
         data = [];
 
     function invalidate() {
-        if (streamingFeed) {
-            streamingFeed.close();
+        if (source && source.streamingFeed) {
+            source.streamingFeed.close();
         }
         data = [];
         callbackGenerator.invalidateCallback();
