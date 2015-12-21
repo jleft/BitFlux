@@ -81,7 +81,7 @@ export default function() {
     var quandl = model.data.product({
         id: 'GOOG',
         display: 'GOOG',
-        volumeFormat: '.2f',
+        volumeFormat: '.3s',
         periods: [day1, week1],
         source: quandlSource
     });
