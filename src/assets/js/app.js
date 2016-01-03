@@ -13,8 +13,8 @@ import coinbaseHistoricErrorResponseFormatter from './data/coinbase/historic/err
 import dataGeneratorAdaptor from './data/generator/historic/feedAdaptor';
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
-import webSocket from './data/coinbase/live/webSocket';
-import coinbaseLiveErrorResponseFormatter from './data/coinbase/live/errorResponseFormatter';
+import coinbaseWebSocket from './data/coinbase/streaming/webSocket';
+import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 import formatProducts from './data/coinbase/formatProducts';
 import notification from './notification/notification';
 
@@ -72,7 +72,7 @@ export default function() {
         timeFormat: '%H:%M'});
 
     var generatedSource = model.data.source(dataGeneratorAdaptor(), null, null);
-    var bitcoinSource = model.data.source(coinbaseAdaptor(), coinbaseHistoricErrorResponseFormatter, webSocket(), coinbaseLiveErrorResponseFormatter);
+    var bitcoinSource = model.data.source(coinbaseAdaptor(), coinbaseHistoricErrorResponseFormatter, coinbaseWebSocket(), coinbaseStreamingErrorResponseFormatter);
     var quandlSource = model.data.source(quandlAdaptor(), quandlHistoricErrorResponseFormatter, null, null);
 
     var generated = model.data.product({
@@ -182,6 +182,10 @@ export default function() {
         });
     }
 
+    function addNotification(message) {
+        notificationMessagesModel.messages.unshift(model.notification.message(message));
+    }
+
     function onViewChange(domain) {
         var viewDomain = [domain[0], domain[1]];
         primaryChartModel.viewDomain = viewDomain;
@@ -214,6 +218,14 @@ export default function() {
     function onCrosshairChange(dataPoint) {
         legendModel.data = dataPoint;
         render();
+    }
+
+    function onStreamingFeedCloseOrError(streamingEvent, source) {
+        var message = source.streamingNotificationFormatter(streamingEvent);
+        if (message) {
+            addNotification(message);
+            render();
+        }
     }
 
     function resetToLatest() {
@@ -291,27 +303,21 @@ export default function() {
                 var responseText = '';
                 try {
                     var responseObject = JSON.parse(err.responseText);
-                    responseText = '. ' + source.historicNotificationFormatter(responseObject);
+                    var formattedMessage = source.historicNotificationFormatter(responseObject);
+                    if (formattedMessage) {
+                        responseText = '. ' + formattedMessage;
+                    }
                 } catch (e) {
                     responseText = '';
                 }
                 var statusText = err.statusText || 'Unkown reason.';
                 var message = 'Error getting historic data: ' + statusText + responseText;
 
-                notificationMessagesModel.messages.unshift(model.notification.message(message));
+                addNotification(message);
                 render();
             })
-            .on(event.streamingFeedError, function(error, source) {
-                // The WebSocket's error event doesn't contain much useful information,
-                // so the close event is used to report errors instead
-            })
-            .on(event.streamingFeedClose, function(closeEvent, source) {
-                var message = source.streamingNotificationFormatter(closeEvent);
-                if (message) {
-                    notificationMessagesModel.messages.unshift(model.notification.message(message));
-                    render();
-                }
-            });
+            .on(event.streamingFeedError, onStreamingFeedCloseOrError)
+            .on(event.streamingFeedClose, onStreamingFeedCloseOrError);
     }
 
     function initialiseHeadMenu(_dataInterface) {
@@ -355,8 +361,8 @@ export default function() {
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
             var statusText = error.statusText || 'Unkown reason.';
-            var message = 'Error getting Coinbase products: ' + statusText;
-            notificationMessagesModel.messages.unshift(model.notification.message(message));
+            var message = 'Error retrieving Coinbase products: ' + statusText;
+            addNotification(message);
         } else {
             var defaultPeriods = [hour1, day1];
             var productPeriodOverrides = d3.map();

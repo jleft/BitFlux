@@ -1,5 +1,5 @@
 export default function(responseObject) {
-    var message = '';
+    var message;
     if (responseObject) {
         message = responseObject.message;
     }

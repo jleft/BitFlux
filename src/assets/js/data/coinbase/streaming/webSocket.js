@@ -43,7 +43,7 @@ export default function() {
 
     webSocket.close = function() {
         // Only close the WebSocket if it is opening or open
-        if (socket && (socket.readyState === 0 || socket.readyState === 1)) {
+        if (socket && (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN)) {
             socket.close();
         }
     };
