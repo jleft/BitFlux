@@ -4,11 +4,11 @@ set -e # exit with nonzero exit code if anything fails
 
 echo "Deploying..."
 
-if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/d3fc-showcase" ]
-then
-    echo "On fork; not deploying."
-    exit 0
-fi
+# if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/d3fc-showcase" ]
+# then
+#     echo "On fork; not deploying."
+#     exit 0
+# fi
 
 if [ "${TRAVIS_PULL_REQUEST}" != "false" ]
 then
