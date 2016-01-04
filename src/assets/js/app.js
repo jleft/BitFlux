@@ -310,7 +310,7 @@ export default function() {
                 } catch (e) {
                     responseText = '';
                 }
-                var statusText = err.statusText || 'Unkown reason.';
+                var statusText = err.statusText || 'Unknown reason.';
                 var message = 'Error getting historic data: ' + statusText + responseText;
 
                 addNotification(message);
