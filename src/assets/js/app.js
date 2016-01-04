@@ -360,7 +360,7 @@ export default function() {
 
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
-            var statusText = error.statusText || 'Unkown reason.';
+            var statusText = error.statusText || 'Unknown reason.';
             var message = 'Error retrieving Coinbase products: ' + statusText;
             addNotification(message);
         } else {
