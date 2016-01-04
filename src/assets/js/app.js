@@ -240,7 +240,7 @@ export default function() {
         appContainer.select('#loading-status-message')
             .classed('hidden', !(isLoading || error))
             .select('.content')
-            .text(error ? error : 'Loading...');
+            .text(error || 'Loading...');
         appContainer.select('#charts')
             .classed('hidden', isLoading || error);
     }
