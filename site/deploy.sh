@@ -1,6 +1,6 @@
 #!/bin/bash
 # inspired by: https://gist.github.com/domenic/ec8b0fc8ab45f39403dd
-set -e # exit with nonzero exit code if anything fails
+set -ev # exit with nonzero exit code if anything fails
 
 echo "Deploying..."
 
@@ -44,6 +44,7 @@ grunt build
 echo "Building develop..."
 cd ../develop
 npm install --quiet
+echo "develop (${TRAVIS_COMMIT}) - build ${TRAVIS_JOB_NUMBER}"
 grunt build --versionNumber="develop (${TRAVIS_COMMIT}) - build ${TRAVIS_JOB_NUMBER}"
 
 echo "Creating directories for built application..."
