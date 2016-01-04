@@ -54,11 +54,6 @@ export default function() {
 
             container.select('#clear-indicators')
                 .on('click', dispatch[event.clearAllPrimaryChartIndicatorsAndSecondaryCharts]);
-
-            selection.select('#toggle-button')
-                .on('click', function() {
-                    dispatch[event.toggleSlideout]();
-                });
         });
     };
 

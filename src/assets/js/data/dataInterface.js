@@ -2,31 +2,28 @@ import d3 from 'd3';
 import fc from 'd3fc';
 import callbackInvalidator from './callbackInvalidator';
 import collectOhlc from './collectOhlc';
-import coinbaseAdaptor from './adaptor/coinbase';
-import dataGeneratorAdaptor from './adaptor/dataGenerator';
-import webSocket from './coinbase/webSocket';
 import event from '../event';
 
 export default function() {
     var dispatch = d3.dispatch(
+        event.newTrade,
         event.historicDataLoaded,
         event.historicFeedError,
-        event.newTrade,
-        event.streamingFeedError);
+        event.streamingFeedError,
+        event.streamingFeedClose);
 
     var _collectOhlc = collectOhlc()
         .date(function(d) {return new Date(d.time); })
         .volume(function(d) {return Number(d.size); });
 
-    var historicFeed,
-        streamingFeed,
+    var source,
         callbackGenerator = callbackInvalidator(),
         candlesOfData = 200,
         data = [];
 
     function invalidate() {
-        if (streamingFeed) {
-            streamingFeed.close();
+        if (source && source.streamingFeed) {
+            source.streamingFeed.close();
         }
         data = [];
         callbackGenerator.invalidateCallback();
@@ -42,42 +39,44 @@ export default function() {
         invalidate();
 
         if (arguments.length === 2) {
-            historicFeed = product.source.historic;
-            historicFeed.product(product.id);
+            source = product.source;
+            source.historicFeed.product(product.id);
 
-            streamingFeed = product.source.streaming;
-            if (streamingFeed != null) {
-                streamingFeed.product(product.id);
+            if (source.streamingFeed != null) {
+                source.streamingFeed.product(product.id);
             }
         }
 
         var now = new Date();
 
-        historicFeed.end(now)
+        source.historicFeed.end(now)
             .candles(candlesOfData)
             .granularity(granularity);
 
         _collectOhlc.granularity(granularity);
 
-        historicFeed(callbackGenerator(function(error, newData) {
+        source.historicFeed(callbackGenerator(function(error, newData) {
             if (!error) {
                 data = dateSortAscending(newData);
-                dispatch[event.historicDataLoaded](data);
+                dispatch[event.historicDataLoaded](data, source);
             } else {
-                dispatch[event.historicFeedError](error);
+                dispatch[event.historicFeedError](error, source);
             }
         }));
 
-        if (streamingFeed != null) {
-            streamingFeed.on('message', function(trade) {
+        if (source.streamingFeed != null) {
+            source.streamingFeed.on('message', function(trade) {
                 _collectOhlc(data, trade);
-                dispatch[event.newTrade](data);
+                dispatch[event.newTrade](data, source);
             })
             .on('error', function(error) {
-                // TODO: The 'close' event is potentially more useful for error info.
-                dispatch[event.streamingFeedError](error);
+                dispatch[event.streamingFeedError](error, source);
+            })
+            .on('close', function(closeEvent) {
+                dispatch[event.streamingFeedClose](closeEvent, source);
             });
-            streamingFeed();
+
+            source.streamingFeed();
         }
     }
 

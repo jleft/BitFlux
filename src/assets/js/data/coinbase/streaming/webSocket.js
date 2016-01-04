@@ -42,7 +42,8 @@ export default function() {
     d3.rebind(webSocket, dispatch, 'on');
 
     webSocket.close = function() {
-        if (socket) {
+        // Only close the WebSocket if it is opening or open
+        if (socket && (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN)) {
             socket.close();
         }
     };
@@ -65,4 +66,3 @@ export default function() {
 
     return webSocket;
 }
-
