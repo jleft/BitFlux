@@ -44,7 +44,7 @@ grunt build
 echo "Building develop..."
 cd ../develop
 npm install --quiet
-grunt build
+grunt build --versionNumber="develop (${TRAVIS_COMMIT}) - build ${TRAVIS_JOB_NUMBER}"
 
 echo "Creating directories for built application..."
 cd ../../dist

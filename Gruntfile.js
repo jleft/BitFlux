@@ -415,7 +415,17 @@ module.exports = function(grunt) {
     grunt.registerTask('test:chrome', ['karma:chrome']);
     grunt.registerTask('test:phantom', ['karma:phantom']);
 
-    grunt.registerTask('build', [
+    grunt.registerTask('build',
+        'Builds the application ready for production and allows for version number to be specified',
+        function() {
+            var version = grunt.option('versionNumber');
+            if (version) {
+                grunt.config.set('template.production.options.data.version', version);
+            }
+            grunt.task.run('build:production');
+        }
+    );
+    grunt.registerTask('build:production', [
         'check',
         'clean',
         'template:production',
