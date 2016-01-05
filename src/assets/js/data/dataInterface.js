@@ -35,6 +35,22 @@ export default function() {
         });
     }
 
+    function handleStreamingFeedEvents() {
+        if (source.streamingFeed != null) {
+            source.streamingFeed.on('message', function(trade) {
+                _collectOhlc(data, trade);
+                dispatch[event.newTrade](data, source);
+            })
+            .on('error', function(streamingFeedError) {
+                dispatch[event.streamingFeedError](streamingFeedError, source);
+            })
+            .on('close', function(closeEvent) {
+                dispatch[event.streamingFeedClose](closeEvent, source);
+            });
+            source.streamingFeed();
+        }
+    }
+
     function dataInterface(granularity, product) {
         invalidate();
 
@@ -55,29 +71,15 @@ export default function() {
 
         _collectOhlc.granularity(granularity);
 
-        source.historicFeed(callbackGenerator(function(error, newData) {
-            if (!error) {
+        source.historicFeed(callbackGenerator(function(historicFeedError, newData) {
+            if (!historicFeedError) {
                 data = dateSortAscending(newData);
                 dispatch[event.historicDataLoaded](data, source);
+                handleStreamingFeedEvents();
             } else {
-                dispatch[event.historicFeedError](error, source);
+                dispatch[event.historicFeedError](historicFeedError, source);
             }
         }));
-
-        if (source.streamingFeed != null) {
-            source.streamingFeed.on('message', function(trade) {
-                _collectOhlc(data, trade);
-                dispatch[event.newTrade](data, source);
-            })
-            .on('error', function(error) {
-                dispatch[event.streamingFeedError](error, source);
-            })
-            .on('close', function(closeEvent) {
-                dispatch[event.streamingFeedClose](closeEvent, source);
-            });
-
-            source.streamingFeed();
-        }
     }
 
     d3.rebind(dataInterface, dispatch, 'on');
