@@ -8,11 +8,10 @@ import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
 import formatProducts from './data/coinbase/formatProducts';
-import initialiseModel from './initialiseModel';
 import notification from './notification/notification';
 import messageModel from './model/notification/message';
 
-export default function() {
+export default function(initialModel) {
 
     var app = {};
 
@@ -39,7 +38,7 @@ export default function() {
         }
     };
 
-    var model = initialiseModel();
+    var model = initialModel;
 
     var periods = model.periods;
     var sources = model.sources;
