@@ -2,14 +2,17 @@
 import d3 from 'd3';
 import fc from 'd3fc';
 import chart from './chart/chart';
-import model from './model/model';
 import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
 import coinbaseProducts from './data/coinbase/getProducts';
+import formatProducts from './data/coinbase/formatProducts';
+import notification from './notification/notification';
+import messageModel from './model/notification/message';
+import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 
-export default function() {
+export default function(initialModel) {
 
     var app = {};
 
@@ -36,42 +39,22 @@ export default function() {
         }
     };
 
-    var day1 = model.data.period({
-        display: 'Daily',
-        seconds: 86400,
-        d3TimeInterval: {unit: d3.time.day, value: 1},
-        timeFormat: '%b %d'});
-    var hour1 = model.data.period({
-        display: '1 Hr',
-        seconds: 3600,
-        d3TimeInterval: {unit: d3.time.hour, value: 1},
-        timeFormat: '%b %d %Hh'});
-    var minute5 = model.data.period({
-        display: '5 Min',
-        seconds: 300,
-        d3TimeInterval: {unit: d3.time.minute, value: 5},
-        timeFormat: '%H:%M'});
-    var minute1 = model.data.period({
-        display: '1 Min',
-        seconds: 60,
-        d3TimeInterval: {unit: d3.time.minute, value: 1},
-        timeFormat: '%H:%M'});
-    var generated = model.data.product({
-        family: 'generated',
-        display: 'Data Generator',
-        volumeFormat: '.3s',
-        periods: [day1]
-    });
+    var model = initialModel;
 
-    var primaryChartModel = model.chart.primary(generated);
-    var secondaryChartModel = model.chart.secondary(generated);
-    var selectorsModel = model.menu.selectors();
-    var xAxisModel = model.chart.xAxis(day1);
-    var navModel = model.chart.nav();
-    var navResetModel = model.chart.navigationReset();
-    var headMenuModel = model.menu.head([generated], generated, day1);
-    var legendModel = model.chart.legend(generated, day1);
-    var overlayModel = model.menu.overlay();
+    var periods = model.periods;
+    var sources = model.sources;
+    var products = model.products;
+
+    var primaryChartModel = model.primaryChart;
+    var secondaryChartModel = model.secondaryChart;
+    var selectorsModel = model.selectors;
+    var xAxisModel = model.xAxis;
+    var navModel = model.nav;
+    var navResetModel = model.navReset;
+    var headMenuModel = model.headMenu;
+    var legendModel = model.legend;
+    var overlayModel = model.overlay;
+    var notificationModel = model.notificationMessages;
 
     var charts = {
         primary: undefined,
@@ -84,6 +67,7 @@ export default function() {
     var headMenu;
     var navReset;
     var selectors;
+    var toastNotifications;
 
     function renderInternal() {
         if (layoutRedrawnInNextRender) {
@@ -124,6 +108,10 @@ export default function() {
             .datum(selectorsModel)
             .call(selectors);
 
+        containers.app.select('#notifications')
+            .datum(notificationModel)
+            .call(toastNotifications);
+
         containers.overlay.datum(overlayModel)
             .call(overlay);
 
@@ -147,6 +135,10 @@ export default function() {
             updateLayout();
             render();
         });
+    }
+
+    function addNotification(message) {
+        notificationModel.messages.unshift(messageModel(message));
     }
 
     function onViewChange(domain) {
@@ -183,6 +175,22 @@ export default function() {
         render();
     }
 
+    function onStreamingFeedCloseOrError(streamingEvent, source) {
+        var message;
+        if (source.streamingNotificationFormatter) {
+            message = source.streamingNotificationFormatter(streamingEvent);
+        } else {
+            // #515 (https://github.com/ScottLogic/d3fc-showcase/issues/515)
+            // (TODO) prevents errors when formatting streaming close/error messages when product changes.
+            // As we only have a coinbase streaming source at the moment, this is a suitable fix for now
+            message = coinbaseStreamingErrorResponseFormatter(streamingEvent);
+        }
+        if (message) {
+            addNotification(message);
+            render();
+        }
+    }
+
     function resetToLatest() {
         var data = primaryChartModel.data;
         var dataDomain = fc.util.extent()
@@ -191,11 +199,13 @@ export default function() {
         onViewChange(navTimeDomain);
     }
 
-    function loading(isLoading) {
-        appContainer.select('#loading-message')
-            .classed('hidden', !isLoading);
+    function loading(isLoading, error) {
+        appContainer.select('#loading-status-message')
+            .classed('hidden', !(isLoading || error))
+            .select('.content')
+            .text(error || 'Loading...');
         appContainer.select('#charts')
-            .classed('hidden', isLoading);
+            .classed('hidden', isLoading || error);
     }
 
     function updateModelData(data) {
@@ -235,7 +245,7 @@ export default function() {
 
     function initialiseDataInterface() {
         return dataInterface()
-            .on(event.newTrade, function(data) {
+            .on(event.newTrade, function(data, source) {
                 updateModelData(data);
                 if (primaryChartModel.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
@@ -244,19 +254,33 @@ export default function() {
                     onViewChange(newDomain);
                 }
             })
-            .on(event.dataLoaded, function(data) {
+            .on(event.historicDataLoaded, function(data, source) {
                 loading(false);
                 updateModelData(data);
                 legendModel.data = null;
                 resetToLatest();
                 updateLayout();
             })
-            .on(event.dataLoadError, function(err) {
-                console.log('Error getting historic data: ' + err); // TODO: something more useful for the user!
+            .on(event.historicFeedError, function(err, source) {
+                loading(false, 'Error loading data. Please make your selection again, or refresh the page.');
+                var responseText = '';
+                try {
+                    var responseObject = JSON.parse(err.responseText);
+                    var formattedMessage = source.historicNotificationFormatter(responseObject);
+                    if (formattedMessage) {
+                        responseText = '. ' + formattedMessage;
+                    }
+                } catch (e) {
+                    responseText = '';
+                }
+                var statusText = err.statusText || 'Unknown reason.';
+                var message = 'Error getting historic data: ' + statusText + responseText;
+
+                addNotification(message);
+                render();
             })
-            .on(event.webSocketError, function(err) {
-                console.log('Error loading data from websocket: ' + err);
-            });
+            .on(event.streamingFeedError, onStreamingFeedCloseOrError)
+            .on(event.streamingFeedClose, onStreamingFeedCloseOrError);
     }
 
     function initialiseHeadMenu(_dataInterface) {
@@ -265,12 +289,7 @@ export default function() {
                 loading(true);
                 updateModelSelectedProduct(product.option);
                 updateModelSelectedPeriod(product.option.periods[0]);
-                if (product.option.family === 'bitcoin') {
-                    _dataInterface.setNewProduct(product.option.display);
-                    _dataInterface(product.option.periods[0].seconds);
-                } else if (product.option.family === 'generated') {
-                    _dataInterface.generateDailyData();
-                }
+                _dataInterface(product.option.periods[0].seconds, product.option);
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
@@ -298,18 +317,23 @@ export default function() {
 
     function deselectOption(option) { option.isSelected = false; }
 
-    function initialiseCoinbaseProducts() {
-        coinbaseProducts(minute1, minute5, hour1, day1, insertProductsIntoHeadMenuModel);
+    function fetchCoinbaseProducts() {
+        coinbaseProducts(insertProductsIntoHeadMenuModel);
     }
 
     function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
         if (error) {
-            console.log('Error getting coinbase products: ' + error); // TODO: something more useful for the user!
+            var statusText = error.statusText || 'Unknown reason.';
+            var message = 'Error retrieving Coinbase products: ' + statusText;
+            addNotification(message);
         } else {
-            // Add the newly received products to the product list
-            headMenuModel.products = headMenuModel.products.concat(bitcoinProducts);
-            render();
+            var defaultPeriods = [periods.hour1, periods.day1];
+            var productPeriodOverrides = d3.map();
+            productPeriodOverrides.set('BTC-USD', [periods.minute1, periods.minute5, periods.hour1, periods.day1]);
+            var formattedProducts = formatProducts(bitcoinProducts, sources.bitcoin, defaultPeriods, productPeriodOverrides);
+            headMenuModel.products = headMenuModel.products.concat(formattedProducts);
         }
+        render();
     }
 
     function initialiseSelectors() {
@@ -325,8 +349,8 @@ export default function() {
 
     function updatePrimaryChartIndicators() {
         primaryChartModel.indicators =
-            selectorsModel.indicatorSelector.indicatorOptions.filter(function(option) {
-                return option.isSelected;
+            selectorsModel.indicatorSelector.options.filter(function(option) {
+                return option.isSelected && option.isPrimary;
             });
 
         overlayModel.primaryIndicators = primaryChartModel.indicators;
@@ -334,8 +358,8 @@ export default function() {
 
     function updateSecondaryCharts() {
         charts.secondaries =
-            selectorsModel.indicatorSelector.secondaryChartOptions.filter(function(option) {
-                return option.isSelected;
+            selectorsModel.indicatorSelector.options.filter(function(option) {
+                return option.isSelected && !option.isPrimary;
             });
         // TODO: This doesn't seem to be a concern of menu.
         charts.secondaries.forEach(function(chartOption) {
@@ -354,6 +378,16 @@ export default function() {
             .on(event.secondaryChartChange, onSecondaryChartChange);
     }
 
+    function onNotificationClose(id) {
+        notificationModel.messages = notificationModel.messages.filter(function(message) { return message.id !== id; });
+        render();
+    }
+
+    function initialiseNotifications() {
+        return notification.toast()
+            .on(event.notificationClose, onNotificationClose);
+    }
+
     app.run = function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
@@ -364,12 +398,13 @@ export default function() {
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
+        toastNotifications = initialiseNotifications();
 
         updateLayout();
         initialiseResize();
 
-        _dataInterface.generateDailyData();
-        initialiseCoinbaseProducts();
+        _dataInterface(products.generated.periods[0].seconds, products.generated);
+        fetchCoinbaseProducts();
     };
 
     return app;

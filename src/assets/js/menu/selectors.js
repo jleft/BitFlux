@@ -5,21 +5,21 @@ import dropdown from './generator/dropdown';
 
 export default function() {
     var dispatch = d3.dispatch(
-      event.primaryChartSeriesChange,
-      event.primaryChartIndicatorChange,
-      event.secondaryChartChange);
+        event.primaryChartSeriesChange,
+        event.primaryChartIndicatorChange,
+        event.secondaryChartChange);
 
     var primaryChartSeriesButtons = dropdown()
-      .on('optionChange', dispatch[event.primaryChartSeriesChange]);
+        .on('optionChange', dispatch[event.primaryChartSeriesChange]);
 
     var indicatorToggle = dropdown()
-      .on('optionChange', function(indicator) {
-          if (indicator.valueString.indexOf('secondary') === 0) {
-              dispatch[event.secondaryChartChange](indicator);
-          } else {
-              dispatch[event.primaryChartIndicatorChange](indicator);
-          }
-      });
+        .on('optionChange', function(indicator) {
+            if (indicator.isPrimary) {
+                dispatch[event.primaryChartIndicatorChange](indicator);
+            } else {
+                dispatch[event.secondaryChartChange](indicator);
+            }
+        });
 
     var selectors = function(selection) {
         selection.each(function(model) {
@@ -30,27 +30,30 @@ export default function() {
             }).indexOf(true);
 
             container.select('#series-dropdown')
-              .datum({config: model.seriesSelector.config,
-                  options: model.seriesSelector.options,
-                  selectedIndex: selectedSeriesIndex})
-              .call(primaryChartSeriesButtons);
+                .datum({
+                    config: model.seriesSelector.config,
+                    options: model.seriesSelector.options,
+                    selectedIndex: selectedSeriesIndex
+                })
+                .call(primaryChartSeriesButtons);
 
-            var indicators = model.indicatorSelector.indicatorOptions
-              .concat(model.indicatorSelector.secondaryChartOptions);
+            var options = model.indicatorSelector.options;
 
-            var selectedIndicatorIndexes = indicators
-              .map(function(option, index) {
-                  return option.isSelected ? index : null;
-              })
-              .filter(function(option) {
-                  return option;
-              });
+            var selectedIndicatorIndexes = options
+                .map(function(option, index) {
+                    return option.isSelected ? index : null;
+                })
+                .filter(function(option) {
+                    return option;
+                });
 
             container.select('#indicator-dropdown')
-              .datum({config: model.indicatorSelector.config,
-                  options: indicators,
-                  selected: selectedIndicatorIndexes})
-              .call(indicatorToggle);
+                .datum({
+                    config: model.indicatorSelector.config,
+                    options: options,
+                    selected: selectedIndicatorIndexes
+                })
+                .call(indicatorToggle);
 
         });
     };

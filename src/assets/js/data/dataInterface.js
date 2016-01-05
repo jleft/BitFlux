@@ -2,85 +2,84 @@ import d3 from 'd3';
 import fc from 'd3fc';
 import callbackInvalidator from './callbackInvalidator';
 import collectOhlc from './collectOhlc';
-import webSocket from './coinbase/webSocket';
 import event from '../event';
 
 export default function() {
-    var historicFeed = fc.data.feed.coinbase();
-    var callbackGenerator = callbackInvalidator();
-    var dataGenerator = fc.data.random.financial();
-    var coinbaseWebSocket = webSocket();
+    var dispatch = d3.dispatch(
+        event.newTrade,
+        event.historicDataLoaded,
+        event.historicFeedError,
+        event.streamingFeedError,
+        event.streamingFeedClose);
+
     var _collectOhlc = collectOhlc()
-      .date(function(d) {return new Date(d.time);})
-      .volume(function(d) {return Number(d.size);});
-    var dispatch = d3.dispatch(event.newTrade, event.dataLoaded,
-      event.dataLoadError, event.webSocketError);
-    var candlesOfData = 200;
-    var data = [];
+        .date(function(d) {return new Date(d.time); })
+        .volume(function(d) {return Number(d.size); });
 
-    // TODO: configurable product.
-
-    function updateHistoricFeedDateRangeToPresent(granularity) {
-        var currDate = new Date();
-        var startDate = d3.time.second.offset(currDate, -candlesOfData * granularity);
-        historicFeed
-          .start(startDate)
-          .end(currDate);
-    }
-
-    function dataInterface(granularity) {
-        invalidate();
-        historicFeed.granularity(granularity);
-        updateHistoricFeedDateRangeToPresent(granularity);
-        _collectOhlc.granularity(granularity);
-
-        historicFeed(callbackGenerator(function(error, newData) {
-            if (!error) {
-                data = newData;
-                dispatch[event.dataLoaded](dateSort(data));
-            } else {
-                dispatch[event.dataLoadError](error);
-            }
-        }));
-        coinbaseWebSocket.on('message', function(trade) {
-            _collectOhlc(data, trade);
-            dispatch[event.newTrade](data);
-        });
-        coinbaseWebSocket.on('error', function(error) {
-            // TODO: The 'close' event is potentially more useful for error info.
-            dispatch[event.webSocketError](error);
-        });
-        coinbaseWebSocket();
-    }
-
-    // TODO: remove? - #407
-    dataInterface.generateDailyData = function() {
-        invalidate();
-
-        var now = new Date();
-        now.setHours(0, 0, 0, 0);
-        var millisecondsPerDay = 24 * 60 * 60 * 1000;
-        dataGenerator.startDate(new Date(now - (candlesOfData - 1) * millisecondsPerDay));
-
-        var generatedData = dataGenerator(candlesOfData);
-        dispatch[event.dataLoaded](generatedData);
-    };
-
-    dataInterface.setNewProduct = function(newProduct) {
-        historicFeed.product(newProduct);
-        coinbaseWebSocket.product(newProduct);
-    };
+    var source,
+        callbackGenerator = callbackInvalidator(),
+        candlesOfData = 200,
+        data = [];
 
     function invalidate() {
-        coinbaseWebSocket.close();
+        if (source && source.streamingFeed) {
+            source.streamingFeed.close();
+        }
         data = [];
         callbackGenerator.invalidateCallback();
     }
 
-    function dateSort(dataToSort) {
+    function dateSortAscending(dataToSort) {
         return dataToSort.sort(function(a, b) {
             return a.date - b.date;
         });
+    }
+
+    function handleStreamingFeedEvents() {
+        if (source.streamingFeed != null) {
+            source.streamingFeed.on('message', function(trade) {
+                _collectOhlc(data, trade);
+                dispatch[event.newTrade](data, source);
+            })
+            .on('error', function(streamingFeedError) {
+                dispatch[event.streamingFeedError](streamingFeedError, source);
+            })
+            .on('close', function(closeEvent) {
+                dispatch[event.streamingFeedClose](closeEvent, source);
+            });
+            source.streamingFeed();
+        }
+    }
+
+    function dataInterface(granularity, product) {
+        invalidate();
+
+        if (arguments.length === 2) {
+            source = product.source;
+            source.historicFeed.product(product.id);
+
+            if (source.streamingFeed != null) {
+                source.streamingFeed.product(product.id);
+            }
+        }
+
+        var now = new Date();
+
+        source.historicFeed.end(now)
+            .candles(candlesOfData)
+            .granularity(granularity);
+
+        _collectOhlc.granularity(granularity);
+
+        source.historicFeed(callbackGenerator(function(historicFeedError, newData) {
+            if (!historicFeedError) {
+                data = dateSortAscending(newData);
+                dispatch[event.historicDataLoaded](data, source);
+                handleStreamingFeedEvents();
+            } else {
+                dispatch[event.historicFeedError](historicFeedError, source);
+            }
+        }));
     }
 
     d3.rebind(dataInterface, dispatch, 'on');

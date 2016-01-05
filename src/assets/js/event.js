@@ -2,9 +2,10 @@ export default {
     crosshairChange: 'crosshairChange',
     viewChange: 'viewChange',
     newTrade: 'newTrade',
-    dataLoaded: 'dataLoaded',
-    dataLoadError: 'dataLoadError',
-    webSocketError: 'webSocketError',
+    historicDataLoaded: 'historicDataLoaded',
+    historicFeedError: 'historicFeedError',
+    streamingFeedError: 'streamingFeedError',
+    streamingFeedClose: 'streamingFeedClose',
     dataProductChange: 'dataProductChange',
     dataPeriodChange: 'dataPeriodChange',
     resetToLatest: 'resetToLatest',
@@ -13,5 +14,6 @@ export default {
     primaryChartYValueAccessorChange: 'primaryChartYValueAccessorChange',
     primaryChartIndicatorChange: 'primaryChartIndicatorChange',
     secondaryChartChange: 'secondaryChartChange',
-    indicatorChange: 'indicatorChange'
+    indicatorChange: 'indicatorChange',
+    notificationClose: 'notificationClose'
 };
