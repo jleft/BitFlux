@@ -1,6 +1,20 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [0.10.0] - 5-1-2016
+### Added
+- Quandl historic data source
+- Error message notifications
+
+### Changed
+- Deployment of latest release and develop to GitHub pages now automatically run on CI
+- Initial application configuration simplified
+- Models refactored for consistency
+- Streaming data connection now initialised when historic data has been received
+
+### Fixed
+- Volume number formatting
+
 ## [0.9.0] - 16-12-2015
 ### Added
 - Component to retrieve Coinbase products
