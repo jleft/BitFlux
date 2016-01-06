@@ -30,12 +30,13 @@
     stroke-width: @stroke-width;
   }
 
-  .average > path.line {
-    visibility: hidden;
-  }
-
   .area > path.area {
     fill: @bollinger-fill-colour;
+  }
+
+  .average > path.line {
+    stroke: @bollinger-average-colour;
+    stroke-dasharray: 5;
   }
 
   .area {
