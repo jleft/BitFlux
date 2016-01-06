@@ -36,15 +36,15 @@ git clone --branch master --depth 1 https://github.com/ScottLogic/d3fc-showcase.
 echo "Cloning develop..."
 git clone --branch develop --depth 1 https://github.com/ScottLogic/d3fc-showcase.git develop
 
-echo "Building master..."
 cd master
+echo "Building master... $(git describe --tags --always  2>&1)"
 npm install --quiet
-grunt build
+grunt build --versionNumber="$(git describe --tags --always  2>&1)"
 
-echo "Building develop..."
 cd ../develop
+echo "Building develop... $(git describe --tags --always  2>&1)"
 npm install --quiet
-grunt build --versionNumber="develop (${TRAVIS_COMMIT}) - build ${TRAVIS_JOB_NUMBER}"
+grunt build --versionNumber="$(git describe --tags --always  2>&1)"
 
 echo "Creating directories for built application..."
 cd ../../dist
