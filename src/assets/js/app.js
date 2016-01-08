@@ -14,6 +14,63 @@ import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/e
 
 export default function(initialModel) {
 
+    var appTemplate = '<div class="container"> \
+        <div id="notifications"></div> \
+        <div class="row head-menu head-row"> \
+            <div class="col-md-12 head-sub-row"> \
+                <div id="product-dropdown" class="dropdown product-dropdown"></div> \
+                <div id="period-selector" class="hidden-xs hidden-sm"></div> \
+                <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
+                <span id="clear-indicators" class="icon sc-icon-delete delete-button hidden-md hidden-lg"></span> \
+            </div> \
+        </div> \
+        <div class="row primary-row"> \
+            <div class="col-md-12" id="loading-status-message"> \
+                <p class="content">Loading...</p> \
+            </div> \
+            <div id="charts" class="col-md-12 hidden"> \
+                <div id="charts-container"> \
+                    <svg id="primary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <div class="x-axis-row"> \
+                        <svg id="x-axis-container"></svg> \
+                    </div> \
+                    <div id="navbar-row" class="hidden-xs hidden-sm"> \
+                        <svg id="navbar-container"></svg> \
+                        <svg id="navbar-reset"></svg> \
+                    </div> \
+                </div> \
+                <div id="overlay"> \
+                    <div id="overlay-primary-container"> \
+                        <div id="overlay-primary-head"> \
+                            <div id="selectors"> \
+                                <div id="series-dropdown" class="dropdown selector-dropdown"></div> \
+                                <div id="indicator-dropdown" class="dropdown selector-dropdown"></div> \
+                            </div> \
+                            <div id="legend" class="hidden-xs hidden-sm"></div> \
+                        </div> \
+                        <div id="overlay-primary-bottom"> \
+                            <div class="edit-indicator-container"></div> \
+                        </div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="x-axis-row"></div> \
+                    <div id="overlay-navbar-row" class="hidden-xs hidden-sm"></div> \
+                </div> \
+            </div> \
+        </div> \
+    </div>';
+
     var app = {};
 
     var containers;
@@ -370,6 +427,9 @@ export default function(initialModel) {
 
     app.run = function() {
         var appContainer = d3.select('#app-container');
+        // TODO: Could potentially use d3.html() to load the html from an external file
+        appContainer.html(appTemplate);
+
         var chartsContainer = appContainer.select('#charts-container');
         var overlayContainer = appContainer.select('#overlay');
         containers = {
