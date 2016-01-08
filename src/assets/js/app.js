@@ -16,28 +16,7 @@ export default function(initialModel) {
 
     var app = {};
 
-    var appContainer = d3.select('#app-container');
-    var chartsContainer = appContainer.select('#charts-container');
-    var overlay = appContainer.select('#overlay');
-    var containers = {
-        app: appContainer,
-        charts: chartsContainer,
-        primary: chartsContainer.select('#primary-container'),
-        secondaries: chartsContainer.selectAll('.secondary-container'),
-        xAxis: chartsContainer.select('#x-axis-container'),
-        navbar: chartsContainer.select('#navbar-container'),
-        overlay: overlay,
-        overlaySecondaries: overlay. selectAll('.overlay-secondary-container'),
-        legend: appContainer.select('#legend'),
-        suspendLayout: function(value) {
-            var self = this;
-            Object.keys(self).forEach(function(key) {
-                if (typeof self[key] !== 'function') {
-                    self[key].layoutSuspended(value);
-                }
-            });
-        }
-    };
+    var containers;
 
     var model = initialModel;
 
@@ -64,6 +43,7 @@ export default function(initialModel) {
         legend: chart.legend()
     };
 
+    var overlay;
     var headMenu;
     var navReset;
     var selectors;
@@ -200,11 +180,11 @@ export default function(initialModel) {
     }
 
     function loading(isLoading, error) {
-        appContainer.select('#loading-status-message')
+        containers.app.select('#loading-status-message')
             .classed('hidden', !(isLoading || error))
             .select('.content')
             .text(error || 'Loading...');
-        appContainer.select('#charts')
+        containers.app.select('#charts')
             .classed('hidden', isLoading || error);
     }
 
@@ -389,6 +369,29 @@ export default function(initialModel) {
     }
 
     app.run = function() {
+        var appContainer = d3.select('#app-container');
+        var chartsContainer = appContainer.select('#charts-container');
+        var overlayContainer = appContainer.select('#overlay');
+        containers = {
+            app: appContainer,
+            charts: chartsContainer,
+            primary: chartsContainer.select('#primary-container'),
+            secondaries: chartsContainer.selectAll('.secondary-container'),
+            xAxis: chartsContainer.select('#x-axis-container'),
+            navbar: chartsContainer.select('#navbar-container'),
+            overlay: overlayContainer,
+            overlaySecondaries: overlayContainer.selectAll('.overlay-secondary-container'),
+            legend: appContainer.select('#legend'),
+            suspendLayout: function(value) {
+                var self = this;
+                Object.keys(self).forEach(function(key) {
+                    if (typeof self[key] !== 'function') {
+                        self[key].layoutSuspended(value);
+                    }
+                });
+            }
+        };
+
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
