@@ -3,6 +3,7 @@
 @primary-dark-blue: #263337;
 @primary-blue: #7B9FA1;
 @primary-white: #FFFFFF;
+@primary-black: #000000;
 @brand-primary: @primary-blue;
 
 // Secondary colours
@@ -90,13 +91,18 @@
 // Changes to height or bottom-margin must also be carried over in nav.js variables
 @navigator-height: 100px;
 @navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
-@navigator-extent-colour: @primary-white;
+@navigator-extent-colour-top: @secondary-orange;
+@navigator-extent-colour-bottom: @primary-white;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
 @navigator-background-stroke-width: 2px;
 @navigator-stroke: 1px;
 @navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;
+
+// Masks (SVG filters)
+@mask-transparent: @primary-black;
+@mask-opaque: @primary-white;
 
 // Sidebar
 @bootstrap-padding-width: 15px;
