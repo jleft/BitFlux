@@ -11,6 +11,7 @@ import formatProducts from './data/coinbase/formatProducts';
 import notification from './notification/notification';
 import messageModel from './model/notification/message';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
+import initialiseModel from './initialiseModel';
 
 export default function(initialModel) {
 
@@ -75,7 +76,7 @@ export default function(initialModel) {
 
     var containers;
 
-    var model = initialModel;
+    var model = initialModel || initialiseModel();
 
     var periods = model.periods;
     var sources = model.sources;
@@ -454,7 +455,6 @@ export default function(initialModel) {
 
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
-
 
         var _dataInterface = initialiseDataInterface();
         headMenu = initialiseHeadMenu(_dataInterface);

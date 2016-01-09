@@ -1,5 +1,3 @@
-import app from './app';
-import initialiseModel from './initialiseModel';
+import showcase from './sc';
 
-var model = initialiseModel();
-app(model).run();
+showcase.app().run();
