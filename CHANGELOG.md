@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [0.10.1] - 10-1-2016
+### Fixed
+- Locked down dependency and development dependency versions to fix build issue #531
+
 ## [0.10.0] - 5-1-2016
 ### Added
 - Quandl historic data source
