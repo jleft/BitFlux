@@ -16,14 +16,13 @@ text {
 }
 
 #app-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    bottom: 0;
+  max-width: @container-lg;
+  height: 100%;
+  margin: 0 auto;
 }
 
-.container {
+.container,
+.container-fluid {
   height: 100%;
   background: @background-colour;
 }

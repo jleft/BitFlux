@@ -13,7 +13,7 @@ import initialiseModel from './initialiseModel';
 
 export default function(initialModel) {
 
-    var appTemplate = '<div class="container"> \
+    var appTemplate = '<div class="container-fluid"> \
         <div id="notifications"></div> \
         <div class="row head-menu head-row"> \
             <div class="col-md-12 head-sub-row"> \
