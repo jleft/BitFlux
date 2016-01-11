@@ -12,8 +12,13 @@ import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/e
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
 import notification from './notification/notification';
+import coinbaseGetProducts from './data/coinbase/getProducts';
+import coninbaseFormatProducts from './data/coinbase/formatProducts';
+import messageModel from './model/notification/message';
 
-export default function() {
+export default function(app) {
+    var initialModel = {};
+
     function initPeriods() {
         return {
             week1: model.data.period('Weekly', 60 * 60 * 24 * 7, {unit: d3.time.week, value: 1}, '%b %d'),
@@ -120,19 +125,37 @@ export default function() {
     var sources = initSources();
     var products = initProducts();
 
-    return {
-        periods: periods,
-        sources: sources,
-        products: products,
-        primaryChart: model.chart.primary(products.generated),
-        secondaryChart: model.chart.secondary(products.generated),
-        selectors: initSelectors(),
-        xAxis: model.chart.xAxis(periods.day1),
-        nav: model.chart.nav(),
-        navReset: model.chart.navigationReset(),
-        headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
-        legend: model.chart.legend(products.generated, periods.day1),
-        overlay: model.menu.overlay(),
-        notificationMessages: model.notification.messages()
-    };
+    coinbaseGetProducts(function(error, bitcoinProducts) {
+        if (error) {
+            var statusText = error.statusText || 'Unknown reason.';
+            var message = 'Error retrieving Coinbase products: ' + statusText;
+            app.updateModel(function(appModel) {
+                appModel.notificationMessages.messages.unshift(messageModel(message));
+            });
+        } else {
+            var defaultPeriods = [periods.hour1, periods.day1];
+            var productPeriodOverrides = d3.map();
+            productPeriodOverrides.set('BTC-USD', [periods.minute1, periods.minute5, periods.hour1, periods.day1]);
+            var formattedProducts = coninbaseFormatProducts(bitcoinProducts, sources.bitcoin, defaultPeriods, productPeriodOverrides);
+
+            app.updateModel(function(appModel) {
+                appModel.headMenu.products = appModel.headMenu.products.concat(formattedProducts);
+            });
+        }
+    });
+
+    initialModel.periods = periods; // TODO: remove if unused
+    initialModel.sources = sources; // TODO: remove if unused
+    initialModel.primaryChart = model.chart.primary(products.generated);
+    initialModel.secondaryChart = model.chart.secondary(products.generated);
+    initialModel.selectors = initSelectors();
+    initialModel.xAxis = model.chart.xAxis(periods.day1);
+    initialModel.nav = model.chart.nav();
+    initialModel.navReset = model.chart.navigationReset();
+    initialModel.headMenu = model.menu.head([products.generated, products.quandl], products.generated, periods.day1);
+    initialModel.legend = model.chart.legend(products.generated, periods.day1);
+    initialModel.overlay = model.menu.overlay();
+    initialModel.notificationMessages = model.notification.messages();
+
+    return initialModel;
 }
