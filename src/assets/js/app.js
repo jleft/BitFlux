@@ -8,6 +8,7 @@ import event from './event';
 import dataInterface from './data/dataInterface';
 import notification from './notification/notification';
 import messageModel from './model/notification/message';
+import dataModel from './model/data/data';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 import initialiseModel from './initialiseModel';
 
@@ -75,6 +76,8 @@ export default function(initialModel) {
     var containers;
 
     var model = initialModel || initialiseModel(app);
+
+    var _dataInterface;
 
     var charts = {
         primary: undefined,
@@ -252,6 +255,13 @@ export default function(initialModel) {
         model.legend.period = period;
     }
 
+    function changeProduct(product) {
+        loading(true);
+        updateModelSelectedProduct(product);
+        updateModelSelectedPeriod(product.periods[0]);
+        _dataInterface(product.periods[0].seconds, product);
+    }
+
     function initialisePrimaryChart() {
         return chart.primary()
             .on(event.crosshairChange, onCrosshairChange)
@@ -308,13 +318,10 @@ export default function(initialModel) {
             .on(event.streamingFeedClose, onStreamingFeedCloseOrError);
     }
 
-    function initialiseHeadMenu(_dataInterface) {
+    function initialiseHeadMenu() {
         return menu.head()
             .on(event.dataProductChange, function(product) {
-                loading(true);
-                updateModelSelectedProduct(product.option);
-                updateModelSelectedPeriod(product.option.periods[0]);
-                _dataInterface(product.option.periods[0].seconds, product.option);
+                changeProduct(product.option);
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
@@ -401,6 +408,21 @@ export default function(initialModel) {
         }
     };
 
+    app.changeQuandlProduct = function(productString) {
+        var product = dataModel.product(productString, productString, [model.periods.day1], model.sources.quandl, '.3s');
+        var existsInHeadMenuProducts = model.headMenu.products.some(function(p) { return p.id === product.id; });
+
+        if (!existsInHeadMenuProducts) {
+            model.headMenu.products.push(product);
+        }
+
+        changeProduct(product);
+
+        if (rendered) {
+            render();
+        }
+    };
+
     app.run = function(element) {
         var appContainer = d3.select(element);
         // TODO: Could potentially use d3.html() to load the html from an external file
@@ -431,8 +453,8 @@ export default function(initialModel) {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
-        var _dataInterface = initialiseDataInterface();
-        headMenu = initialiseHeadMenu(_dataInterface);
+        _dataInterface = initialiseDataInterface();
+        headMenu = initialiseHeadMenu();
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
