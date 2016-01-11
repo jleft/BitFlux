@@ -1,4 +1,6 @@
 /*global window */
+import fc from 'd3fc';
+
 var renderedOnce = false;
 
 export default function(containers, charts) {
@@ -35,10 +37,10 @@ export default function(containers, charts) {
         renderedOnce = true;
     }
 
-    var useableScreenHeight = window.innerHeight - headRowHeight;
+    var useableHeight = fc.util.innerDimensions(containers.app.node()).height - headRowHeight;
 
     containers.charts
-      .style('height', useableScreenHeight + 'px');
+      .style('height', useableHeight + 'px');
 
     charts.xAxis.dimensionChanged(containers.xAxis);
     charts.navbar.dimensionChanged(containers.navbar);
