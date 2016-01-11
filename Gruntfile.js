@@ -464,6 +464,8 @@ module.exports = function(grunt) {
     grunt.registerTask('build:module', [
         'check',
         'clean',
+        'svg_sprite',
+        'copy:icons',
         'rollup:module',
         'uglify:module']);
 
