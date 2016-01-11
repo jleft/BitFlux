@@ -191,13 +191,17 @@ export default function() {
         var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
         primaryChart.yTickValues(tickValues)
           .yDecorate(function(s) {
-              s.selectAll('.tick')
+              var closePriceTick = s.selectAll('.tick')
                 .filter(function(d) { return d === latestPrice; })
-                .classed('closeLine', true)
-                .select('path')
+                .classed('closeLine', true);
+
+              var calloutHeight = 18;
+              closePriceTick.select('path')
                 .attr('d', function(d) {
-                    return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, 14));
+                    return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, calloutHeight));
                 });
+              closePriceTick.select('text')
+                .attr('transform', 'translate(' + calloutHeight / 2 + ',1)');
           });
 
         // Redraw
