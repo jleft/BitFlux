@@ -4,9 +4,7 @@
     margin-right: 0 !important;
 
     .extent {
-      fill: @navigator-extent-colour;
       stroke: none;
-      fill-opacity: 0.125;
       shape-rendering: crispEdges;
     }
 
@@ -49,6 +47,26 @@
     text {
       font-size: @font-size-base;
       fill: @font-colour;
+    }
+
+    #brush-mask {
+      .mask-background {
+        fill: @mask-transparent;
+      }
+      .area {
+        fill: @mask-opaque;
+      }
+    }
+
+    #brush-gradient {
+      // To change the gradient offsets, edit nav.js
+      .brush-gradient-top {
+        stop-color: @navigator-extent-colour-top;
+      }
+
+      .brush-gradient-bottom {
+        stop-color: @navigator-extent-colour-bottom;
+      }
     }
   }
 

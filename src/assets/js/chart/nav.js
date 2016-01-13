@@ -49,6 +49,9 @@ export default function() {
           selection.selectAll('.resize.w>rect, .resize.e>rect')
             .attr('height', barHeight)
             .attr('y', borderWidth);
+          enter.select('.extent')
+            .attr('mask', 'url("#brush-mask")')
+            .attr('fill', 'url("#brush-gradient")');
 
           // Adds the handles to the brush sides
           var handles = enter.selectAll('.e, .w');
@@ -72,6 +75,15 @@ export default function() {
               return this.data;
           }
       });
+
+    var maskXScale = fc.scale.dateTime();
+    var maskYScale = d3.scale.linear();
+
+    var brushMask = fc.series.area()
+      .yValue(function(d) { return d.close; })
+      .xScale(maskXScale)
+      .yScale(maskYScale);
+
     var layoutWidth;
 
 
@@ -85,8 +97,37 @@ export default function() {
         return ((navBrush.extent()[0][0] - navBrush.extent()[1][0]) === 0);
     }
 
+    function createDefs(selection, data) {
+        var defsEnter = selection.selectAll('defs')
+          .data([0])
+          .enter()
+          .append('defs');
+
+        defsEnter.html('<linearGradient id="brush-gradient" x1="0" x2="0" y1="0" y2="1"> \
+              <stop offset="0%" class="brush-gradient-top" /> \
+              <stop offset="100%" class="brush-gradient-bottom" /> \
+          </linearGradient> \
+          <mask id="brush-mask"> \
+              <rect class="mask-background"></rect> \
+          </mask>');
+
+        selection.select('.mask-background').attr({
+            width: layoutWidth,
+            height: navChartHeight
+        });
+
+        maskXScale.domain(fc.util.extent().fields('date')(data));
+        maskYScale.domain(fc.util.extent().fields(['low', 'high'])(data));
+
+        selection.select('mask')
+            .datum(data)
+            .call(brushMask);
+    }
+
     function nav(selection) {
         var model = selection.datum();
+
+        createDefs(selection, model.data);
 
         viewScale.domain(model.viewDomain);
 
@@ -140,6 +181,8 @@ export default function() {
     nav.dimensionChanged = function(container) {
         layoutWidth = parseInt(container.style('width'), 10);
         viewScale.range([0, layoutWidth]);
+        maskXScale.range([0, layoutWidth]);
+        maskYScale.range([navChartHeight, 0]);
     };
 
     return nav;
