@@ -49,6 +49,9 @@ export default function() {
           selection.selectAll('.resize.w>rect, .resize.e>rect')
             .attr('height', barHeight)
             .attr('y', borderWidth);
+          enter.select('.extent')
+            .attr('mask', 'url("#brush-mask")')
+            .attr('fill', 'url("#brush-gradient")');
 
           // Adds the handles to the brush sides
           var handles = enter.selectAll('.e, .w');
@@ -74,8 +77,7 @@ export default function() {
       });
 
     var maskXScale = fc.scale.dateTime();
-    var maskYScale = d3.scale.linear()
-      .range([navChartHeight, 0]);
+    var maskYScale = d3.scale.linear();
 
     var brushMask = fc.series.area()
       .yValue(function(d) { return d.close; })
@@ -96,7 +98,11 @@ export default function() {
     }
 
     function createDefs(selection, data) {
-        var defsEnter = selection.selectAll('defs').data([0]).enter().append('defs');
+        var defsEnter = selection.selectAll('defs')
+          .data([0])
+          .enter()
+          .append('defs');
+
         defsEnter.html('<linearGradient id="brush-gradient" x1="0" x2="0" y1="0" y2="1"> \
               <stop offset="0%" class="brush-gradient-top" /> \
               <stop offset="100%" class="brush-gradient-bottom" /> \
@@ -110,8 +116,7 @@ export default function() {
             height: navChartHeight
         });
 
-        maskXScale.domain(fc.util.extent().fields('date')(data))
-          .range([0, layoutWidth]);
+        maskXScale.domain(fc.util.extent().fields('date')(data));
         maskYScale.domain(fc.util.extent().fields(['low', 'high'])(data));
 
         selection.select('mask')
@@ -176,6 +181,8 @@ export default function() {
     nav.dimensionChanged = function(container) {
         layoutWidth = parseInt(container.style('width'), 10);
         viewScale.range([0, layoutWidth]);
+        maskXScale.range([0, layoutWidth]);
+        maskYScale.range([navChartHeight, 0]);
     };
 
     return nav;
