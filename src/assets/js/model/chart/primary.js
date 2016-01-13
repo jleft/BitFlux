@@ -22,6 +22,7 @@ export default function(initialProduct) {
     var candlestick = candlestickSeries();
     candlestick.id = util.uid();
     var _series = option('Candlestick', 'candlestick', candlestick);
+    _series.option.extentAccessor = ['high', 'low'];
     Object.defineProperty(model, 'series', {
         get: function() { return _series; },
         set: function(newValue) {
