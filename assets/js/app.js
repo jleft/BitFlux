@@ -595,7 +595,7 @@
   ///
   // NOTE: d3 uses very similar logic here:
   // https://github.com/mbostock/d3/blob/5b981a18db32938206b3579248c47205ecc94123/src/scale/scale.js#L8
-  function range(scale) {
+  function scaleRange(scale) {
       // for non ordinal, simply return the range
       if (!isOrdinal(scale)) {
           return scale.range();
@@ -631,7 +631,7 @@
 
   var scale$1 = Object.freeze({
       isOrdinal: isOrdinal,
-      range: range,
+      range: scaleRange,
       setRange: setRange
   });
 
@@ -667,8 +667,8 @@
 
       var rectangles = function(selection) {
 
-          var xRange = range(xScale),
-              yRange = range(yScale);
+          var xRange = scaleRange(xScale),
+              yRange = scaleRange(yScale);
 
           if (strategy.containerWidth) {
               strategy.containerWidth(Math.max(xRange[0], xRange[1]));
@@ -771,7 +771,7 @@
       return rectangles;
   }
 
-  var layout$1 = {
+  var layout$2 = {
       rectangles: rectangles,
       strategy: strategy
   };
@@ -1602,7 +1602,7 @@
       return fan;
   }
 
-  function lineAnnotation() {
+  function annotationLine() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -1648,13 +1648,13 @@
                   throw new Error('Invalid orientation');
               }
 
-              var scaleRange = range(crossScale),
+              var scaleRange$$ = scaleRange(crossScale),
                   // the transform that sets the 'origin' of the annotation
                   containerTransform = function(d) {
                       var transform = valueScale(value(d));
-                      return translation(scaleRange[0], transform);
+                      return translation(scaleRange$$[0], transform);
                   },
-                  scaleWidth = scaleRange[1] - scaleRange[0];
+                  scaleWidth = scaleRange$$[1] - scaleRange$$[0];
 
               var container = d3.select(this);
 
@@ -1756,7 +1756,7 @@
   // overriding where the series value is stored on the node (__series__) and
   // forcing the node datum (__data__) to be the user supplied data (via mapping).
 
-  function _multi() {
+  function multiSeries() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -2003,11 +2003,11 @@
           .xValue(x)
           .yValue(y);
 
-      var horizontalLine = lineAnnotation()
+      var horizontalLine = annotationLine()
           .value(y)
           .label(function(d) { return d.y; });
 
-      var verticalLine = lineAnnotation()
+      var verticalLine = annotationLine()
           .orient('vertical')
           .value(x)
           .label(function(d) { return d.x; });
@@ -2017,7 +2017,7 @@
       // these annotations.
       function identityScale(scale) {
           return d3.scale.identity()
-              .range(range(scale));
+              .range(scaleRange(scale));
       }
 
       var crosshair = function(selection) {
@@ -2038,17 +2038,17 @@
                   .style('visibility', 'hidden');
 
               container.select('rect')
-                  .attr('x', range(xScale)[0])
-                  .attr('y', range(yScale)[1])
-                  .attr('width', range(xScale)[1])
-                  .attr('height', range(yScale)[0]);
+                  .attr('x', scaleRange(xScale)[0])
+                  .attr('y', scaleRange(yScale)[1])
+                  .attr('width', scaleRange(xScale)[1])
+                  .attr('height', scaleRange(yScale)[0]);
 
               var crosshairElement = dataJoin(container, data);
 
               crosshairElement.enter()
                   .style('pointer-events', 'none');
 
-              var multi = _multi()
+              var multi = multiSeries()
                   .series([horizontalLine, verticalLine, pointSeries])
                   .xScale(identityScale(xScale))
                   .yScale(identityScale(yScale))
@@ -2585,12 +2585,12 @@
               var container = d3.select(this);
 
               // add the domain line
-              var range$$ = range(scale);
+              var range = scaleRange(scale);
               var domainPathData = pathTranspose([
-                  [range$$[0], sign * outerTickSize],
-                  [range$$[0], 0],
-                  [range$$[1], 0],
-                  [range$$[1], sign * outerTickSize]
+                  [range[0], sign * outerTickSize],
+                  [range[0], 0],
+                  [range[1], 0],
+                  [range[1], sign * outerTickSize]
               ]);
 
               var domainLine = domainPathDataJoin(container, [data]);
@@ -3889,7 +3889,7 @@
       candlestick: candlestick,
       cycle: cycle,
       line: _line,
-      multi: _multi,
+      multi: multiSeries,
       ohlc: ohlc,
       point: point,
       stacked: stacked,
@@ -4139,7 +4139,7 @@
           bearBar = _bar(),
           bullBarTop = _bar(),
           bearBarTop = _bar(),
-          multi = _multi(),
+          multi = multiSeries(),
           decorate = noop;
 
       var elderRay = function(selection) {
@@ -4249,7 +4249,7 @@
 
       var envelope = function(selection) {
 
-          var multi = _multi()
+          var multi = multiSeries()
               .xScale(xScale)
               .yScale(yScale)
               .series([area, upperLine, lowerLine])
@@ -4318,10 +4318,10 @@
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
-          multiSeries = _multi(),
+          multiSeries$$ = multiSeries(),
           decorate = noop;
 
-      var annotations = lineAnnotation();
+      var annotations = annotationLine();
 
       var forceLine = _line()
           .yValue(function(d, i) {
@@ -4330,7 +4330,7 @@
 
       var force = function(selection) {
 
-          multiSeries.xScale(xScale)
+          multiSeries$$.xScale(xScale)
               .yScale(yScale)
               .series([annotations, forceLine])
               .mapping(function(series) {
@@ -4349,7 +4349,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries);
+          selection.call(multiSeries$$);
       };
 
       force.xScale = function(x) {
@@ -4387,10 +4387,10 @@
           yScale = d3.scale.linear(),
           upperValue = 80,
           lowerValue = 20,
-          multi = _multi(),
+          multi = multiSeries(),
           decorate = noop;
 
-      var annotations = lineAnnotation();
+      var annotations = annotationLine();
       var dLine = _line()
           .yValue(function(d, i) {
               return d.stochastic.d;
@@ -4475,16 +4475,16 @@
           yScale = d3.scale.linear(),
           upperValue = 70,
           lowerValue = 30,
-          multiSeries = _multi(),
+          multiSeries$$ = multiSeries(),
           decorate = noop;
 
-      var annotations = lineAnnotation();
+      var annotations = annotationLine();
       var rsiLine = _line()
           .yValue(function(d, i) { return d.rsi; });
 
       var rsi = function(selection) {
 
-          multiSeries.xScale(xScale)
+          multiSeries$$.xScale(xScale)
               .yScale(yScale)
               .series([rsiLine, annotations])
               .mapping(function(series) {
@@ -4505,7 +4505,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries);
+          selection.call(multiSeries$$);
       };
 
       rsi.xScale = function(x) {
@@ -4558,7 +4558,7 @@
           macdLine = _line(),
           signalLine = _line(),
           divergenceBar = _bar(),
-          multiSeries = _multi(),
+          multiSeries$$ = multiSeries(),
           decorate = noop;
 
       var macd = function(selection) {
@@ -4572,7 +4572,7 @@
           divergenceBar.xValue(xValue)
               .yValue(function(d, i) { return root(d).divergence; });
 
-          multiSeries.xScale(xScale)
+          multiSeries$$.xScale(xScale)
               .yScale(yScale)
               .series([divergenceBar, macdLine, signalLine])
               .decorate(function(g, data, index) {
@@ -4583,7 +4583,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries);
+          selection.call(multiSeries$$);
       };
 
       macd.xScale = function(x) {
@@ -4659,7 +4659,7 @@
 
       var bollingerBands = function(selection) {
 
-          var multi = _multi()
+          var multi = multiSeries()
               .xScale(xScale)
               .yScale(yScale)
               .series([area, upperLine, lowerLine, averageLine])
@@ -4838,7 +4838,7 @@
       return elderRay;
   }
 
-  function _slidingWindow() {
+  function slidingWindow() {
 
       var undefinedValue = d3.functor(undefined),
           windowSize = d3.functor(10),
@@ -4898,7 +4898,7 @@
   function merge() {
 
       var merge = noop,
-          algorithm = _slidingWindow();
+          algorithm = slidingWindow();
 
       var mergeCompute = function(data) {
           return d3.zip(data, algorithm(data))
@@ -4983,7 +4983,7 @@
   // of 'undefined' values to the output.
   function undefinedInputAdapter() {
 
-      var algorithm = _slidingWindow()
+      var algorithm = slidingWindow()
           .accumulator(d3.mean);
       var undefinedValue = d3.functor(undefined),
           defined = function(value) {
@@ -5064,14 +5064,14 @@
       var volumeValue = function(d, i) { return d.volume; },
           closeValue = function(d, i) { return d.close; };
 
-      var slidingWindow = _slidingWindow()
+      var slidingWindow$$ = slidingWindow()
           .windowSize(2)
           .accumulator(function(values) {
               return (closeValue(values[1]) - closeValue(values[0])) * volumeValue(values[1]);
           });
 
       var force = function(data) {
-          return slidingWindow(data);
+          return slidingWindow$$(data);
       };
 
       force.volumeValue = function(x) {
@@ -5089,7 +5089,7 @@
           return force;
       };
 
-      d3.rebind(force, slidingWindow, 'windowSize');
+      d3.rebind(force, slidingWindow$$, 'windowSize');
 
       return force;
   }
@@ -5120,7 +5120,7 @@
           highValue = function(d, i) { return d.high; },
           lowValue = function(d, i) { return d.low; };
 
-      var kWindow = _slidingWindow()
+      var kWindow = slidingWindow()
           .windowSize(5)
           .accumulator(function(values) {
               var maxHigh = d3.max(values, highValue);
@@ -5128,7 +5128,7 @@
               return 100 * (closeValue(values[values.length - 1]) - minLow) / (maxHigh - minLow);
           });
 
-      var dWindow = _slidingWindow()
+      var dWindow = slidingWindow()
           .windowSize(3)
           .accumulator(function(values) {
               if (values[0] === undefined) {
@@ -5209,7 +5209,7 @@
           prevDownChangesAvg,
           prevUpChangesAvg;
 
-      var slidingWindow = _slidingWindow()
+      var slidingWindow$$ = slidingWindow()
           .windowSize(14)
           .accumulator(function(values) {
               var closes = values.map(closeValue);
@@ -5246,7 +5246,7 @@
           });
 
       var rsi = function(data) {
-          return slidingWindow(data);
+          return slidingWindow$$(data);
       };
 
       rsi.closeValue = function(x) {
@@ -5257,7 +5257,7 @@
           return rsi;
       };
 
-      d3.rebind(rsi, slidingWindow, 'windowSize');
+      d3.rebind(rsi, slidingWindow$$, 'windowSize');
 
       return rsi;
   }
@@ -5282,7 +5282,7 @@
 
   function movingAverage() {
 
-      var ma = _slidingWindow()
+      var ma = slidingWindow()
               .accumulator(d3.mean)
               .value(function(d) { return d.close; });
 
@@ -5440,7 +5440,7 @@
 
       var multiplier = 2;
 
-      var slidingWindow = _slidingWindow()
+      var slidingWindow$$ = slidingWindow()
           .undefinedValue({
               upper: undefined,
               average: undefined,
@@ -5457,7 +5457,7 @@
           });
 
       var bollingerBands = function(data) {
-          return slidingWindow(data);
+          return slidingWindow$$(data);
       };
 
       bollingerBands.multiplier = function(x) {
@@ -5468,7 +5468,7 @@
           return bollingerBands;
       };
 
-      d3.rebind(bollingerBands, slidingWindow, 'windowSize', 'value');
+      d3.rebind(bollingerBands, slidingWindow$$, 'windowSize', 'value');
 
       return bollingerBands;
   }
@@ -5480,7 +5480,7 @@
       percentageChange: percentageChange,
       relativeStrengthIndex: relativeStrengthIndex$2,
       stochasticOscillator: stochasticOscillator$2,
-      slidingWindow: _slidingWindow,
+      slidingWindow: slidingWindow,
       undefinedInputAdapter: undefinedInputAdapter,
       forceIndex: forceIndex$2,
       envelope: envelope$2,
@@ -6664,7 +6664,7 @@
               });
           });
 
-      var multi = _multi()
+      var multi = multiSeries()
           .series([line, point$$])
           .mapping(function(series) {
               switch (series) {
@@ -6832,7 +6832,7 @@
               if (xBaseline !== null) {
                   return yScale(xBaseline.apply(this, arguments));
               } else {
-                  var r = range(yScale);
+                  var r = scaleRange(yScale);
                   return xAxis.orient() === 'bottom' ? r[0] : r[1];
               }
           });
@@ -6843,7 +6843,7 @@
               if (yBaseline !== null) {
                   return xScale(yBaseline.apply(this, arguments));
               } else {
-                  var r = range(xScale);
+                  var r = scaleRange(xScale);
                   return yAxis.orient() === 'left' ? r[0] : r[1];
               }
           });
@@ -7160,16 +7160,16 @@
           yScale = d3.scale.linear(),
           x0, x1, y0, y1,
           x0Scaled = function() {
-              return range(xScale)[0];
+              return scaleRange(xScale)[0];
           },
           x1Scaled = function() {
-              return range(xScale)[1];
+              return scaleRange(xScale)[1];
           },
           y0Scaled = function() {
-              return range(yScale)[0];
+              return scaleRange(yScale)[0];
           },
           y1Scaled = function() {
-              return range(yScale)[1];
+              return scaleRange(yScale)[1];
           },
           decorate = noop;
 
@@ -7279,7 +7279,7 @@
   var annotation = {
       band: band,
       gridline: gridline,
-      line: lineAnnotation
+      line: annotationLine
   };
 
   var cssLayout = __commonjs(function (module, exports) {
@@ -8605,7 +8605,7 @@
       }
   }
 
-  function layout$2(node) {
+  function layout$1(node) {
       if (ownerSVGElement(node).__layout__ === 'suspended') {
           return;
       }
@@ -8658,7 +8658,7 @@
                   // layout(number, number) - sets the width and height and performs layout
                   this.setAttribute('layout-width', name);
                   this.setAttribute('layout-height', value);
-                  layout$2(this);
+                  layout$1(this);
               } else {
                   // layout(name, value) - sets a layout- attribute
                   this.setAttribute('layout-style', name + ':' + value);
@@ -8681,7 +8681,7 @@
               }
           } else if (argsLength === 0) {
               // layout() - executes layout
-              layout$2(this);
+              layout$1(this);
           }
       });
   }
@@ -8703,7 +8703,7 @@
       tool: tool,
       util: util$1,
       version: version,
-      layout: layout$1
+      layout: layout$2
   };
 
   var id = 0;
