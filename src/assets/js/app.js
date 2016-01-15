@@ -11,8 +11,8 @@ import messageModel from './model/notification/message';
 import dataModel from './model/data/data';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 import initialiseModel from './initialiseModel';
-import coinbaseGetProducts from './data/coinbase/getProducts';
-import coninbaseFormatProducts from './data/coinbase/formatProducts';
+import getCoinbaseProducts from './data/coinbase/getProducts';
+import formatCoinbaseProducts from './data/coinbase/formatProducts';
 
 export default function() {
 
@@ -414,7 +414,7 @@ export default function() {
             var defaultPeriods = [model.periods.hour1, model.periods.day1];
             var productPeriodOverrides = d3.map();
             productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
-            var formattedProducts = coninbaseFormatProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
+            var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
             model.headMenu.products = model.headMenu.products.concat(formattedProducts);
         }
     }
@@ -489,7 +489,7 @@ export default function() {
         _dataInterface(model.headMenu.selectedPeriod.seconds, model.headMenu.selectedProduct);
 
         if (fetchCoinbaseProducts) {
-            coinbaseGetProducts(addCoinbaseProducts);
+            getCoinbaseProducts(addCoinbaseProducts);
         } else if (model.sources.bitcoin) {
             delete model.sources.bitcoin;
         }
