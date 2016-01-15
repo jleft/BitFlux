@@ -22,6 +22,10 @@ export default function() {
         return coinbaseAdaptor;
     };
 
+    coinbaseAdaptor.apiKey = function() {
+        throw new Error('Not implemented.');
+    };
+
     d3.rebind(coinbaseAdaptor, historicFeed, 'end', 'granularity', 'product');
 
     return coinbaseAdaptor;

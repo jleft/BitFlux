@@ -58,5 +58,9 @@ export default function() {
         return dataGeneratorAdaptor;
     };
 
+    dataGeneratorAdaptor.apiKey = function() {
+        throw new Error('Not implemented.');
+    };
+
     return dataGeneratorAdaptor;
 }

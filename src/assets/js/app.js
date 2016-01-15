@@ -495,5 +495,9 @@ export default function() {
         }
     };
 
+    fc.util.rebind(app, model.sources.quandl.historicFeed, {
+        quandlApiKey: 'apiKey'
+    });
+
     return app;
 }

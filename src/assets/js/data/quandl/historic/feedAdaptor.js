@@ -40,7 +40,8 @@ export default function() {
 
     fc.util.rebind(quandlAdaptor, historicFeed, {
         end: 'end',
-        product: 'dataset'
+        product: 'dataset',
+        apiKey: 'apiKey'
     });
 
     return quandlAdaptor;
