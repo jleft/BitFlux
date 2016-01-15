@@ -142,7 +142,6 @@ export default function() {
     return {
         periods: periods,
         sources: sources,
-        products: products,
         primaryChart: model.chart.primary(products.generated),
         secondaryChart: model.chart.secondary(products.generated),
         selectors: initSelectors(),
