@@ -4,6 +4,12 @@ set -e # exit with nonzero exit code if anything fails
 
 echo "Deploying..."
 
+if [ "${TRAVIS}" != true ]
+then
+    echo "This script is only intended to be run on Travis CI; not deploying."
+    exit 0
+fi
+
 if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/d3fc-showcase" ]
 then
     echo "On fork; not deploying."
