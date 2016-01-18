@@ -43,14 +43,16 @@ echo "Cloning develop..."
 git clone --branch develop --depth 1 https://github.com/ScottLogic/d3fc-showcase.git develop
 
 cd master
-echo "Building master... $(git describe --tags --always  2>&1)"
+MASTER=$(git describe --tags --always  2>&1)
+echo "Building master... $MASTER"
 npm install --quiet
-grunt build --versionNumber="$(git describe --tags --always  2>&1)"
+grunt build --versionNumber="$MASTER"
 
 cd ../develop
-echo "Building develop... $(git describe --tags --always  2>&1)"
+DEVELOP=$(git describe --tags --always  2>&1)
+echo "Building develop... $DEVELOP"
 npm install --quiet
-grunt build --versionNumber="$(git describe --tags --always  2>&1)"
+grunt build --versionNumber="$DEVELOP"
 
 echo "Creating directories for built application..."
 cd ../../dist
@@ -64,6 +66,7 @@ echo "Copying built application files..."
 cp -r ../temp/master/dist/* master
 cp -r ../temp/develop/dist/* develop
 rm -rf ../temp
+printf '{"timestamp":"%s","travis_build_number":"%s","master_version":"%s","develop_version":"%s"}\n' "$(date +%s)" "$TRAVIS_BUILD_NUMBER" "$MASTER" "$DEVELOP" > versions.json
 
 echo "Deploying to gh-pages..."
 
