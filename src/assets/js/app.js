@@ -417,6 +417,8 @@ export default function() {
             var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
             model.headMenu.products = model.headMenu.products.concat(formattedProducts);
         }
+
+        render();
     }
 
     app.fetchCoinbaseProducts = function(x) {
