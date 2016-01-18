@@ -18,6 +18,7 @@ export default function() {
 
     var appTemplate = '<div class="container-fluid"> \
         <div id="notifications"></div> \
+        <div id="loading-status-message"></div> \
         <div class="row head-menu head-row"> \
             <div class="col-md-12 head-sub-row"> \
                 <div id="product-dropdown" class="dropdown product-dropdown"></div> \
@@ -27,10 +28,7 @@ export default function() {
             </div> \
         </div> \
         <div class="row primary-row"> \
-            <div class="col-md-12" id="loading-status-message"> \
-                <p class="content">Loading...</p> \
-            </div> \
-            <div id="charts" class="col-md-12 hidden"> \
+            <div id="charts" class="col-md-12"> \
                 <div id="charts-container"> \
                     <svg id="primary-container"></svg> \
                     <svg class="secondary-container"></svg> \
@@ -232,12 +230,12 @@ export default function() {
     }
 
     function loading(isLoading, error) {
+        var spinner = '<div class="spinner"></div>';
+        var errorMessage = '<div class="content alert alert-info">' + error + '</div>';
+
         containers.app.select('#loading-status-message')
             .classed('hidden', !(isLoading || error))
-            .select('.content')
-            .text(error || 'Loading...');
-        containers.app.select('#charts')
-            .classed('hidden', isLoading || error);
+            .html(error ? errorMessage : spinner);
     }
 
     function updateModelData(data) {
