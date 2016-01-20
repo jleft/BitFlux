@@ -179,7 +179,7 @@ export default function() {
     d3.rebind(nav, dispatch, 'on');
 
     nav.dimensionChanged = function(container) {
-        layoutWidth = parseInt(container.style('width'), 10);
+        layoutWidth = util.width(container.node());
         viewScale.range([0, layoutWidth]);
         maskXScale.range([0, layoutWidth]);
         maskYScale.range([navChartHeight, 0]);
