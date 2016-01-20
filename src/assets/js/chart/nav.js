@@ -3,7 +3,6 @@ import fc from 'd3fc';
 import util from '../util/util';
 import event from '../event';
 import zoomBehavior from '../behavior/zoom';
-import width from '../util/width';
 
 export default function() {
     var navHeight = 100; // Also maintain in variables.less
@@ -180,7 +179,7 @@ export default function() {
     d3.rebind(nav, dispatch, 'on');
 
     nav.dimensionChanged = function(container) {
-        layoutWidth = width(container.node());
+        layoutWidth = util.width(container.node());
         viewScale.range([0, layoutWidth]);
         maskXScale.range([0, layoutWidth]);
         maskYScale.range([navChartHeight, 0]);
