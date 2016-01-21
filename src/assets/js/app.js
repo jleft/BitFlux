@@ -6,55 +6,78 @@ import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
 import dataInterface from './data/dataInterface';
-import coinbaseProducts from './data/coinbase/getProducts';
-import formatProducts from './data/coinbase/formatProducts';
 import notification from './notification/notification';
 import messageModel from './model/notification/message';
+import dataModel from './model/data/data';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
+import initialiseModel from './initialiseModel';
+import getCoinbaseProducts from './data/coinbase/getProducts';
+import formatCoinbaseProducts from './data/coinbase/formatProducts';
 
-export default function(initialModel) {
+export default function() {
+
+    var appTemplate = '<div class="container-fluid"> \
+        <div id="notifications"></div> \
+        <div id="loading-status-message"></div> \
+        <div class="row head-menu head-row"> \
+            <div class="col-md-12 head-sub-row"> \
+                <div id="product-dropdown" class="dropdown product-dropdown"></div> \
+                <div id="period-selector" class="hidden-xs hidden-sm"></div> \
+                <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
+                <span id="clear-indicators" class="icon sc-icon-delete delete-button hidden-md hidden-lg"></span> \
+            </div> \
+        </div> \
+        <div class="row primary-row"> \
+            <div id="charts" class="col-md-12"> \
+                <div id="charts-container"> \
+                    <svg id="primary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <svg class="secondary-container"></svg> \
+                    <div class="x-axis-row"> \
+                        <svg id="x-axis-container"></svg> \
+                    </div> \
+                    <div id="navbar-row" class="hidden-xs hidden-sm"> \
+                        <svg id="navbar-container"></svg> \
+                        <svg id="navbar-reset"></svg> \
+                    </div> \
+                </div> \
+                <div id="overlay"> \
+                    <div id="overlay-primary-container"> \
+                        <div id="overlay-primary-head"> \
+                            <div id="selectors"> \
+                                <div id="series-dropdown" class="dropdown selector-dropdown"></div> \
+                                <div id="indicator-dropdown" class="dropdown selector-dropdown"></div> \
+                            </div> \
+                            <div id="legend" class="hidden-xs hidden-sm"></div> \
+                        </div> \
+                        <div id="overlay-primary-bottom"> \
+                            <div class="edit-indicator-container"></div> \
+                        </div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="overlay-secondary-container"> \
+                        <div class="edit-indicator-container"></div> \
+                    </div> \
+                    <div class="x-axis-row"></div> \
+                    <div id="overlay-navbar-row" class="hidden-xs hidden-sm"></div> \
+                </div> \
+            </div> \
+        </div> \
+    </div>';
 
     var app = {};
 
-    var appContainer = d3.select('#app-container');
-    var chartsContainer = appContainer.select('#charts-container');
-    var overlay = appContainer.select('#overlay');
-    var containers = {
-        app: appContainer,
-        charts: chartsContainer,
-        primary: chartsContainer.select('#primary-container'),
-        secondaries: chartsContainer.selectAll('.secondary-container'),
-        xAxis: chartsContainer.select('#x-axis-container'),
-        navbar: chartsContainer.select('#navbar-container'),
-        overlay: overlay,
-        overlaySecondaries: overlay. selectAll('.overlay-secondary-container'),
-        legend: appContainer.select('#legend'),
-        suspendLayout: function(value) {
-            var self = this;
-            Object.keys(self).forEach(function(key) {
-                if (typeof self[key] !== 'function') {
-                    self[key].layoutSuspended(value);
-                }
-            });
-        }
-    };
+    var containers;
 
-    var model = initialModel;
+    var model = initialiseModel();
 
-    var periods = model.periods;
-    var sources = model.sources;
-    var products = model.products;
-
-    var primaryChartModel = model.primaryChart;
-    var secondaryChartModel = model.secondaryChart;
-    var selectorsModel = model.selectors;
-    var xAxisModel = model.xAxis;
-    var navModel = model.nav;
-    var navResetModel = model.navReset;
-    var headMenuModel = model.headMenu;
-    var legendModel = model.legend;
-    var overlayModel = model.overlay;
-    var notificationModel = model.notificationMessages;
+    var _dataInterface;
 
     var charts = {
         primary: undefined,
@@ -64,23 +87,30 @@ export default function(initialModel) {
         legend: chart.legend()
     };
 
+    var overlay;
     var headMenu;
     var navReset;
     var selectors;
     var toastNotifications;
 
+    var fetchCoinbaseProducts = false;
+
+    var firstRender = true;
     function renderInternal() {
+        if (firstRender) {
+            firstRender = false;
+        }
         if (layoutRedrawnInNextRender) {
             containers.suspendLayout(false);
         }
 
-        containers.primary.datum(primaryChartModel)
+        containers.primary.datum(model.primaryChart)
             .call(charts.primary);
 
-        containers.legend.datum(legendModel)
+        containers.legend.datum(model.legend)
             .call(charts.legend);
 
-        containers.secondaries.datum(secondaryChartModel)
+        containers.secondaries.datum(model.secondaryChart)
             // TODO: Add component: group of secondary charts.
             // Then also move method layout.getSecondaryContainer into the group.
             .filter(function(d, i) { return i < charts.secondaries.length; })
@@ -90,29 +120,29 @@ export default function(initialModel) {
                     .call(charts.secondaries[i].option);
             });
 
-        containers.xAxis.datum(xAxisModel)
+        containers.xAxis.datum(model.xAxis)
             .call(charts.xAxis);
 
-        containers.navbar.datum(navModel)
+        containers.navbar.datum(model.nav)
             .call(charts.navbar);
 
         containers.app.select('#navbar-reset')
-            .datum(navResetModel)
+            .datum(model.navReset)
             .call(navReset);
 
         containers.app.select('.head-menu')
-            .datum(headMenuModel)
+            .datum(model.headMenu)
             .call(headMenu);
 
         containers.app.select('#selectors')
-            .datum(selectorsModel)
+            .datum(model.selectors)
             .call(selectors);
 
         containers.app.select('#notifications')
-            .datum(notificationModel)
+            .datum(model.notificationMessages)
             .call(toastNotifications);
 
-        containers.overlay.datum(overlayModel)
+        containers.overlay.datum(model.overlay)
             .call(overlay);
 
         if (layoutRedrawnInNextRender) {
@@ -138,23 +168,23 @@ export default function(initialModel) {
     }
 
     function addNotification(message) {
-        notificationModel.messages.unshift(messageModel(message));
+        model.notificationMessages.messages.unshift(messageModel(message));
     }
 
     function onViewChange(domain) {
         var viewDomain = [domain[0], domain[1]];
-        primaryChartModel.viewDomain = viewDomain;
-        secondaryChartModel.viewDomain = viewDomain;
-        xAxisModel.viewDomain = viewDomain;
-        navModel.viewDomain = viewDomain;
+        model.primaryChart.viewDomain = viewDomain;
+        model.secondaryChart.viewDomain = viewDomain;
+        model.xAxis.viewDomain = viewDomain;
+        model.nav.viewDomain = viewDomain;
 
         var trackingLatest = util.domain.trackingLatestData(
-            primaryChartModel.viewDomain,
-            primaryChartModel.data);
-        primaryChartModel.trackingLatest = trackingLatest;
-        secondaryChartModel.trackingLatest = trackingLatest;
-        navModel.trackingLatest = trackingLatest;
-        navResetModel.trackingLatest = trackingLatest;
+            model.primaryChart.viewDomain,
+            model.primaryChart.data);
+        model.primaryChart.trackingLatest = trackingLatest;
+        model.secondaryChart.trackingLatest = trackingLatest;
+        model.nav.trackingLatest = trackingLatest;
+        model.navReset.trackingLatest = trackingLatest;
         render();
     }
 
@@ -171,7 +201,7 @@ export default function(initialModel) {
     }
 
     function onCrosshairChange(dataPoint) {
-        legendModel.data = dataPoint;
+        model.legend.data = dataPoint;
         render();
     }
 
@@ -192,7 +222,7 @@ export default function(initialModel) {
     }
 
     function resetToLatest() {
-        var data = primaryChartModel.data;
+        var data = model.primaryChart.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
         var navTimeDomain = util.domain.moveToLatest(dataDomain, data, 0.2);
@@ -200,31 +230,38 @@ export default function(initialModel) {
     }
 
     function loading(isLoading, error) {
-        appContainer.select('#loading-status-message')
+        var spinner = '<div class="spinner"></div>';
+        var errorMessage = '<div class="content alert alert-info">' + error + '</div>';
+
+        containers.app.select('#loading-status-message')
             .classed('hidden', !(isLoading || error))
-            .select('.content')
-            .text(error || 'Loading...');
-        appContainer.select('#charts')
-            .classed('hidden', isLoading || error);
+            .html(error ? errorMessage : spinner);
     }
 
     function updateModelData(data) {
-        primaryChartModel.data = data;
-        secondaryChartModel.data = data;
-        navModel.data = data;
+        model.primaryChart.data = data;
+        model.secondaryChart.data = data;
+        model.nav.data = data;
     }
 
     function updateModelSelectedProduct(product) {
-        headMenuModel.selectedProduct = product;
-        primaryChartModel.product = product;
-        secondaryChartModel.product = product;
-        legendModel.product = product;
+        model.headMenu.selectedProduct = product;
+        model.primaryChart.product = product;
+        model.secondaryChart.product = product;
+        model.legend.product = product;
     }
 
     function updateModelSelectedPeriod(period) {
-        headMenuModel.selectedPeriod = period;
-        xAxisModel.period = period;
-        legendModel.period = period;
+        model.headMenu.selectedPeriod = period;
+        model.xAxis.period = period;
+        model.legend.period = period;
+    }
+
+    function changeProduct(product) {
+        loading(true);
+        updateModelSelectedProduct(product);
+        updateModelSelectedPeriod(product.periods[0]);
+        _dataInterface(product.periods[0].seconds, product);
     }
 
     function initialisePrimaryChart() {
@@ -247,17 +284,17 @@ export default function(initialModel) {
         return dataInterface()
             .on(event.newTrade, function(data, source) {
                 updateModelData(data);
-                if (primaryChartModel.trackingLatest) {
+                if (model.primaryChart.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
-                        primaryChartModel.viewDomain,
-                        primaryChartModel.data);
+                        model.primaryChart.viewDomain,
+                        model.primaryChart.data);
                     onViewChange(newDomain);
                 }
             })
             .on(event.historicDataLoaded, function(data, source) {
                 loading(false);
                 updateModelData(data);
-                legendModel.data = null;
+                model.legend.data = null;
                 resetToLatest();
                 updateLayout();
             })
@@ -283,13 +320,10 @@ export default function(initialModel) {
             .on(event.streamingFeedClose, onStreamingFeedCloseOrError);
     }
 
-    function initialiseHeadMenu(_dataInterface) {
+    function initialiseHeadMenu() {
         return menu.head()
             .on(event.dataProductChange, function(product) {
-                loading(true);
-                updateModelSelectedProduct(product.option);
-                updateModelSelectedPeriod(product.option.periods[0]);
-                _dataInterface(product.option.periods[0].seconds, product.option);
+                changeProduct(product.option);
                 render();
             })
             .on(event.dataPeriodChange, function(period) {
@@ -299,7 +333,7 @@ export default function(initialModel) {
                 render();
             })
             .on(event.clearAllPrimaryChartIndicatorsAndSecondaryCharts, function() {
-                primaryChartModel.indicators.forEach(deselectOption);
+                model.primaryChart.indicators.forEach(deselectOption);
                 charts.secondaries.forEach(deselectOption);
 
                 updatePrimaryChartIndicators();
@@ -317,30 +351,11 @@ export default function(initialModel) {
 
     function deselectOption(option) { option.isSelected = false; }
 
-    function fetchCoinbaseProducts() {
-        coinbaseProducts(insertProductsIntoHeadMenuModel);
-    }
-
-    function insertProductsIntoHeadMenuModel(error, bitcoinProducts) {
-        if (error) {
-            var statusText = error.statusText || 'Unknown reason.';
-            var message = 'Error retrieving Coinbase products: ' + statusText;
-            addNotification(message);
-        } else {
-            var defaultPeriods = [periods.hour1, periods.day1];
-            var productPeriodOverrides = d3.map();
-            productPeriodOverrides.set('BTC-USD', [periods.minute1, periods.minute5, periods.hour1, periods.day1]);
-            var formattedProducts = formatProducts(bitcoinProducts, sources.bitcoin, defaultPeriods, productPeriodOverrides);
-            headMenuModel.products = headMenuModel.products.concat(formattedProducts);
-        }
-        render();
-    }
-
     function initialiseSelectors() {
         return menu.selectors()
             .on(event.primaryChartSeriesChange, function(series) {
-                primaryChartModel.series = series;
-                selectOption(series, selectorsModel.seriesSelector.options);
+                model.primaryChart.series = series;
+                selectOption(series, model.selectors.seriesSelector.options);
                 render();
             })
             .on(event.primaryChartIndicatorChange, onPrimaryIndicatorChange)
@@ -348,17 +363,17 @@ export default function(initialModel) {
     }
 
     function updatePrimaryChartIndicators() {
-        primaryChartModel.indicators =
-            selectorsModel.indicatorSelector.options.filter(function(option) {
+        model.primaryChart.indicators =
+            model.selectors.indicatorSelector.options.filter(function(option) {
                 return option.isSelected && option.isPrimary;
             });
 
-        overlayModel.primaryIndicators = primaryChartModel.indicators;
+        model.overlay.primaryIndicators = model.primaryChart.indicators;
     }
 
     function updateSecondaryCharts() {
         charts.secondaries =
-            selectorsModel.indicatorSelector.options.filter(function(option) {
+            model.selectors.indicatorSelector.options.filter(function(option) {
                 return option.isSelected && !option.isPrimary;
             });
         // TODO: This doesn't seem to be a concern of menu.
@@ -366,7 +381,7 @@ export default function(initialModel) {
             chartOption.option.on(event.viewChange, onViewChange);
         });
 
-        overlayModel.secondaryIndicators = charts.secondaries;
+        model.overlay.secondaryIndicators = charts.secondaries;
         // TODO: Remove .remove! (could a secondary chart group component manage this?).
         containers.secondaries.selectAll('*').remove();
         updateLayout();
@@ -379,7 +394,7 @@ export default function(initialModel) {
     }
 
     function onNotificationClose(id) {
-        notificationModel.messages = notificationModel.messages.filter(function(message) { return message.id !== id; });
+        model.notificationMessages.messages = model.notificationMessages.messages.filter(function(message) { return message.id !== id; });
         render();
     }
 
@@ -388,13 +403,82 @@ export default function(initialModel) {
             .on(event.notificationClose, onNotificationClose);
     }
 
-    app.run = function() {
+    function addCoinbaseProducts(error, bitcoinProducts) {
+        if (error) {
+            var statusText = error.statusText || 'Unknown reason.';
+            var message = 'Error retrieving Coinbase products: ' + statusText;
+            model.notificationMessages.messages.unshift(messageModel(message));
+        } else {
+            var defaultPeriods = [model.periods.hour1, model.periods.day1];
+            var productPeriodOverrides = d3.map();
+            productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
+            var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
+            model.headMenu.products = model.headMenu.products.concat(formattedProducts);
+        }
+
+        render();
+    }
+
+    app.fetchCoinbaseProducts = function(x) {
+        if (!arguments.length) {
+            return fetchCoinbaseProducts;
+        }
+        fetchCoinbaseProducts = x;
+        return app;
+    };
+
+    app.changeQuandlProduct = function(productString) {
+        var product = dataModel.product(productString, productString, [model.periods.day1], model.sources.quandl, '.3s');
+        var existsInHeadMenuProducts = model.headMenu.products.some(function(p) { return p.id === product.id; });
+
+        if (!existsInHeadMenuProducts) {
+            model.headMenu.products.push(product);
+        }
+
+        changeProduct(product);
+
+        if (!firstRender) {
+            render();
+        }
+    };
+
+    app.run = function(element) {
+        if (!element) {
+            throw new Error('An element must be specified when running the application.');
+        }
+
+        var appContainer = d3.select(element);
+        appContainer.html(appTemplate);
+
+        var chartsAndOverlayContainer = appContainer.select('#charts');
+        var chartsContainer = appContainer.select('#charts-container');
+        var overlayContainer = appContainer.select('#overlay');
+        containers = {
+            app: appContainer,
+            charts: chartsContainer,
+            chartsAndOverlay: chartsAndOverlayContainer,
+            primary: chartsContainer.select('#primary-container'),
+            secondaries: chartsContainer.selectAll('.secondary-container'),
+            xAxis: chartsContainer.select('#x-axis-container'),
+            navbar: chartsContainer.select('#navbar-container'),
+            overlay: overlayContainer,
+            overlaySecondaries: overlayContainer.selectAll('.overlay-secondary-container'),
+            legend: appContainer.select('#legend'),
+            suspendLayout: function(value) {
+                var self = this;
+                Object.keys(self).forEach(function(key) {
+                    if (typeof self[key] !== 'function') {
+                        self[key].layoutSuspended(value);
+                    }
+                });
+            }
+        };
+
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
-
-        var _dataInterface = initialiseDataInterface();
-        headMenu = initialiseHeadMenu(_dataInterface);
+        _dataInterface = initialiseDataInterface();
+        headMenu = initialiseHeadMenu();
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
@@ -402,10 +486,18 @@ export default function(initialModel) {
 
         updateLayout();
         initialiseResize();
+        _dataInterface(model.headMenu.selectedPeriod.seconds, model.headMenu.selectedProduct);
 
-        _dataInterface(products.generated.periods[0].seconds, products.generated);
-        fetchCoinbaseProducts();
+        if (fetchCoinbaseProducts) {
+            getCoinbaseProducts(addCoinbaseProducts);
+        } else if (model.sources.bitcoin) {
+            delete model.sources.bitcoin;
+        }
     };
+
+    fc.util.rebind(app, model.sources.quandl.historicFeed, {
+        quandlApiKey: 'apiKey'
+    });
 
     return app;
 }

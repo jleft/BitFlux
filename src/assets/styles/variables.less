@@ -3,6 +3,7 @@
 @primary-dark-blue: #263337;
 @primary-blue: #7B9FA1;
 @primary-white: #FFFFFF;
+@primary-black: #000000;
 @brand-primary: @primary-blue;
 
 // Secondary colours
@@ -71,6 +72,7 @@
 // Plot Area - Bollinger
 @bollinger-upper-colour: @tertiary-blue;
 @bollinger-lower-colour: @tertiary-blue;
+@bollinger-average-colour: @tertiary-pink;
 @bollinger-fill-colour: fade(@primary-white, 20%);
 
 // Gridlines
@@ -89,13 +91,18 @@
 // Changes to height or bottom-margin must also be carried over in nav.js variables
 @navigator-height: 100px;
 @navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
-@navigator-extent-colour: @primary-white;
+@navigator-extent-colour-top: @secondary-orange;
+@navigator-extent-colour-bottom: lighten(@secondary-orange, 30%);
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
 @navigator-background-stroke-width: 2px;
 @navigator-stroke: 1px;
 @navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;
+
+// Masks (SVG filters)
+@mask-transparent: @primary-black;
+@mask-opaque: @primary-white;
 
 // Sidebar
 @bootstrap-padding-width: 15px;
@@ -144,3 +151,12 @@
 @notification-max-width: 400px;
 @notification-spacing: 20px;
 @notification-enter-animation-duration: 0.5s;
+
+// Loading
+@error-alert-width: 400px;
+
+// Spinner
+@spinner-colour: @primary-white;
+@spinner-size: 50px;
+@spinner-thickness: 7px;
+@spinner-animation-duration: 0.6s;

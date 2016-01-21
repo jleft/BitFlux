@@ -1,8 +1,17 @@
 #loading-status-message {
+  position: absolute;
+  top: @head-height;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: fade(@primary-dark-blue, 60%);
+  z-index: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   .content {
-    text-align: center;
-    padding: 10px;
-    border-top: @secondary-grey @stroke-width solid;
-    margin-right: @y-axis-width;
+    width: @error-alert-width;
+    max-width: 100%;
   }
 }

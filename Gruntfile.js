@@ -254,7 +254,20 @@ module.exports = function(grunt) {
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'd3fcShowcase'
+                moduleName: 'sc',
+                globals: {
+                    d3: 'd3',
+                    d3fc: 'fc',
+                    jquery: '$'
+                }
+            },
+            module: {
+                files: {
+                    'dist/sc.js': ['src/assets/js/sc.js']
+                },
+                options: {
+                    sourceMap: true
+                }
             },
             development: {
                 files: {
@@ -269,11 +282,15 @@ module.exports = function(grunt) {
                     'dist/assets/js/app.js': ['src/assets/js/main.js']
                 },
                 options: {
+                    globals: {
+                        d3: 'd3',
+                        jquery: '$'
+                    },
                     plugins: [
                         require('rollup-plugin-npm')({
                             jsnext: true,
                             main: true,
-                            skip: ['d3'] // d3fc extends d3.selection.prototype
+                            skip: ['d3', 'jquery'] // d3fc extends d3.selection.prototype; Bootstrap depends on jQuery
                         }),
                         require('rollup-plugin-commonjs')()
                     ]
@@ -298,6 +315,11 @@ module.exports = function(grunt) {
             production: {
                 files: {
                     'dist/assets/js/app.min.js': ['dist/assets/js/app.js']
+                }
+            },
+            module: {
+                files: {
+                    'dist/sc.min.js': ['dist/sc.js']
                 }
             }
         },
@@ -448,6 +470,13 @@ module.exports = function(grunt) {
         'svg_sprite',
         'less:development',
         'copy']);
+    grunt.registerTask('build:module', [
+        'check',
+        'clean',
+        'svg_sprite',
+        'copy:icons',
+        'rollup:module',
+        'uglify:module']);
 
     grunt.registerTask('build:android', ['buildAndTest', 'cordovacli:buildAndroid']);
     grunt.registerTask('build:ios', ['buildAndTest', 'cordovacli:buildIos']);

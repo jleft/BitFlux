@@ -4,6 +4,12 @@ set -e # exit with nonzero exit code if anything fails
 
 echo "Deploying..."
 
+if [ "${TRAVIS}" != true ]
+then
+    echo "This script is only intended to be run on Travis CI; not deploying."
+    exit 0
+fi
+
 if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/d3fc-showcase" ]
 then
     echo "On fork; not deploying."
@@ -36,15 +42,17 @@ git clone --branch master --depth 1 https://github.com/ScottLogic/d3fc-showcase.
 echo "Cloning develop..."
 git clone --branch develop --depth 1 https://github.com/ScottLogic/d3fc-showcase.git develop
 
-echo "Building master..."
 cd master
+MASTER=$(git describe --tags --always  2>&1)
+echo "Building master... $MASTER"
 npm install --quiet
-grunt build
+grunt build --versionNumber="$MASTER"
 
-echo "Building develop..."
 cd ../develop
+DEVELOP=$(git describe --tags --always  2>&1)
+echo "Building develop... $DEVELOP"
 npm install --quiet
-grunt build --versionNumber="develop (${TRAVIS_COMMIT}) - build ${TRAVIS_JOB_NUMBER}"
+grunt build --versionNumber="$DEVELOP"
 
 echo "Creating directories for built application..."
 cd ../../dist
@@ -58,6 +66,7 @@ echo "Copying built application files..."
 cp -r ../temp/master/dist/* master
 cp -r ../temp/develop/dist/* develop
 rm -rf ../temp
+printf '{"timestamp":"%s","travis_build_number":"%s","master_version":"%s","develop_version":"%s"}\n' "$(date +%s)" "$TRAVIS_BUILD_NUMBER" "$MASTER" "$DEVELOP" > versions.json
 
 echo "Deploying to gh-pages..."
 

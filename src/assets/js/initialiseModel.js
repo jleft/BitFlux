@@ -41,33 +41,45 @@ export default function() {
     }
 
     function initSeriesSelector() {
+
         var candlestick = candlestickSeries();
         candlestick.id = util.uid();
-
-        var candlestickOption = model.menu.option('Candlestick', 'candlestick',
-            candlestick, 'sc-icon-candlestick-series');
+        var candlestickOption = model.menu.option(
+            'Candlestick',
+            'candlestick',
+            candlestick,
+            'sc-icon-candlestick-series');
         candlestickOption.isSelected = true;
+        candlestickOption.option.extentAccessor = ['high', 'low'];
 
         var ohlc = fc.series.ohlc();
         ohlc.id = util.uid();
+        var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series');
+        ohlcOption.option.extentAccessor = ['high', 'low'];
 
         var line = fc.series.line();
         line.id = util.uid();
+        var lineOption = model.menu.option('Line', 'line', line, 'sc-icon-line-series');
+        lineOption.option.extentAccessor = 'close';
 
         var point = fc.series.point();
         point.id = util.uid();
+        var pointOption = model.menu.option('Point', 'point', point, 'sc-icon-point-series');
+        pointOption.option.extentAccessor = 'close';
 
         var area = fc.series.area();
         area.id = util.uid();
+        var areaOption = model.menu.option('Area', 'area', area, 'sc-icon-area-series');
+        areaOption.option.extentAccessor = 'close';
 
         var config = model.menu.dropdownConfig(null, false, true, true);
 
         var options = [
             candlestickOption,
-            model.menu.option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series'),
-            model.menu.option('Line', 'line', line, 'sc-icon-line-series'),
-            model.menu.option('Point', 'point', point, 'sc-icon-point-series'),
-            model.menu.option('Area', 'area', area, 'sc-icon-area-series')
+            ohlcOption,
+            lineOption,
+            pointOption,
+            areaOption
         ];
 
         return model.menu.selector(config, options);
@@ -84,14 +96,21 @@ export default function() {
             .yValue(function(d) { return d.movingAverage; });
         movingAverage.id = util.uid();
 
+        var movingAverageOption = model.menu.option('Moving Average', 'movingAverage',
+            movingAverage, 'sc-icon-moving-average-indicator', true);
+        movingAverageOption.option.extentAccessor = function(d) { return d.movingAverage; };
+
         var bollingerBands = fc.indicator.renderer.bollingerBands();
         bollingerBands.id = util.uid();
 
+        var bollingerBandsOption = model.menu.option('Bollinger Bands', 'bollinger',
+            bollingerBands, 'sc-icon-bollinger-bands-indicator', true);
+        bollingerBandsOption.option.extentAccessor = [function(d) { return d.bollingerBands.lower; },
+            function(d) { return d.bollingerBands.upper; }];
+
         var indicators = [
-            model.menu.option('Moving Average', 'movingAverage',
-                movingAverage, 'sc-icon-moving-average-indicator', true),
-            model.menu.option('Bollinger Bands', 'bollinger',
-                bollingerBands, 'sc-icon-bollinger-bands-indicator', true),
+            movingAverageOption,
+            bollingerBandsOption,
             model.menu.option('Relative Strength Index', 'secondary-rsi',
                 secondary.rsi(), 'sc-icon-rsi-indicator', false),
             model.menu.option('MACD', 'secondary-macd',
@@ -123,7 +142,6 @@ export default function() {
     return {
         periods: periods,
         sources: sources,
-        products: products,
         primaryChart: model.chart.primary(products.generated),
         secondaryChart: model.chart.secondary(products.generated),
         selectors: initSelectors(),
