@@ -254,7 +254,12 @@ module.exports = function(grunt) {
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'sc'
+                moduleName: 'sc',
+                globals: {
+                    d3: 'd3',
+                    d3fc: 'fc',
+                    jquery: '$'
+                }
             },
             module: {
                 files: {
@@ -277,11 +282,15 @@ module.exports = function(grunt) {
                     'dist/assets/js/app.js': ['src/assets/js/main.js']
                 },
                 options: {
+                    globals: {
+                        d3: 'd3',
+                        jquery: '$'
+                    },
                     plugins: [
                         require('rollup-plugin-npm')({
                             jsnext: true,
                             main: true,
-                            skip: ['d3'] // d3fc extends d3.selection.prototype
+                            skip: ['d3', 'jquery'] // d3fc extends d3.selection.prototype; Bootstrap depends on jQuery
                         }),
                         require('rollup-plugin-commonjs')()
                     ]
