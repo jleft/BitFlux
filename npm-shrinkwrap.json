@@ -1,6 +1,6 @@
 {
   "name": "d3fc-showcase",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": {
       "version": "6.4.5",
