@@ -1,6 +1,29 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [0.11.0] - 21-1-2016
+### Added
+- Navigator selected area gradient
+- Small API for easier integration in OpenFin and associated build step to export as a module
+
+### Changed
+- Coinbase API calls are debounced to prevent reaching rate limit
+- Update d3fc dependency to 5.2.0
+- Use `fc.util.extent()` for padding Y domain
+- Add extent accessors to series and indicators to simplify padding calculations
+- Application fills to its parent container, rather than entire window
+
+### Fixed
+- Moving Average line shown on Bollinger Bands
+- Text in chart and menu is no longer selectable
+- Text in chart and menu no longer have text selection cursor
+- RSI calculations fixed via updating d3fc dependency to 5.2.0
+- Reset button is now click-able when tracking latest price
+- Padding around current price callout
+- Improved loading state visuals with spinner
+- Width calculations in navigator
+- jQuery is now a dependency, rather than a development dependency
+
 ## [0.10.1] - 10-1-2016
 ### Fixed
 - Locked down dependency and development dependency versions to fix build issue #531
