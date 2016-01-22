@@ -1,5 +1,5 @@
-import showcase from './sc';
+import BitFlux from './sc';
 
-showcase.app()
+BitFlux.app()
     .fetchCoinbaseProducts(true)
     .run('#app-container');

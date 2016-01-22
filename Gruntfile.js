@@ -168,7 +168,7 @@ module.exports = function(grunt) {
                 options: {
                     base: 'dist',
                     message: 'Deploy to GitHub Pages',
-                    repo: 'https://github.com/ScottLogic/d3fc-showcase.git'
+                    repo: 'https://github.com/ScottLogic/BitFlux.git'
                 },
                 src: ['**/*']
             }

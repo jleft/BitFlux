@@ -1,5 +1,5 @@
 {
-  "name": "d3fc-showcase",
+  "name": "BitFlux",
   "version": "0.11.0",
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": {
