@@ -10,7 +10,7 @@ then
     exit 0
 fi
 
-if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/d3fc-showcase" ]
+if [ "${TRAVIS_REPO_SLUG}" != "ScottLogic/BitFlux" ]
 then
     echo "On fork; not deploying."
     exit 0
@@ -37,10 +37,10 @@ mkdir temp
 cd temp
 
 echo "Cloning master..."
-git clone --branch master --depth 1 https://github.com/ScottLogic/d3fc-showcase.git master
+git clone --branch master --depth 1 https://github.com/ScottLogic/BitFlux.git master
 
 echo "Cloning develop..."
-git clone --branch develop --depth 1 https://github.com/ScottLogic/d3fc-showcase.git develop
+git clone --branch develop --depth 1 https://github.com/ScottLogic/BitFlux.git develop
 
 cd master
 MASTER=$(git describe --tags --always  2>&1)

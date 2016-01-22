@@ -210,7 +210,7 @@ export default function() {
         if (source.streamingNotificationFormatter) {
             message = source.streamingNotificationFormatter(streamingEvent);
         } else {
-            // #515 (https://github.com/ScottLogic/d3fc-showcase/issues/515)
+            // #515 (https://github.com/ScottLogic/BitFlux/issues/515)
             // (TODO) prevents errors when formatting streaming close/error messages when product changes.
             // As we only have a coinbase streaming source at the moment, this is a suitable fix for now
             message = coinbaseStreamingErrorResponseFormatter(streamingEvent);

@@ -1,5 +1,5 @@
 {
-  "name": "d3fc-showcase",
+  "name": "BitFlux",
   "version": "0.11.0",
   "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/scottlogic/d3fc-showcase.git"
+    "url": "git+https://github.com/scottlogic/BitFlux.git"
   },
   "author": "Scott Logic",
   "keywords": [
@@ -19,9 +19,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/scottlogic/d3fc-showcase/issues"
+    "url": "https://github.com/scottlogic/BitFlux/issues"
   },
-  "homepage": "https://github.com/scottlogic/d3fc-showcase#readme",
+  "homepage": "https://github.com/scottlogic/BitFlux#readme",
   "dependencies": {
     "bootstrap": "^3.3.6",
     "d3fc": "^5.2.0",

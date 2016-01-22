@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A cross-platform financial charting application to showcase the functionality of d3fc components">
-    <title>d3fc Showcase</title>
+    <title>BitFlux</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <!-- Version: <%- version %> -->
 </head>

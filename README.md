@@ -1,8 +1,8 @@
-# d3fc-showcase
+# BitFlux
 
-[![Build Status](https://travis-ci.org/ScottLogic/d3fc-showcase.svg?branch=develop)](https://travis-ci.org/ScottLogic/d3fc-showcase)
-[![Dependency Status](https://david-dm.org/ScottLogic/d3fc-showcase.svg)](https://david-dm.org/ScottLogic/d3fc-showcase)
-[![devDependency Status](https://david-dm.org/ScottLogic/d3fc-showcase/dev-status.svg)](https://david-dm.org/ScottLogic/d3fc-showcase#info=devDependencies)
+[![Build Status](https://travis-ci.org/ScottLogic/BitFlux.svg?branch=develop)](https://travis-ci.org/ScottLogic/BitFlux)
+[![Dependency Status](https://david-dm.org/ScottLogic/BitFlux.svg)](https://david-dm.org/ScottLogic/BitFlux)
+[![devDependency Status](https://david-dm.org/ScottLogic/BitFlux/dev-status.svg)](https://david-dm.org/ScottLogic/BitFlux#info=devDependencies)
 
 A cross-platform financial charting application to showcase the functionality of [d3fc](http://scottlogic.github.io/d3fc/) components.
 
@@ -46,7 +46,7 @@ The project is then accessible at http://localhost:PORTNUMBER
 
 #### GitHub Pages
 
-For this option to be available, you should have forked the ScottLogic/d3fc-showcase repository to your GitHub account.
+For this option to be available, you should have forked the ScottLogic/BitFlux repository to your GitHub account.
 
 To run on GitHub Pages, run the grunt command:
 
