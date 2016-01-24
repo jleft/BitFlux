@@ -48,28 +48,28 @@ export default function() {
             'Candlestick',
             'candlestick',
             candlestick,
-            'sc-icon-candlestick-series');
+            'bf-icon-candlestick-series');
         candlestickOption.isSelected = true;
         candlestickOption.option.extentAccessor = ['high', 'low'];
 
         var ohlc = fc.series.ohlc();
         ohlc.id = util.uid();
-        var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series');
+        var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'bf-icon-ohlc-series');
         ohlcOption.option.extentAccessor = ['high', 'low'];
 
         var line = fc.series.line();
         line.id = util.uid();
-        var lineOption = model.menu.option('Line', 'line', line, 'sc-icon-line-series');
+        var lineOption = model.menu.option('Line', 'line', line, 'bf-icon-line-series');
         lineOption.option.extentAccessor = 'close';
 
         var point = fc.series.point();
         point.id = util.uid();
-        var pointOption = model.menu.option('Point', 'point', point, 'sc-icon-point-series');
+        var pointOption = model.menu.option('Point', 'point', point, 'bf-icon-point-series');
         pointOption.option.extentAccessor = 'close';
 
         var area = fc.series.area();
         area.id = util.uid();
-        var areaOption = model.menu.option('Area', 'area', area, 'sc-icon-area-series');
+        var areaOption = model.menu.option('Area', 'area', area, 'bf-icon-area-series');
         areaOption.option.extentAccessor = 'close';
 
         var config = model.menu.dropdownConfig(null, false, true, true);
@@ -97,14 +97,14 @@ export default function() {
         movingAverage.id = util.uid();
 
         var movingAverageOption = model.menu.option('Moving Average', 'movingAverage',
-            movingAverage, 'sc-icon-moving-average-indicator', true);
+            movingAverage, 'bf-icon-moving-average-indicator', true);
         movingAverageOption.option.extentAccessor = function(d) { return d.movingAverage; };
 
         var bollingerBands = fc.indicator.renderer.bollingerBands();
         bollingerBands.id = util.uid();
 
         var bollingerBandsOption = model.menu.option('Bollinger Bands', 'bollinger',
-            bollingerBands, 'sc-icon-bollinger-bands-indicator', true);
+            bollingerBands, 'bf-icon-bollinger-bands-indicator', true);
         bollingerBandsOption.option.extentAccessor = [function(d) { return d.bollingerBands.lower; },
             function(d) { return d.bollingerBands.upper; }];
 
@@ -112,11 +112,11 @@ export default function() {
             movingAverageOption,
             bollingerBandsOption,
             model.menu.option('Relative Strength Index', 'secondary-rsi',
-                secondary.rsi(), 'sc-icon-rsi-indicator', false),
+                secondary.rsi(), 'bf-icon-rsi-indicator', false),
             model.menu.option('MACD', 'secondary-macd',
-                secondary.macd(), 'sc-icon-macd-indicator', false),
+                secondary.macd(), 'bf-icon-macd-indicator', false),
             model.menu.option('Volume', 'secondary-volume',
-                secondary.volume(), 'sc-icon-bar-series', false)
+                secondary.volume(), 'bf-icon-bar-series', false)
         ];
 
         return indicators;
