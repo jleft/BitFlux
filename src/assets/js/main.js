@@ -1,4 +1,4 @@
-import BitFlux from './bf';
+import BitFlux from './bitflux';
 
 BitFlux.app()
     .fetchCoinbaseProducts(true)
