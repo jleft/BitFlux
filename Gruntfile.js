@@ -254,7 +254,7 @@ module.exports = function(grunt) {
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'bf',
+                moduleName: 'bitflux',
                 globals: {
                     d3: 'd3',
                     d3fc: 'fc',
@@ -263,7 +263,7 @@ module.exports = function(grunt) {
             },
             module: {
                 files: {
-                    'dist/bf.js': ['src/assets/js/bf.js']
+                    'dist/bitflux.js': ['src/assets/js/bitflux.js']
                 },
                 options: {
                     sourceMap: true
@@ -319,7 +319,7 @@ module.exports = function(grunt) {
             },
             module: {
                 files: {
-                    'dist/bf.min.js': ['dist/bf.js']
+                    'dist/bitflux.min.js': ['dist/bitflux.js']
                 }
             }
         },
