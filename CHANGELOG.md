@@ -1,6 +1,16 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.0.0] - 27-1-2016
+### Changed
+- **Breaking change**: Renamed project to **BitFlux**
+  - When using BitFlux as a an external UMD module the exported name is now `bitflux` (previously `sc`)
+  - Module distribution files are now named `bitflux.*` (previously `sc.*`)
+  - Icon classes are now prefixed with `bf-` (previously `sc-`)
+
+### Fixed
+- x-axis, shared by primary and secondary charts, height increased to prevent labels being clipped
+
 ## [0.11.0] - 21-1-2016
 ### Added
 - Navigator selected area gradient
