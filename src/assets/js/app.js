@@ -24,7 +24,7 @@ export default function() {
                 <div id="product-dropdown" class="dropdown product-dropdown"></div> \
                 <div id="period-selector" class="hidden-xs hidden-sm"></div> \
                 <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
-                <span id="clear-indicators" class="icon sc-icon-delete delete-button hidden-md hidden-lg"></span> \
+                <span id="clear-indicators" class="icon bf-icon-delete delete-button hidden-md hidden-lg"></span> \
             </div> \
         </div> \
         <div class="row primary-row"> \
@@ -210,7 +210,7 @@ export default function() {
         if (source.streamingNotificationFormatter) {
             message = source.streamingNotificationFormatter(streamingEvent);
         } else {
-            // #515 (https://github.com/ScottLogic/d3fc-showcase/issues/515)
+            // #515 (https://github.com/ScottLogic/BitFlux/issues/515)
             // (TODO) prevents errors when formatting streaming close/error messages when product changes.
             // As we only have a coinbase streaming source at the moment, this is a suitable fix for now
             message = coinbaseStreamingErrorResponseFormatter(streamingEvent);

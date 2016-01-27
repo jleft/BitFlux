@@ -19,7 +19,7 @@ export default function() {
                 .attr('class', 'edit-indicator');
 
             containersEnter.append('span')
-                .attr('class', 'icon sc-icon-delete')
+                .attr('class', 'icon bf-icon-delete')
                 .on('click', dispatch.indicatorChange);
 
             containersEnter.append('span')

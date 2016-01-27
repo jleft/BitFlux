@@ -168,7 +168,7 @@ module.exports = function(grunt) {
                 options: {
                     base: 'dist',
                     message: 'Deploy to GitHub Pages',
-                    repo: 'https://github.com/ScottLogic/d3fc-showcase.git'
+                    repo: 'https://github.com/ScottLogic/BitFlux.git'
                 },
                 src: ['**/*']
             }
@@ -254,7 +254,7 @@ module.exports = function(grunt) {
         rollup: {
             options: {
                 format: 'umd',
-                moduleName: 'sc',
+                moduleName: 'bitflux',
                 globals: {
                     d3: 'd3',
                     d3fc: 'fc',
@@ -263,7 +263,7 @@ module.exports = function(grunt) {
             },
             module: {
                 files: {
-                    'dist/sc.js': ['src/assets/js/sc.js']
+                    'dist/bitflux.js': ['src/assets/js/bitflux.js']
                 },
                 options: {
                     sourceMap: true
@@ -319,7 +319,7 @@ module.exports = function(grunt) {
             },
             module: {
                 files: {
-                    'dist/sc.min.js': ['dist/sc.js']
+                    'dist/bitflux.min.js': ['dist/bitflux.js']
                 }
             }
         },
@@ -406,8 +406,8 @@ module.exports = function(grunt) {
                     mode: {
                         css: {
                             dest: '',
-                            sprite: 'sc-icon-sprite.svg',
-                            prefix: '.sc-icon-%s',
+                            sprite: 'bf-icon-sprite.svg',
+                            prefix: '.bf-icon-%s',
                             dimensions: true,
                             render: {
                                 less: true
