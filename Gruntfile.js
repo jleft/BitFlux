@@ -35,6 +35,7 @@ module.exports = function(grunt) {
             ],
             vendorJsFiles: [
                 'node_modules/d3/d3.min.js',
+                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
@@ -290,7 +291,7 @@ module.exports = function(grunt) {
                         require('rollup-plugin-npm')({
                             jsnext: true,
                             main: true,
-                            skip: ['d3', 'jquery'] // d3fc extends d3.selection.prototype; Bootstrap depends on jQuery
+                            skip: ['d3', 'jquery', 'svg-innerhtml'] // d3fc extends d3.selection.prototype; Bootstrap depends on jQuery
                         }),
                         require('rollup-plugin-commonjs')()
                     ]
