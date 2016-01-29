@@ -1,10 +1,11 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3')) :
-  typeof define === 'function' && define.amd ? define(['d3'], factory) :
-  (factory(global.d3));
-}(this, function (d3) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3'), require('jquery'), require('svg-innerhtml')) :
+  typeof define === 'function' && define.amd ? define(['d3', 'jquery', 'svg-innerhtml'], factory) :
+  (factory(global.d3,global.$,global.svgInnerhtml));
+}(this, function (d3,$,svgInnerhtml) { 'use strict';
 
   d3 = 'default' in d3 ? d3['default'] : d3;
+  $ = 'default' in $ ? $['default'] : $;
 
   var __commonjs_global = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : this;
   function __commonjs(fn, module) { return module = { exports: {} }, fn(module, module.exports, __commonjs_global), module.exports; }
@@ -756,91 +757,6 @@
       gridline: gridline,
       line: annotationLine
   };
-
-  /**
-   * innerHTML property for SVGElement
-   * Copyright(c) 2010, Jeff Schiller
-   *
-   * Licensed under the Apache License, Version 2
-   *
-   * Minor modifications by Chris Price to only polyfill when required.
-   */
-  (function(SVGElement) {
-    if (!SVGElement || 'innerHTML' in SVGElement.prototype) {
-      return;
-    }
-    var serializeXML = function(node, output) {
-      var nodeType = node.nodeType;
-      if (nodeType == 3) { // TEXT nodes.
-        // Replace special XML characters with their entities.
-        output.push(node.textContent.replace(/&/, '&amp;').replace(/</, '&lt;').replace('>', '&gt;'));
-      } else if (nodeType == 1) { // ELEMENT nodes.
-        // Serialize Element nodes.
-        output.push('<', node.tagName);
-        if (node.hasAttributes()) {
-          var attrMap = node.attributes;
-          for (var i = 0, len = attrMap.length; i < len; ++i) {
-            var attrNode = attrMap.item(i);
-            output.push(' ', attrNode.name, '=\'', attrNode.value, '\'');
-          }
-        }
-        if (node.hasChildNodes()) {
-          output.push('>');
-          var childNodes = node.childNodes;
-          for (var i = 0, len = childNodes.length; i < len; ++i) {
-            serializeXML(childNodes.item(i), output);
-          }
-          output.push('</', node.tagName, '>');
-        } else {
-          output.push('/>');
-        }
-      } else if (nodeType == 8) {
-        // TODO(codedread): Replace special characters with XML entities?
-        output.push('<!--', node.nodeValue, '-->');
-      } else {
-        // TODO: Handle CDATA nodes.
-        // TODO: Handle ENTITY nodes.
-        // TODO: Handle DOCUMENT nodes.
-        throw 'Error serializing XML. Unhandled node of type: ' + nodeType;
-      }
-    }
-    // The innerHTML DOM property for SVGElement.
-    Object.defineProperty(SVGElement.prototype, 'innerHTML', {
-      get: function() {
-        var output = [];
-        var childNode = this.firstChild;
-        while (childNode) {
-          serializeXML(childNode, output);
-          childNode = childNode.nextSibling;
-        }
-        return output.join('');
-      },
-      set: function(markupText) {
-        // Wipe out the current contents of the element.
-        while (this.firstChild) {
-          this.removeChild(this.firstChild);
-        }
-
-        try {
-          // Parse the markup into valid nodes.
-          var dXML = new DOMParser();
-          dXML.async = false;
-          // Wrap the markup into a SVG node to ensure parsing works.
-          sXML = '<svg xmlns=\'http://www.w3.org/2000/svg\'>' + markupText + '</svg>';
-          var svgDocElement = dXML.parseFromString(sXML, 'text/xml').documentElement;
-
-          // Now take each node, import it and append to this element.
-          var childNode = svgDocElement.firstChild;
-          while(childNode) {
-            this.appendChild(this.ownerDocument.importNode(childNode, true));
-            childNode = childNode.nextSibling;
-          }
-        } catch(e) {
-          throw new Error('Error parsing XML string');
-        };
-      }
-    });
-  })((1, eval)('this').SVGElement);
 
   // A drop-in replacement for the D3 axis, supporting the decorate pattern.
   function axisSvg() {
@@ -1718,7 +1634,7 @@
       return base;
   }
 
-  function _line() {
+  function seriesLine() {
 
       var decorate = noop;
 
@@ -1797,7 +1713,7 @@
           xBaseline = null,
           yBaseline = null,
           chartLabel = '',
-          plotArea = _line(),
+          plotArea = seriesLine(),
           decorate = noop;
 
       // Each axis-series has a cross-scale which is defined as an identity
@@ -2254,7 +2170,7 @@
   // overriding where the series value is stored on the node (__series__) and
   // forcing the node datum (__data__) to be the user supplied data (via mapping).
 
-  function multiSeries() {
+  function _multi() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -2439,7 +2355,7 @@
       var xScale = exportedScale();
       var yScale = d3.scale.linear();
       var radius = 2;
-      var line = _line();
+      var line = seriesLine();
 
       // configure the point series to render the data from the
       // highLowOpenClose function
@@ -2457,7 +2373,7 @@
               });
           });
 
-      var multi = multiSeries()
+      var multi = _multi()
           .series([line, point$$])
           .mapping(function(series) {
               switch (series) {
@@ -2546,7 +2462,7 @@
       var padding = 10,
           columns = 9,
           decorate = noop,
-          plotArea = _line(),
+          plotArea = seriesLine(),
           margin = {
               bottom: 30,
               right: 30
@@ -3543,7 +3459,7 @@
       sampler: sampler
   };
 
-  function slidingWindow() {
+  function _slidingWindow() {
 
       var undefinedValue = d3.functor(undefined),
           windowSize = d3.functor(10),
@@ -3602,7 +3518,7 @@
 
       var multiplier = 2;
 
-      var slidingWindow$$ = slidingWindow()
+      var slidingWindow = _slidingWindow()
           .undefinedValue({
               upper: undefined,
               average: undefined,
@@ -3619,7 +3535,7 @@
           });
 
       var bollingerBands = function(data) {
-          return slidingWindow$$(data);
+          return slidingWindow(data);
       };
 
       bollingerBands.multiplier = function(x) {
@@ -3630,7 +3546,7 @@
           return bollingerBands;
       };
 
-      d3.rebind(bollingerBands, slidingWindow$$, 'windowSize', 'value');
+      d3.rebind(bollingerBands, slidingWindow, 'windowSize', 'value');
 
       return bollingerBands;
   }
@@ -3640,7 +3556,7 @@
   function merge() {
 
       var merge = noop,
-          algorithm = slidingWindow();
+          algorithm = _slidingWindow();
 
       var mergeCompute = function(data) {
           return d3.zip(data, algorithm(data))
@@ -3668,7 +3584,7 @@
       return mergeCompute;
   }
 
-  function bollingerBands() {
+  function bollingerBands$1() {
 
       var bollingerAlgorithm = bollingerBands$2()
           .value(function(d) { return d.close; });
@@ -3743,7 +3659,7 @@
   // of 'undefined' values to the output.
   function undefinedInputAdapter() {
 
-      var algorithm = slidingWindow()
+      var algorithm = _slidingWindow()
           .accumulator(d3.mean);
       var undefinedValue = d3.functor(undefined),
           defined = function(value) {
@@ -3900,7 +3816,7 @@
           prevDownChangesAvg,
           prevUpChangesAvg;
 
-      var slidingWindow$$ = slidingWindow()
+      var slidingWindow = _slidingWindow()
           .windowSize(14)
           .accumulator(function(values) {
               var closes = values.map(closeValue);
@@ -3937,7 +3853,7 @@
           });
 
       var rsi = function(data) {
-          return slidingWindow$$(data);
+          return slidingWindow(data);
       };
 
       rsi.closeValue = function(x) {
@@ -3948,7 +3864,7 @@
           return rsi;
       };
 
-      d3.rebind(rsi, slidingWindow$$, 'windowSize');
+      d3.rebind(rsi, slidingWindow, 'windowSize');
 
       return rsi;
   }
@@ -3959,7 +3875,7 @@
           highValue = function(d, i) { return d.high; },
           lowValue = function(d, i) { return d.low; };
 
-      var kWindow = slidingWindow()
+      var kWindow = _slidingWindow()
           .windowSize(5)
           .accumulator(function(values) {
               var maxHigh = d3.max(values, highValue);
@@ -3967,7 +3883,7 @@
               return 100 * (closeValue(values[values.length - 1]) - minLow) / (maxHigh - minLow);
           });
 
-      var dWindow = slidingWindow()
+      var dWindow = _slidingWindow()
           .windowSize(3)
           .accumulator(function(values) {
               if (values[0] === undefined) {
@@ -4023,14 +3939,14 @@
       var volumeValue = function(d, i) { return d.volume; },
           closeValue = function(d, i) { return d.close; };
 
-      var slidingWindow$$ = slidingWindow()
+      var slidingWindow = _slidingWindow()
           .windowSize(2)
           .accumulator(function(values) {
               return (closeValue(values[1]) - closeValue(values[0])) * volumeValue(values[1]);
           });
 
       var force = function(data) {
-          return slidingWindow$$(data);
+          return slidingWindow(data);
       };
 
       force.volumeValue = function(x) {
@@ -4048,7 +3964,7 @@
           return force;
       };
 
-      d3.rebind(force, slidingWindow$$, 'windowSize');
+      d3.rebind(force, slidingWindow, 'windowSize');
 
       return force;
   }
@@ -4149,7 +4065,7 @@
       percentageChange: percentageChange,
       relativeStrengthIndex: relativeStrengthIndex$2,
       stochasticOscillator: stochasticOscillator$2,
-      slidingWindow: slidingWindow,
+      slidingWindow: _slidingWindow,
       undefinedInputAdapter: undefinedInputAdapter,
       forceIndex: forceIndex$2,
       envelope: envelope$2,
@@ -4175,7 +4091,7 @@
       return exponentialMovingAverage;
   }
 
-  function macd$1() {
+  function macd$2() {
 
       var macdAlgorithm = macd$3()
           .value(function(d) { return d.close; });
@@ -4196,7 +4112,7 @@
 
   function movingAverage() {
 
-      var ma = slidingWindow()
+      var ma = _slidingWindow()
               .accumulator(d3.mean)
               .value(function(d) { return d.close; });
 
@@ -4214,7 +4130,7 @@
       return movingAverage;
   }
 
-  function relativeStrengthIndex() {
+  function relativeStrengthIndex$1() {
 
       var rsi = relativeStrengthIndex$2();
 
@@ -4232,7 +4148,7 @@
       return relativeStrengthIndex;
   }
 
-  function stochasticOscillator() {
+  function stochasticOscillator$1() {
 
       var stoc = stochasticOscillator$2();
 
@@ -4250,7 +4166,7 @@
       return stochasticOscillator;
   }
 
-  function forceIndex() {
+  function forceIndex$1() {
 
       var force = forceIndex$2();
 
@@ -4270,7 +4186,7 @@
       return forceIndex;
   }
 
-  function envelope() {
+  function envelope$1() {
 
       var envelopeAlgorithm = envelope$2();
 
@@ -4299,7 +4215,7 @@
       return envelope;
   }
 
-  function elderRay() {
+  function elderRay$1() {
 
       var elderRayAlgorithm = elderRay$2()
           .value(function(d) { return d.close; });
@@ -4318,18 +4234,18 @@
       return elderRay;
   }
 
-  var algorithm = {
-      bollingerBands: bollingerBands,
+  var algorithm$1 = {
+      bollingerBands: bollingerBands$1,
       calculator: calculator,
       exponentialMovingAverage: exponentialMovingAverage,
-      macd: macd$1,
+      macd: macd$2,
       merge: merge,
       movingAverage: movingAverage,
-      relativeStrengthIndex: relativeStrengthIndex,
-      stochasticOscillator: stochasticOscillator,
-      forceIndex: forceIndex,
-      envelope: envelope,
-      elderRay: elderRay
+      relativeStrengthIndex: relativeStrengthIndex$1,
+      stochasticOscillator: stochasticOscillator$1,
+      forceIndex: forceIndex$1,
+      envelope: envelope$1,
+      elderRay: elderRay$1
   };
 
   function _area() {
@@ -4375,7 +4291,7 @@
       return area;
   }
 
-  function bollingerBands$1() {
+  function bollingerBands() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4392,24 +4308,24 @@
               return root(d).lower;
           });
 
-      var upperLine = _line()
+      var upperLine = seriesLine()
           .yValue(function(d, i) {
               return root(d).upper;
           });
 
-      var averageLine = _line()
+      var averageLine = seriesLine()
           .yValue(function(d, i) {
               return root(d).average;
           });
 
-      var lowerLine = _line()
+      var lowerLine = seriesLine()
           .yValue(function(d, i) {
               return root(d).lower;
           });
 
       var bollingerBands = function(selection) {
 
-          var multi = multiSeries()
+          var multi = _multi()
               .xScale(xScale)
               .yScale(yScale)
               .series([area, upperLine, lowerLine, averageLine])
@@ -4604,16 +4520,16 @@
       return bar;
   }
 
-  function macd$2() {
+  function macd$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
           xValue = function(d) { return d.date; },
           root = function(d) { return d.macd; },
-          macdLine = _line(),
-          signalLine = _line(),
+          macdLine = seriesLine(),
+          signalLine = seriesLine(),
           divergenceBar = _bar(),
-          multiSeries$$ = multiSeries(),
+          multiSeries = _multi(),
           decorate = noop;
 
       var macd = function(selection) {
@@ -4627,7 +4543,7 @@
           divergenceBar.xValue(xValue)
               .yValue(function(d, i) { return root(d).divergence; });
 
-          multiSeries$$.xScale(xScale)
+          multiSeries.xScale(xScale)
               .yScale(yScale)
               .series([divergenceBar, macdLine, signalLine])
               .decorate(function(g, data, index) {
@@ -4638,7 +4554,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries$$);
+          selection.call(multiSeries);
       };
 
       macd.xScale = function(x) {
@@ -4680,22 +4596,22 @@
       return macd;
   }
 
-  function relativeStrengthIndex$1() {
+  function relativeStrengthIndex() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
           upperValue = 70,
           lowerValue = 30,
-          multiSeries$$ = multiSeries(),
+          multiSeries = _multi(),
           decorate = noop;
 
       var annotations = annotationLine();
-      var rsiLine = _line()
+      var rsiLine = seriesLine()
           .yValue(function(d, i) { return d.rsi; });
 
       var rsi = function(selection) {
 
-          multiSeries$$.xScale(xScale)
+          multiSeries.xScale(xScale)
               .yScale(yScale)
               .series([rsiLine, annotations])
               .mapping(function(series) {
@@ -4716,7 +4632,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries$$);
+          selection.call(multiSeries);
       };
 
       rsi.xScale = function(x) {
@@ -4760,22 +4676,22 @@
       return rsi;
   }
 
-  function stochasticOscillator$1() {
+  function stochasticOscillator() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
           upperValue = 80,
           lowerValue = 20,
-          multi = multiSeries(),
+          multi = _multi(),
           decorate = noop;
 
       var annotations = annotationLine();
-      var dLine = _line()
+      var dLine = seriesLine()
           .yValue(function(d, i) {
               return d.stochastic.d;
           });
 
-      var kLine = _line()
+      var kLine = seriesLine()
           .yValue(function(d, i) {
               return d.stochastic.k;
           });
@@ -4848,23 +4764,23 @@
       return stochastic;
   }
 
-  function forceIndex$1() {
+  function forceIndex() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
-          multiSeries$$ = multiSeries(),
+          multiSeries = _multi(),
           decorate = noop;
 
       var annotations = annotationLine();
 
-      var forceLine = _line()
+      var forceLine = seriesLine()
           .yValue(function(d, i) {
               return d.force;
           });
 
       var force = function(selection) {
 
-          multiSeries$$.xScale(xScale)
+          multiSeries.xScale(xScale)
               .yScale(yScale)
               .series([annotations, forceLine])
               .mapping(function(series) {
@@ -4883,7 +4799,7 @@
                   decorate(g, data, index);
               });
 
-          selection.call(multiSeries$$);
+          selection.call(multiSeries);
       };
 
       force.xScale = function(x) {
@@ -4915,7 +4831,7 @@
       return force;
   }
 
-  function envelope$1() {
+  function envelope() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4932,19 +4848,19 @@
               return root(d).lower;
           });
 
-      var upperLine = _line()
+      var upperLine = seriesLine()
           .yValue(function(d, i) {
               return root(d).upper;
           });
 
-      var lowerLine = _line()
+      var lowerLine = seriesLine()
           .yValue(function(d, i) {
               return root(d).lower;
           });
 
       var envelope = function(selection) {
 
-          var multi = multiSeries()
+          var multi = _multi()
               .xScale(xScale)
               .yScale(yScale)
               .series([area, upperLine, lowerLine])
@@ -5009,7 +4925,7 @@
       return envelope;
   }
 
-  function elderRay$1() {
+  function elderRay() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -5019,7 +4935,7 @@
           bearBar = _bar(),
           bullBarTop = _bar(),
           bearBarTop = _bar(),
-          multi = multiSeries(),
+          multi = _multi(),
           decorate = noop;
 
       var elderRay = function(selection) {
@@ -5101,17 +5017,17 @@
   }
 
   var renderer = {
-      bollingerBands: bollingerBands$1,
-      macd: macd$2,
-      relativeStrengthIndex: relativeStrengthIndex$1,
-      stochasticOscillator: stochasticOscillator$1,
-      forceIndex: forceIndex$1,
-      envelope: envelope$1,
-      elderRay: elderRay$1
+      bollingerBands: bollingerBands,
+      macd: macd$1,
+      relativeStrengthIndex: relativeStrengthIndex,
+      stochasticOscillator: stochasticOscillator,
+      forceIndex: forceIndex,
+      envelope: envelope,
+      elderRay: elderRay
   };
 
   var indicator = {
-      algorithm: algorithm,
+      algorithm: algorithm$1,
       renderer: renderer
   };
 
@@ -6904,7 +6820,7 @@
           yScale = d3.scale.linear(),
           xValue = function(d, i) { return d.date.getDay(); },
           subScale = d3.scale.linear(),
-          subSeries = _line(),
+          subSeries = seriesLine(),
           barWidth = fractionalBarWidth(0.75);
 
       var dataJoin = _dataJoin()
@@ -7230,7 +7146,7 @@
 
   function line() {
 
-      var line = _line()
+      var line = seriesLine()
           .yValue(function(d) { return d.y0 + d.y; });
 
       var stack = _stack()
@@ -7731,7 +7647,7 @@
       return waterfall;
   }
 
-  var algorithm$1 = {
+  var algorithm = {
       waterfall: waterfall$1
   };
 
@@ -7741,8 +7657,8 @@
       bar: _bar,
       candlestick: candlestick,
       cycle: cycle,
-      line: _line,
-      multi: multiSeries,
+      line: seriesLine,
+      multi: _multi,
       ohlc: ohlc,
       point: point,
       stacked: stacked,
@@ -7751,7 +7667,7 @@
       ohlcBase: ohlcBase,
       errorBar: errorBar,
       waterfall: waterfall,
-      algorithm: algorithm$1
+      algorithm: algorithm
   };
 
   var svg = {
@@ -7890,7 +7806,7 @@
               crosshairElement.enter()
                   .style('pointer-events', 'none');
 
-              var multi = multiSeries()
+              var multi = _multi()
                   .series([horizontalLine, verticalLine, pointSeries])
                   .xScale(identityScale(xScale))
                   .yScale(identityScale(yScale))
@@ -8847,10 +8763,112 @@
       return ++id;
   }
 
+  function width(element) {
+      return $(element).width();
+  }
+
+  // Inspired by underscore library implementation of debounce
+
+  function debounce(func, wait, immediate) {
+      var timeout;
+      var args;
+      var timestamp;
+      var result;
+
+      var later = function() {
+          var last = new Date().getTime() - timestamp;
+
+          if (last < wait && last >= 0) {
+              timeout = setTimeout(later.bind(this), wait - last);
+          } else {
+              timeout = null;
+              if (!immediate) {
+                  result = func.apply(this, args);
+                  args = null;
+              }
+          }
+      };
+
+      return function() {
+          args = arguments;
+          timestamp = new Date().getTime();
+          var callNow = immediate && !timeout;
+
+          if (!timeout) {
+              timeout = setTimeout(later.bind(this), wait);
+          }
+          if (callNow) {
+              result = func.apply(this, args);
+              args = null;
+          }
+
+          return result;
+      };
+  }
+
+  // Inspired by underscore library implementation of throttle
+
+  function throttle(func, wait, options) {
+      var args;
+      var result;
+      var timeout = null;
+      var previous = 0;
+
+      if (!options) {
+          options = {};
+      }
+
+      var later = function() {
+          if (options.leading === false) {
+              previous = 0;
+          } else {
+              previous = new Date().getTime();
+          }
+
+          timeout = null;
+          result = func.apply(this, args);
+
+          if (!timeout) {
+              args = null;
+          }
+      };
+
+      return function() {
+          var now = new Date().getTime();
+
+          if (!previous && options.leading === false) {
+              previous = now;
+          }
+
+          var remaining = wait - (now - previous);
+          args = arguments;
+
+          if (remaining <= 0 || remaining > wait) {
+              if (timeout) {
+                  clearTimeout(timeout);
+                  timeout = null;
+              }
+              previous = now;
+              result = func.apply(this, args);
+
+              if (!timeout) {
+                  args = null;
+              }
+          } else if (!timeout && options.trailing !== false) {
+              timeout = setTimeout(later.bind(this), remaining);
+          }
+
+          return result;
+      };
+  }
+
   var util = {
       domain: domain,
       layout: layout,
-      uid: uid
+      uid: uid,
+      width: width,
+      debounce: debounce,
+      throttle: throttle
   };
 
   function zoomBehavior(width) {
@@ -9328,7 +9346,7 @@
       d3.rebind(nav, dispatch, 'on');
 
       nav.dimensionChanged = function(container) {
-          layoutWidth = parseInt(container.style('width'), 10);
+          layoutWidth = util.width(container.node());
           viewScale.range([0, layoutWidth]);
           maskXScale.range([0, layoutWidth]);
           maskYScale.range([navChartHeight, 0]);
@@ -9403,7 +9421,7 @@
           if (scaleTickSeconds < period.seconds) {
               xAxis.ticks(period.d3TimeInterval.unit, period.d3TimeInterval.value);
           } else {
-              xAxis.ticks(1);
+              xAxis.ticks(6);
           }
       }
 
@@ -9754,7 +9772,6 @@
       secondary: secondary
   };
 
-  // Generates a menu option similar to those generated by sc.model.menu.option from a sc.model.data.product object
   function productAdaptor(product) {
       return {
           displayString: product.display,
@@ -9762,7 +9779,6 @@
       };
   }
 
-  // Generates a menu option similar to those generated by model.menu.option from a model.data.period object
   function periodAdaptor(period) {
       return {
           displayString: period.display,
@@ -9899,14 +9915,12 @@
               var container = d3.select(this);
 
               var products = model.products;
-              var productDatum = {
-                  config: model.productConfig,
-                  options: products.map(productAdaptor),
-                  selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
-              };
-
               container.select('#product-dropdown')
-                  .datum(productDatum)
+                  .datum({
+                      config: model.productConfig,
+                      options: products.map(productAdaptor),
+                      selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
+                  })
                   .call(dataProductDropdown);
 
               var periods = model.selectedProduct.periods;
@@ -9963,7 +9977,7 @@
                   return option.isSelected;
               }).indexOf(true);
 
-              container.select('.series-dropdown')
+              container.select('#series-dropdown')
                   .datum({
                       config: model.seriesSelector.config,
                       options: model.seriesSelector.options,
@@ -9981,11 +9995,12 @@
                       return option;
                   });
 
-              container.select('.indicator-dropdown')
+              container.select('#indicator-dropdown')
                   .datum({
                       config: model.indicatorSelector.config,
                       options: options,
-                      selected: selectedIndicatorIndexes})
+                      selected: selectedIndicatorIndexes
+                  })
                   .call(indicatorToggle);
 
           });
@@ -10038,7 +10053,7 @@
                   .attr('class', 'edit-indicator');
 
               containersEnter.append('span')
-                  .attr('class', 'icon sc-icon-delete')
+                  .attr('class', 'icon bf-icon-delete')
                   .on('click', dispatch.indicatorChange);
 
               containersEnter.append('span')
@@ -10061,8 +10076,7 @@
   function overlay() {
       var dispatch = d3.dispatch(
           event.primaryChartIndicatorChange,
-          event.secondaryChartChange,
-          event.dataProductChange);
+          event.secondaryChartChange);
 
       var primaryChartIndicatorToggle = editIndicatorGroup()
           .on(event.indicatorChange, dispatch[event.primaryChartIndicatorChange]);
@@ -10070,23 +10084,9 @@
       var secondaryChartToggle = editIndicatorGroup()
           .on(event.indicatorChange, dispatch[event.secondaryChartChange]);
 
-      var dataProductDropdown = dropdown()
-          .on('optionChange', dispatch[event.dataProductChange]);
-
       var overlay = function(selection) {
           selection.each(function(model) {
               var container = d3.select(this);
-
-              var products = model.products;
-              var productDatum = {
-                  config: model.productConfig,
-                  options: products.map(productAdaptor),
-                  selectedIndex: products.indexOf(model.selectedProduct)
-              };
-
-              container.select('#mobile-product-dropdown')
-                  .datum(productDatum)
-                  .call(dataProductDropdown);
 
               container.select('#overlay-primary-container .edit-indicator-container')
                   .datum({selectedIndicators: model.primaryIndicators})
@@ -10424,13 +10424,10 @@
       };
   }
 
-  function overlay$1(initialProducts, initialSelectedProduct) {
+  function overlay$1() {
       return {
           primaryIndicators: [],
-          secondaryIndicators: [],
-          productConfig: dropdownConfig(),
-          products: initialProducts,
-          selectedProduct: initialSelectedProduct
+          secondaryIndicators: []
       };
   }
 
@@ -10630,45 +10627,6 @@
       return dataGeneratorAdaptor;
   }
 
-  // Inspired by underscore library implementation of debounce
-
-  function debounce(func, wait, immediate) {
-      var timeout;
-      var args;
-      var timestamp;
-      var result;
-
-      var later = function() {
-          var last = new Date().getTime() - timestamp;
-
-          if (last < wait && last >= 0) {
-              timeout = setTimeout(later.bind(this), wait - last);
-          } else {
-              timeout = null;
-              if (!immediate) {
-                  result = func.apply(this, args);
-                  args = null;
-              }
-          }
-      };
-
-      return function() {
-          args = arguments;
-          timestamp = new Date().getTime();
-          var callNow = immediate && !timeout;
-
-          if (!timeout) {
-              timeout = setTimeout(later.bind(this), wait);
-          }
-          if (callNow) {
-              result = func.apply(this, args);
-              args = null;
-          }
-
-          return result;
-      };
-  }
-
   function coinbaseAdaptor() {
       var rateLimit = 1000;       // The coinbase API has a limit of 1 request per second
 
@@ -10861,28 +10819,28 @@
               'Candlestick',
               'candlestick',
               candlestick,
-              'sc-icon-candlestick-series');
+              'bf-icon-candlestick-series');
           candlestickOption.isSelected = true;
           candlestickOption.option.extentAccessor = ['high', 'low'];
 
           var ohlc = fc.series.ohlc();
           ohlc.id = util.uid();
-          var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'sc-icon-ohlc-series');
+          var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'bf-icon-ohlc-series');
           ohlcOption.option.extentAccessor = ['high', 'low'];
 
           var line = fc.series.line();
           line.id = util.uid();
-          var lineOption = model.menu.option('Line', 'line', line, 'sc-icon-line-series');
+          var lineOption = model.menu.option('Line', 'line', line, 'bf-icon-line-series');
           lineOption.option.extentAccessor = 'close';
 
           var point = fc.series.point();
           point.id = util.uid();
-          var pointOption = model.menu.option('Point', 'point', point, 'sc-icon-point-series');
+          var pointOption = model.menu.option('Point', 'point', point, 'bf-icon-point-series');
           pointOption.option.extentAccessor = 'close';
 
           var area = fc.series.area();
           area.id = util.uid();
-          var areaOption = model.menu.option('Area', 'area', area, 'sc-icon-area-series');
+          var areaOption = model.menu.option('Area', 'area', area, 'bf-icon-area-series');
           areaOption.option.extentAccessor = 'close';
 
           var config = model.menu.dropdownConfig(null, false, true, true);
@@ -10910,14 +10868,14 @@
           movingAverage.id = util.uid();
 
           var movingAverageOption = model.menu.option('Moving Average', 'movingAverage',
-              movingAverage, 'sc-icon-moving-average-indicator', true);
+              movingAverage, 'bf-icon-moving-average-indicator', true);
           movingAverageOption.option.extentAccessor = function(d) { return d.movingAverage; };
 
           var bollingerBands = fc.indicator.renderer.bollingerBands();
           bollingerBands.id = util.uid();
 
           var bollingerBandsOption = model.menu.option('Bollinger Bands', 'bollinger',
-              bollingerBands, 'sc-icon-bollinger-bands-indicator', true);
+              bollingerBands, 'bf-icon-bollinger-bands-indicator', true);
           bollingerBandsOption.option.extentAccessor = [function(d) { return d.bollingerBands.lower; },
               function(d) { return d.bollingerBands.upper; }];
 
@@ -10925,11 +10883,11 @@
               movingAverageOption,
               bollingerBandsOption,
               model.menu.option('Relative Strength Index', 'secondary-rsi',
-                  secondary.rsi(), 'sc-icon-rsi-indicator', false),
+                  secondary.rsi(), 'bf-icon-rsi-indicator', false),
               model.menu.option('MACD', 'secondary-macd',
-                  secondary.macd(), 'sc-icon-macd-indicator', false),
+                  secondary.macd(), 'bf-icon-macd-indicator', false),
               model.menu.option('Volume', 'secondary-volume',
-                  secondary.volume(), 'sc-icon-bar-series', false)
+                  secondary.volume(), 'bf-icon-bar-series', false)
           ];
 
           return indicators;
@@ -10963,7 +10921,7 @@
           navReset: model.chart.navigationReset(),
           headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
           legend: model.chart.legend(products.generated, periods.day1),
-          overlay: model.menu.overlay([products.generated, products.quandl], products.generated),
+          overlay: model.menu.overlay(),
           notificationMessages: model.notification.messages()
       };
   }
@@ -10989,24 +10947,17 @@
 
       var appTemplate = '<div class="container-fluid"> \
         <div id="notifications"></div> \
+        <div id="loading-status-message"></div> \
         <div class="row head-menu head-row"> \
             <div class="col-md-12 head-sub-row"> \
-                <div id="product-dropdown" class="dropdown product-dropdown hidden-xs hidden-sm"></div> \
-                <div class="selectors hidden-md hidden-lg"> \
-                    <div class="series-dropdown dropdown selector-dropdown"></div> \
-                    <div id="mobile-period-selector" class="dropdown hidden-md hidden-lg"></div> \
-                    <div id="spacer"></div> \
-                    <div class="indicator-dropdown dropdown selector-dropdown"></div> \
-                </div> \
+                <div id="product-dropdown" class="dropdown product-dropdown"></div> \
                 <div id="period-selector" class="hidden-xs hidden-sm"></div> \
-                <span id="clear-indicators" class="icon sc-icon-delete delete-button hidden-md hidden-lg"></span> \
+                <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
+                <span id="clear-indicators" class="icon bf-icon-delete delete-button hidden-md hidden-lg"></span> \
             </div> \
         </div> \
         <div class="row primary-row"> \
-            <div class="col-md-12" id="loading-status-message"> \
-                <p class="content">Loading...</p> \
-            </div> \
-            <div id="charts" class="col-md-12 hidden"> \
+            <div id="charts" class="col-md-12"> \
                 <div id="charts-container"> \
                     <svg id="primary-container"></svg> \
                     <svg class="secondary-container"></svg> \
@@ -11023,10 +10974,9 @@
                 <div id="overlay"> \
                     <div id="overlay-primary-container"> \
                         <div id="overlay-primary-head"> \
-                            <div class="selectors"> \
-                                <div id="mobile-product-dropdown" class="dropdown hidden-md hidden-lg"></div> \
-                                <div class="series-dropdown dropdown selector-dropdown hidden-xs hidden-sm"></div> \
-                                <div class="indicator-dropdown dropdown selector-dropdown hidden-xs hidden-sm"></div> \
+                            <div id="selectors"> \
+                                <div id="series-dropdown" class="dropdown selector-dropdown"></div> \
+                                <div id="indicator-dropdown" class="dropdown selector-dropdown"></div> \
                             </div> \
                             <div id="legend" class="hidden-xs hidden-sm"></div> \
                         </div> \
@@ -11113,7 +11063,7 @@
               .datum(model.headMenu)
               .call(headMenu);
 
-          containers.app.selectAll('.selectors')
+          containers.app.select('#selectors')
               .datum(model.selectors)
               .call(selectors);
 
@@ -11189,7 +11139,7 @@
           if (source.streamingNotificationFormatter) {
               message$$ = source.streamingNotificationFormatter(streamingEvent);
           } else {
-              // #515 (https://github.com/ScottLogic/d3fc-showcase/issues/515)
+              // #515 (https://github.com/ScottLogic/BitFlux/issues/515)
               // (TODO) prevents errors when formatting streaming close/error messages when product changes.
               // As we only have a coinbase streaming source at the moment, this is a suitable fix for now
               message$$ = coinbaseStreamingErrorResponseFormatter(streamingEvent);
@@ -11209,12 +11159,12 @@
       }
 
       function loading(isLoading, error) {
+          var spinner = '<div class="spinner"></div>';
+          var errorMessage = '<div class="content alert alert-info">' + error + '</div>';
+
           containers.app.select('#loading-status-message')
               .classed('hidden', !(isLoading || error))
-              .select('.content')
-              .text(error || 'Loading...');
-          containers.app.select('#charts')
-              .classed('hidden', isLoading || error);
+              .html(error ? errorMessage : spinner);
       }
 
       function updateModelData(data) {
@@ -11228,7 +11178,6 @@
           model.primaryChart.product = product;
           model.secondaryChart.product = product;
           model.legend.product = product;
-          model.overlay.selectedProduct = product;
       }
 
       function updateModelSelectedPeriod(period) {
@@ -11370,11 +11319,7 @@
       function initialiseOverlay() {
           return menu.overlay()
               .on(event.primaryChartIndicatorChange, onPrimaryIndicatorChange)
-              .on(event.secondaryChartChange, onSecondaryChartChange)
-              .on(event.dataProductChange, function(product) {
-                  changeProduct(product.option);
-                  render();
-              });
+              .on(event.secondaryChartChange, onSecondaryChartChange);
       }
 
       function onNotificationClose(id) {
@@ -11397,7 +11342,7 @@
               var productPeriodOverrides = d3.map();
               productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
               var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
-              model.headMenu.products = model.overlay.products = model.headMenu.products.concat(formattedProducts);
+              model.headMenu.products = model.headMenu.products.concat(formattedProducts);
           }
 
           render();
@@ -11486,11 +11431,11 @@
       return app;
   }
 
-  var showcase = {
+  var BitFlux = {
       app: app
   };
 
-  showcase.app()
+  BitFlux.app()
       .fetchCoinbaseProducts(true)
       .run('#app-container');
 
