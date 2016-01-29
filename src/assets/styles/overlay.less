@@ -12,6 +12,39 @@
       display: flex;
       flex-direction: column;
       flex: 0 0 40px;
+
+      .selectors {
+        .series-dropdown, .indicator-dropdown {
+          .phone-portrait-display(@phone-portrait-overlay-selectors-display);
+          .phone-landscape-display(@phone-landscape-overlay-selectors-display);
+          .tablet-portrait-display(@tablet-portrait-overlay-selectors-display);
+          .tablet-landscape-display(@tablet-landscape-overlay-selectors-display);
+        }
+
+        margin-top: 6px;
+
+        #mobile-product-dropdown {
+          .phone-portrait-display(@phone-portrait-overlay-product-dropdown-display);
+          .phone-landscape-display(@phone-landscape-overlay-product-dropdown-display);
+          .tablet-portrait-display(@tablet-portrait-overlay-product-dropdown-display);
+          .tablet-landscape-display(@tablet-landscape-overlay-product-dropdown-display);
+
+          display: none;
+
+          .dropdown-toggle {
+            background-color: fadeout(@model-product-dropdown-background-colour, 25%);
+            border: none;
+          }
+        }
+      }
+
+      .series-dropdown > .dropdown-toggle {
+        width: 50px;
+      }
+      
+      .indicator-dropdown > .dropdown-toggle {
+        width: 130px;
+      }
     }
 
     #overlay-primary-bottom {

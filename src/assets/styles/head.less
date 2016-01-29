@@ -5,9 +5,14 @@
 
   .head-sub-row {
     display: flex;
-    padding-right: ((@grid-gutter-width / 2) + @y-axis-width);
+    align-items: center;
 
     #product-dropdown {
+      .phone-portrait-display(@phone-portrait-product-dropdown-display);
+      .phone-landscape-display(@phone-landscape-product-dropdown-display);
+      .tablet-portrait-display(@tablet-portrait-product-dropdown-display);
+      .tablet-landscape-display(@tablet-landscape-product-dropdown-display);
+
       flex-grow: 1;
 
       button {
@@ -25,6 +30,7 @@
       justify-content: flex-end;
       align-self: flex-end;
       flex-grow: 1;
+      padding-right: @y-axis-width;
 
       ul {
         list-style: none;
@@ -61,7 +67,32 @@
       }
     }
 
-    #mobile-period-selector {
+    .selectors {
+      .phone-portrait-display(@phone-portrait-head-selectors-display);
+      .phone-landscape-display(@phone-landscape-head-selectors-display);
+      .tablet-portrait-display(@tablet-portrait-head-selectors-display);
+      .tablet-landscape-display(@tablet-landscape-head-selectors-display);
+
+      position: initial;
+      display: none;
+      flex-grow: 1;
+    }
+
+    #mobile-product-dropdown {
+      button {
+        height: 34px;
+      }
+    }
+
+    #spacer {
+      @media only screen and (max-width : @bootstrap-md-width) { flex-grow: 1};
+    }
+
+    #mobile-period-selector button {
+      height: 34px;
+      font-size: @font-size-small;
+
+      @media only screen and (max-width : @text-shrink-threshold-width) { font-size: @font-size-tiny};
       .phone-portrait-display(@phone-portrait-period-dropdown-display);
       .phone-landscape-display(@phone-landscape-period-dropdown-display);
       .tablet-portrait-display(@tablet-portrait-period-dropdown-display);

@@ -7,6 +7,10 @@
     border: 1px solid @dropdown-button-border-color;
     border-radius: 2px;
     color: @selector-font-colour;
+    font-size: @font-size-small;
+    margin-right: 12px;
+
+    @media only screen and (max-width : @text-shrink-threshold-width) { font-size: @font-size-tiny};
   }
 
   .dropdown-menu {
@@ -21,6 +25,8 @@
       color: @font-colour;
       font-size: @font-size-small;
 
+      @media only screen and (max-width : @bootstrap-md-width) { font-size: @font-size-tiny};
+
       &:hover,
       &:focus {
         background: none;
@@ -30,6 +36,11 @@
     > li {
       padding-top: 8px;
       padding-bottom: 8px;
+
+      @media only screen and (max-width : @bootstrap-md-width) {
+        padding-top: 6px;
+        padding-bottom: 6px;
+      };
 
       &:hover,
       &:focus {

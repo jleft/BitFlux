@@ -3,11 +3,14 @@ import fc from 'd3fc';
 import event from '../event';
 import menu from '../menu/menu';
 import editIndicatorGroup from './generator/editIndicatorGroup';
+import dropdown from './generator/dropdown';
+import productAdaptor from '../model/menu/productAdaptor';
 
 export default function() {
     var dispatch = d3.dispatch(
         event.primaryChartIndicatorChange,
-        event.secondaryChartChange);
+        event.secondaryChartChange,
+        event.dataProductChange);
 
     var primaryChartIndicatorToggle = editIndicatorGroup()
         .on(event.indicatorChange, dispatch[event.primaryChartIndicatorChange]);
@@ -15,9 +18,23 @@ export default function() {
     var secondaryChartToggle = editIndicatorGroup()
         .on(event.indicatorChange, dispatch[event.secondaryChartChange]);
 
+    var dataProductDropdown = dropdown()
+        .on('optionChange', dispatch[event.dataProductChange]);
+
     var overlay = function(selection) {
         selection.each(function(model) {
             var container = d3.select(this);
+
+            var products = model.products;
+            var productDatum = {
+                config: model.productConfig,
+                options: products.map(productAdaptor),
+                selectedIndex: products.indexOf(model.selectedProduct)
+            };
+
+            container.select('#mobile-product-dropdown')
+                .datum(productDatum)
+                .call(dataProductDropdown);
 
             container.select('#overlay-primary-container .edit-indicator-container')
                 .datum({selectedIndicators: model.primaryIndicators})
