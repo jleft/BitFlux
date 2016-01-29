@@ -76,6 +76,12 @@ To run the unit tests, run the grunt command:
 grunt test
 ```
 
+To generate a code coverage report, run
+
+```
+grunt test:coverage
+```
+
 ## License
 
 This project is licensed under the [MIT License](http://opensource.org/licenses/MIT).

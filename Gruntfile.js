@@ -339,15 +339,37 @@ module.exports = function(grunt) {
                 ],
                 browserify: {
                     debug: true,
-                    transform: [['babelify', {
-                        plugins: ['transform-es2015-modules-commonjs']
-                    }]]
+                    transform: ['babelify']
                 }
             },
-            phantom: {
+            coverage: {
+                reporters: ['dots', 'coverage'],
                 browsers: ['PhantomJS'],
                 autoWatch: false,
-                singleRun: true
+                singleRun: true,
+                browserify: {
+                    transform: [
+                        require('browserify-istanbul')({
+                            instrumenter: require('isparta'),
+                            ignore: ['<%= meta.testJsFiles %>']
+                        }),
+                        'babelify'
+                    ]
+                },
+                coverageReporter: {
+                    reporters: [
+                        {
+                            type: 'text'
+                        },
+                        {
+                            type: 'text-summary'
+                        },
+                        {
+                            type: 'html',
+                            dir: '<%= meta.coverageDir %>'
+                        }
+                    ]
+                }
             },
             chrome: {
                 browsers: ['Chrome'],
@@ -429,7 +451,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
         'build',
-        'test:phantom',
+        'test:coverage',
         'mobile:platforms',
         'mobile:prepare'
     ]);
@@ -438,7 +460,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['karma:all']);
     grunt.registerTask('test:chrome', ['karma:chrome']);
-    grunt.registerTask('test:phantom', ['karma:phantom']);
+    grunt.registerTask('test:coverage', ['karma:coverage']);
 
     grunt.registerTask('build',
         'Builds the application ready for production, with option for version number to be specified',
@@ -497,7 +519,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
-    grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
+    grunt.registerTask('buildAndTest', ['build', 'test:coverage']);
     grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
     grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
 
