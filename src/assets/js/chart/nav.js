@@ -16,7 +16,7 @@ export default function() {
     var barHeight = extentHeight;
     var handleCircleCenter = borderWidth + barHeight / 2;
     var handleBarWidth = 2;
-    var yExtentPadding = 0.2;
+    var yExtentPadding = [0, 0.04];
 
     var dispatch = d3.dispatch(event.viewChange);
 
