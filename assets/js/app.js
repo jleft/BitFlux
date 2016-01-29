@@ -1634,7 +1634,7 @@
       return base;
   }
 
-  function seriesLine() {
+  function _line() {
 
       var decorate = noop;
 
@@ -1713,7 +1713,7 @@
           xBaseline = null,
           yBaseline = null,
           chartLabel = '',
-          plotArea = seriesLine(),
+          plotArea = _line(),
           decorate = noop;
 
       // Each axis-series has a cross-scale which is defined as an identity
@@ -2355,7 +2355,7 @@
       var xScale = exportedScale();
       var yScale = d3.scale.linear();
       var radius = 2;
-      var line = seriesLine();
+      var line = _line();
 
       // configure the point series to render the data from the
       // highLowOpenClose function
@@ -2462,7 +2462,7 @@
       var padding = 10,
           columns = 9,
           decorate = noop,
-          plotArea = seriesLine(),
+          plotArea = _line(),
           margin = {
               bottom: 30,
               right: 30
@@ -3584,7 +3584,7 @@
       return mergeCompute;
   }
 
-  function bollingerBands$1() {
+  function bollingerBands() {
 
       var bollingerAlgorithm = bollingerBands$2()
           .value(function(d) { return d.close; });
@@ -4091,7 +4091,7 @@
       return exponentialMovingAverage;
   }
 
-  function macd$2() {
+  function macd$1() {
 
       var macdAlgorithm = macd$3()
           .value(function(d) { return d.close; });
@@ -4130,7 +4130,7 @@
       return movingAverage;
   }
 
-  function relativeStrengthIndex$1() {
+  function relativeStrengthIndex() {
 
       var rsi = relativeStrengthIndex$2();
 
@@ -4148,7 +4148,7 @@
       return relativeStrengthIndex;
   }
 
-  function stochasticOscillator$1() {
+  function stochasticOscillator() {
 
       var stoc = stochasticOscillator$2();
 
@@ -4166,7 +4166,7 @@
       return stochasticOscillator;
   }
 
-  function forceIndex$1() {
+  function forceIndex() {
 
       var force = forceIndex$2();
 
@@ -4186,7 +4186,7 @@
       return forceIndex;
   }
 
-  function envelope$1() {
+  function envelope() {
 
       var envelopeAlgorithm = envelope$2();
 
@@ -4215,7 +4215,7 @@
       return envelope;
   }
 
-  function elderRay$1() {
+  function elderRay() {
 
       var elderRayAlgorithm = elderRay$2()
           .value(function(d) { return d.close; });
@@ -4234,18 +4234,18 @@
       return elderRay;
   }
 
-  var algorithm$1 = {
-      bollingerBands: bollingerBands$1,
+  var algorithm = {
+      bollingerBands: bollingerBands,
       calculator: calculator,
       exponentialMovingAverage: exponentialMovingAverage,
-      macd: macd$2,
+      macd: macd$1,
       merge: merge,
       movingAverage: movingAverage,
-      relativeStrengthIndex: relativeStrengthIndex$1,
-      stochasticOscillator: stochasticOscillator$1,
-      forceIndex: forceIndex$1,
-      envelope: envelope$1,
-      elderRay: elderRay$1
+      relativeStrengthIndex: relativeStrengthIndex,
+      stochasticOscillator: stochasticOscillator,
+      forceIndex: forceIndex,
+      envelope: envelope,
+      elderRay: elderRay
   };
 
   function _area() {
@@ -4291,7 +4291,7 @@
       return area;
   }
 
-  function bollingerBands() {
+  function bollingerBands$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4308,17 +4308,17 @@
               return root(d).lower;
           });
 
-      var upperLine = seriesLine()
+      var upperLine = _line()
           .yValue(function(d, i) {
               return root(d).upper;
           });
 
-      var averageLine = seriesLine()
+      var averageLine = _line()
           .yValue(function(d, i) {
               return root(d).average;
           });
 
-      var lowerLine = seriesLine()
+      var lowerLine = _line()
           .yValue(function(d, i) {
               return root(d).lower;
           });
@@ -4520,14 +4520,14 @@
       return bar;
   }
 
-  function macd$1() {
+  function macd$2() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
           xValue = function(d) { return d.date; },
           root = function(d) { return d.macd; },
-          macdLine = seriesLine(),
-          signalLine = seriesLine(),
+          macdLine = _line(),
+          signalLine = _line(),
           divergenceBar = _bar(),
           multiSeries = _multi(),
           decorate = noop;
@@ -4596,7 +4596,7 @@
       return macd;
   }
 
-  function relativeStrengthIndex() {
+  function relativeStrengthIndex$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4606,7 +4606,7 @@
           decorate = noop;
 
       var annotations = annotationLine();
-      var rsiLine = seriesLine()
+      var rsiLine = _line()
           .yValue(function(d, i) { return d.rsi; });
 
       var rsi = function(selection) {
@@ -4676,7 +4676,7 @@
       return rsi;
   }
 
-  function stochasticOscillator() {
+  function stochasticOscillator$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4686,12 +4686,12 @@
           decorate = noop;
 
       var annotations = annotationLine();
-      var dLine = seriesLine()
+      var dLine = _line()
           .yValue(function(d, i) {
               return d.stochastic.d;
           });
 
-      var kLine = seriesLine()
+      var kLine = _line()
           .yValue(function(d, i) {
               return d.stochastic.k;
           });
@@ -4764,7 +4764,7 @@
       return stochastic;
   }
 
-  function forceIndex() {
+  function forceIndex$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4773,7 +4773,7 @@
 
       var annotations = annotationLine();
 
-      var forceLine = seriesLine()
+      var forceLine = _line()
           .yValue(function(d, i) {
               return d.force;
           });
@@ -4831,7 +4831,7 @@
       return force;
   }
 
-  function envelope() {
+  function envelope$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -4848,12 +4848,12 @@
               return root(d).lower;
           });
 
-      var upperLine = seriesLine()
+      var upperLine = _line()
           .yValue(function(d, i) {
               return root(d).upper;
           });
 
-      var lowerLine = seriesLine()
+      var lowerLine = _line()
           .yValue(function(d, i) {
               return root(d).lower;
           });
@@ -4925,7 +4925,7 @@
       return envelope;
   }
 
-  function elderRay() {
+  function elderRay$1() {
 
       var xScale = d3.time.scale(),
           yScale = d3.scale.linear(),
@@ -5017,17 +5017,17 @@
   }
 
   var renderer = {
-      bollingerBands: bollingerBands,
-      macd: macd$1,
-      relativeStrengthIndex: relativeStrengthIndex,
-      stochasticOscillator: stochasticOscillator,
-      forceIndex: forceIndex,
-      envelope: envelope,
-      elderRay: elderRay
+      bollingerBands: bollingerBands$1,
+      macd: macd$2,
+      relativeStrengthIndex: relativeStrengthIndex$1,
+      stochasticOscillator: stochasticOscillator$1,
+      forceIndex: forceIndex$1,
+      envelope: envelope$1,
+      elderRay: elderRay$1
   };
 
   var indicator = {
-      algorithm: algorithm$1,
+      algorithm: algorithm,
       renderer: renderer
   };
 
@@ -6820,7 +6820,7 @@
           yScale = d3.scale.linear(),
           xValue = function(d, i) { return d.date.getDay(); },
           subScale = d3.scale.linear(),
-          subSeries = seriesLine(),
+          subSeries = _line(),
           barWidth = fractionalBarWidth(0.75);
 
       var dataJoin = _dataJoin()
@@ -7146,7 +7146,7 @@
 
   function line() {
 
-      var line = seriesLine()
+      var line = _line()
           .yValue(function(d) { return d.y0 + d.y; });
 
       var stack = _stack()
@@ -7647,7 +7647,7 @@
       return waterfall;
   }
 
-  var algorithm = {
+  var algorithm$1 = {
       waterfall: waterfall$1
   };
 
@@ -7657,7 +7657,7 @@
       bar: _bar,
       candlestick: candlestick,
       cycle: cycle,
-      line: seriesLine,
+      line: _line,
       multi: _multi,
       ohlc: ohlc,
       point: point,
@@ -7667,7 +7667,7 @@
       ohlcBase: ohlcBase,
       errorBar: errorBar,
       waterfall: waterfall,
-      algorithm: algorithm
+      algorithm: algorithm$1
   };
 
   var svg = {
