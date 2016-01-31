@@ -35,6 +35,10 @@ module.exports = function(grunt) {
             ],
             vendorJsFiles: [
                 'node_modules/d3/d3.min.js',
+                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
+                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
+                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
+                'node_modules/d3fc/dist/d3fc.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
@@ -280,20 +284,6 @@ module.exports = function(grunt) {
             production: {
                 files: {
                     'dist/assets/js/app.js': ['src/assets/js/main.js']
-                },
-                options: {
-                    globals: {
-                        d3: 'd3',
-                        jquery: '$'
-                    },
-                    plugins: [
-                        require('rollup-plugin-npm')({
-                            jsnext: true,
-                            main: true,
-                            skip: ['d3', 'jquery'] // d3fc extends d3.selection.prototype; Bootstrap depends on jQuery
-                        }),
-                        require('rollup-plugin-commonjs')()
-                    ]
                 }
             }
         },
