@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.0.1] - 1-2-2016
+### Fixed
+- Build process updated to prevent errors in IE (dependencies are concatenated rather than use rollup)
+
 ## [1.0.0] - 27-1-2016
 ### Changed
 - **Breaking change**: Renamed project to **BitFlux**
