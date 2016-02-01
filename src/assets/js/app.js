@@ -22,9 +22,9 @@ export default function() {
         <div class="row head-menu head-row"> \
             <div class="col-md-12 head-sub-row"> \
                 <div id="product-dropdown" class="dropdown product-dropdown"></div> \
-                <div id="period-selector" class="hidden-xs hidden-sm"></div> \
-                <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
-                <span id="clear-indicators" class="icon bf-icon-delete delete-button hidden-md hidden-lg"></span> \
+                <div id="period-selector"></div> \
+                <div id="mobile-period-selector" class="dropdown"></div> \
+                <span id="clear-indicators" class="icon bf-icon-delete delete-button"></span> \
             </div> \
         </div> \
         <div class="row primary-row"> \
@@ -37,7 +37,7 @@ export default function() {
                     <div class="x-axis-row"> \
                         <svg id="x-axis-container"></svg> \
                     </div> \
-                    <div id="navbar-row" class="hidden-xs hidden-sm"> \
+                    <div id="navbar-row"> \
                         <svg id="navbar-container"></svg> \
                         <svg id="navbar-reset"></svg> \
                     </div> \
@@ -49,7 +49,7 @@ export default function() {
                                 <div id="series-dropdown" class="dropdown selector-dropdown"></div> \
                                 <div id="indicator-dropdown" class="dropdown selector-dropdown"></div> \
                             </div> \
-                            <div id="legend" class="hidden-xs hidden-sm"></div> \
+                            <div id="legend"></div> \
                         </div> \
                         <div id="overlay-primary-bottom"> \
                             <div class="edit-indicator-container"></div> \
@@ -65,7 +65,7 @@ export default function() {
                         <div class="edit-indicator-container"></div> \
                     </div> \
                     <div class="x-axis-row"></div> \
-                    <div id="overlay-navbar-row" class="hidden-xs hidden-sm"></div> \
+                    <div id="overlay-navbar-row"></div> \
                 </div> \
             </div> \
         </div> \
