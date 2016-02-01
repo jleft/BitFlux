@@ -63,7 +63,9 @@
   }
 
   .crosshair {
-    @media only screen { display: none !important; }
+    .mobile-display(@mobile-device-crosshair-display);
+    display: flex;
+
     .point {
       fill: @crosshair-circle-colour;
       fill-opacity: @crosshair-circle-opacity;

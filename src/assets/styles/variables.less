@@ -152,7 +152,6 @@
 @notification-spacing: 20px;
 @notification-enter-animation-duration: 0.5s;
 
-<<<<<<< HEAD
 // Loading
 @error-alert-width: 400px;
 
@@ -161,24 +160,33 @@
 @spinner-size: 50px;
 @spinner-thickness: 7px;
 @spinner-animation-duration: 0.6s;
-=======
-// Device Configurations
+
+// If the period dropdown is shown, the period tab and clear all should be hidden
+// Phone
+@phone-landscape-nav-display: @hide;
+@phone-landscape-clear-all-display: @show;
+@phone-landscape-period-tab-display: @hide;
+@phone-landscape-period-dropdown-display: @show;
+
+@phone-portrait-nav-display: @hide;
+@phone-portrait-clear-all-display: @show;
+@phone-portrait-period-tab-display: @hide;
+@phone-portrait-period-dropdown-display: @show;
+
 // Tablet
-// @tablet-landscape-nav-hide:
-// @tablet-landscape-clear-all-hide:
-// @tablet-landscape-period-dropdown:
+@tablet-landscape-nav-display: @hide;
+@tablet-landscape-clear-all-display: @hide;
+@tablet-landscape-period-tab-display: @show;
+@tablet-landscape-period-dropdown-display: @hide;
 
-// @tablet-portrait-nav-hide:
-// @tablet-portrait-clear-all-hide:
-// @tablet-portrait-period-dropdown:
+@tablet-portrait-nav-display: @show;
+@tablet-portrait-clear-all-display: @show;
+@tablet-portrait-period-tab-display: @hide;
+@tablet-portrait-period-dropdown-display: @show;
 
+// Tablet + phone
+@mobile-device-legend-display: @hide;
+@mobile-device-crosshair-display: @hide;
 
-// // Phone
-// @phone-landscape-nav-hide:
-// @phone-landscape-clear-all-hide:
-// @phone-landscape-period-dropdown:
-
-// @phone-portrait-nav-hide:
-// @phone-portrait-clear-all-hide:
-// @phone-portrait-period-dropdown:
->>>>>>> Mobile and tablet layout changes
+@hide: ~'none !important';
+@show: flex;

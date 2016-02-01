@@ -16,7 +16,13 @@
     }
 
     #period-selector {
-      @media (max-width: @screen-xs-max) { display: none !important; }
+      .phone-portrait-display(@phone-portrait-period-tab-display);
+      .phone-landscape-display(@phone-landscape-period-tab-display);
+      .tablet-portrait-display(@tablet-portrait-period-tab-display);
+      .tablet-landscape-display(@tablet-landscape-period-tab-display);
+
+      display: flex;
+      justify-content: flex-end;
       align-self: flex-end;
       flex-grow: 1;
 
@@ -56,13 +62,23 @@
     }
 
     #mobile-period-selector {
-      @media (min-width: @screen-sm) { display: none !important; }
+      .phone-portrait-display(@phone-portrait-period-dropdown-display);
+      .phone-landscape-display(@phone-landscape-period-dropdown-display);
+      .tablet-portrait-display(@tablet-portrait-period-dropdown-display);
+      .tablet-landscape-display(@tablet-landscape-period-dropdown-display);
+
+      display: none;
       align-self: center;
       margin-right: 12px;
     }
 
     .delete-button {
-      @media (min-width: @screen-sm) { display: none !important; }
+      .phone-portrait-display(@phone-portrait-clear-all-display);
+      .phone-landscape-display(@phone-landscape-clear-all-display);
+      .tablet-portrait-display(@tablet-portrait-clear-all-display);
+      .tablet-landscape-display(@tablet-landscape-clear-all-display);
+
+      display: none;
       align-self: center;
       margin-right: 12px;
       cursor: pointer;

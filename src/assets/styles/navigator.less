@@ -1,5 +1,11 @@
 #navbar-row {
-  @media (max-height: @screen-sm) { display: none !important; }
+  .phone-portrait-display(@phone-portrait-nav-display);
+  .phone-landscape-display(@phone-landscape-nav-display);
+  .tablet-portrait-display(@tablet-portrait-nav-display);
+  .tablet-landscape-display(@tablet-landscape-nav-display);
+  
+  display: flex;
+
   #navbar-container {
     min-height: @navigator-height;
     margin-right: 0 !important;
