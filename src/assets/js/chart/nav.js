@@ -16,6 +16,7 @@ export default function() {
     var barHeight = extentHeight;
     var handleCircleCenter = borderWidth + barHeight / 2;
     var handleBarWidth = 2;
+    var yExtentPadding = [0, 0.04];
 
     var dispatch = d3.dispatch(event.viewChange);
 
@@ -117,7 +118,7 @@ export default function() {
         });
 
         maskXScale.domain(fc.util.extent().fields('date')(data));
-        maskYScale.domain(fc.util.extent().fields(['low', 'high'])(data));
+        maskYScale.domain(fc.util.extent().fields(['low', 'high']).pad(yExtentPadding)(data));
 
         selection.select('mask')
             .datum(data)
@@ -135,7 +136,7 @@ export default function() {
           fc.util.extent().fields('date')(model.data),
           model.data);
         var yExtent = fc.util.extent()
-          .fields(['low', 'high'])(filteredData);
+          .fields(['low', 'high']).pad(yExtentPadding)(filteredData);
 
         var brushHide = false;
 
