@@ -67,7 +67,6 @@ export default function() {
     crosshair.id = util.uid();
 
     var gridlines = fc.annotation.gridline()
-      .yTicks(5)
       .xTicks(0);
     var closeLine = fc.annotation.line()
       .orient('horizontal')
@@ -203,6 +202,8 @@ export default function() {
               closePriceTick.select('text')
                 .attr('transform', 'translate(' + calloutHeight / 2 + ',1)');
           });
+
+        gridlines.yTicks(tickValues.length - 1);
 
         // Redraw
         primaryChart.plotArea(multi);
