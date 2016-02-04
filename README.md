@@ -1,10 +1,18 @@
-# BitFlux
+# [BitFlux](http://scottlogic.github.io/BitFlux/)
 
 [![Build Status](https://travis-ci.org/ScottLogic/BitFlux.svg?branch=develop)](https://travis-ci.org/ScottLogic/BitFlux)
 [![Dependency Status](https://david-dm.org/ScottLogic/BitFlux.svg)](https://david-dm.org/ScottLogic/BitFlux)
 [![devDependency Status](https://david-dm.org/ScottLogic/BitFlux/dev-status.svg)](https://david-dm.org/ScottLogic/BitFlux#info=devDependencies)
 
-A cross-platform financial charting application to showcase the functionality of [d3fc](http://scottlogic.github.io/d3fc/) components.
+**A cross-platform financial charting application to showcase the functionality of [d3fc](https://d3fc.io) components.**
+
+Visit [the website](http://scottlogic.github.io/BitFlux/) to view the application.
+
+
+| Version                                                                   | Build status                                                                                                             | View                                                                                         |
+|---------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------|
+| [Latest release](https://github.com/ScottLogic/BitFlux/releases) (Master) | [![Build Status](https://travis-ci.org/ScottLogic/BitFlux.svg?branch=master)](https://travis-ci.org/ScottLogic/BitFlux)  | [http://scottlogic.github.io/BitFlux/master/](http://scottlogic.github.io/BitFlux/master/)   |
+| Development                                                               | [![Build Status](https://travis-ci.org/ScottLogic/BitFlux.svg?branch=develop)](https://travis-ci.org/ScottLogic/BitFlux) | [http://scottlogic.github.io/BitFlux/develop/](http://scottlogic.github.io/BitFlux/develop/) |
 
 ## Developing
 
