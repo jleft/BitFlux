@@ -28,6 +28,10 @@
   .rsi {
     stroke: @rsi-line-colour;
     stroke-width: @stroke-width;
+
+    .annotation line {
+      shape-rendering: crispEdges;
+    }
   }
 
   .macd-divergence {
