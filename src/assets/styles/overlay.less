@@ -42,7 +42,11 @@
   }
 
   .edit-indicator {
+    pointer-events: visiblePainted;
+    display: flex;
+    align-items: center;
     background-color: fadeout(@overlay-background-colour, 25%);
+    height: @edit-indicator-height;
     border-radius: 2px;
     margin-left: 3px;
     margin-right: 5px;
@@ -50,11 +54,7 @@
     padding-right: 5px;
 
     .icon {
-      pointer-events: visiblePainted;
-      visibility: visible;
-      display: inline-block;
       cursor: pointer;
-      vertical-align: middle;
       background-color: @overlay-background-colour;
       border-radius: 4px;
     }
@@ -62,7 +62,6 @@
     .indicator-label {
       color: @edit-indicator-text-colour;
       font-size: @font-size-tiny;
-      vertical-align: middle;
       margin-left: 6px;
     }
   }
