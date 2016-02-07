@@ -24,7 +24,7 @@
   "homepage": "https://github.com/scottlogic/BitFlux#readme",
   "dependencies": {
     "bootstrap": "^3.3.6",
-    "d3": "^3.5.12",
+    "d3": "^3.5.14",
     "d3fc": "^5.3.0",
     "jquery": "^2.2.0",
     "seedrandom": "^2.4.2"
