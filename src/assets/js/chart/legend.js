@@ -1,44 +1,36 @@
 import d3 from 'd3';
+import fc from 'd3fc';
 
 export default function() {
-    var formatPrice;
-    var formatVolume;
-    var formatTime;
-
-    var legendItems = [
-        'T',
-        function(d) { return formatTime(d.date); },
-        'O',
-        function(d) { return formatPrice(d.open); },
-        'H',
-        function(d) { return formatPrice(d.high); },
-        'L',
-        function(d) { return formatPrice(d.low); },
-        'C',
-        function(d) { return formatPrice(d.close); },
-        'V',
-        function(d) { return formatVolume(d.volume); }
-    ];
-
     function legend(selection) {
         selection.each(function(model) {
             var container = d3.select(this);
 
-            formatPrice = model.product.priceFormat;
-            formatVolume = model.product.volumeFormat;
-            formatTime = model.period.timeFormat;
+            var priceFormat = model.product.priceFormat;
+            var volumeFormat = model.product.volumeFormat;
+            var timeFormat = model.period.timeFormat;
 
             container.classed('hidden', !model.data);
 
+            container.select('#tooltip')
+                .layout({flexDirection: 'row'})
+                .selectAll('.tooltip')
+                .layout({marginRight: 40, marginLeft: 15});
+
             if (model.data) {
-                var span = container.selectAll('span')
-                    .data(legendItems);
+                var tooltip = fc.chart.tooltip()
+                    .items([
+                        ['T', function(d) { return timeFormat(d.date); }],
+                        ['O', function(d) { return priceFormat(d.open); }],
+                        ['H', function(d) { return priceFormat(d.high); }],
+                        ['L', function(d) { return priceFormat(d.low); }],
+                        ['C', function(d) { return priceFormat(d.close); }],
+                        ['V', function(d) { return volumeFormat(d.volume); }]
+                    ]);
 
-                span.enter()
-                    .append('span')
-                    .attr('class', function(d, i) { return i % 2 === 0 ? 'legendLabel' : 'legendValue'; });
-
-                span.text(function(d) { return d3.functor(d)(model.data); });
+                container.select('#tooltip')
+                    .datum(model.data)
+                    .call(tooltip);
             }
         });
     }
