@@ -2,34 +2,37 @@ import d3 from 'd3';
 import fc from 'd3fc';
 
 export default function() {
+    var priceFormat;
+    var volumeFormat;
+    var timeFormat;
+
+    var tooltip = fc.chart.tooltip()
+        .items([
+            ['T', function(d) { return timeFormat(d.date); }],
+            ['O', function(d) { return priceFormat(d.open); }],
+            ['H', function(d) { return priceFormat(d.high); }],
+            ['L', function(d) { return priceFormat(d.low); }],
+            ['C', function(d) { return priceFormat(d.close); }],
+            ['V', function(d) { return volumeFormat(d.volume); }]
+        ]);
+
     function legend(selection) {
         selection.each(function(model) {
             var container = d3.select(this);
+            var tooltipContainer = container.select('#tooltip');
 
-            var priceFormat = model.product.priceFormat;
-            var volumeFormat = model.product.volumeFormat;
-            var timeFormat = model.period.timeFormat;
+            priceFormat = model.product.priceFormat;
+            volumeFormat = model.product.volumeFormat;
+            timeFormat = model.period.timeFormat;
 
             container.classed('hidden', !model.data);
 
-            container.select('#tooltip')
-                .layout({flexDirection: 'row'})
+            tooltipContainer.layout({flexDirection: 'row'})
                 .selectAll('.tooltip')
                 .layout({marginRight: 40, marginLeft: 15});
 
             if (model.data) {
-                var tooltip = fc.chart.tooltip()
-                    .items([
-                        ['T', function(d) { return timeFormat(d.date); }],
-                        ['O', function(d) { return priceFormat(d.open); }],
-                        ['H', function(d) { return priceFormat(d.high); }],
-                        ['L', function(d) { return priceFormat(d.low); }],
-                        ['C', function(d) { return priceFormat(d.close); }],
-                        ['V', function(d) { return volumeFormat(d.volume); }]
-                    ]);
-
-                container.select('#tooltip')
-                    .datum(model.data)
+                tooltipContainer.datum(model.data)
                     .call(tooltip);
             }
         });
