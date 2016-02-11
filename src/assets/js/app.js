@@ -24,9 +24,8 @@ export default function() {
                 <div id="product-dropdown" class="dropdown product-dropdown"></div> \
                 <div class="selectors"> \
                     <div class="series-dropdown dropdown selector-dropdown"></div> \
-                    <div id="mobile-period-selector" class="dropdown"></div> \
-                    <div id="spacer"></div> \
                     <div class="indicator-dropdown dropdown selector-dropdown"></div> \
+                    <div id="mobile-period-selector" class="dropdown"></div> \
                 </div> \
                 <div id="period-selector"></div> \
                 <span id="clear-indicators" class="icon bf-icon-delete delete-button"></span> \

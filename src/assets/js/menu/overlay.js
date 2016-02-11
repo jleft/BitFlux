@@ -26,14 +26,13 @@ export default function() {
             var container = d3.select(this);
 
             var products = model.products;
-            var productDatum = {
-                config: model.productConfig,
-                options: products.map(productAdaptor),
-                selectedIndex: products.indexOf(model.selectedProduct)
-            };
 
             container.select('#mobile-product-dropdown')
-                .datum(productDatum)
+                .datum({
+                    config: model.productConfig,
+                    options: products.map(productAdaptor),
+                    selectedIndex: products.indexOf(model.selectedProduct)
+                })
                 .call(dataProductDropdown);
 
             container.select('#overlay-primary-container .edit-indicator-container')

@@ -26,14 +26,13 @@ export default function() {
             var container = d3.select(this);
 
             var products = model.products;
-            var productDatum = {
-                config: model.productConfig,
-                options: products.map(productAdaptor),
-                selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
-            };
 
             container.select('#product-dropdown')
-                .datum(productDatum)
+                .datum({
+                    config: model.productConfig,
+                    options: products.map(productAdaptor),
+                    selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
+                })
                 .call(dataProductDropdown);
 
             var periods = model.selectedProduct.periods;

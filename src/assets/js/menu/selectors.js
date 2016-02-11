@@ -51,7 +51,8 @@ export default function() {
                 .datum({
                     config: model.indicatorSelector.config,
                     options: options,
-                    selected: selectedIndicatorIndexes})
+                    selected: selectedIndicatorIndexes
+                })
                 .call(indicatorToggle);
 
         });

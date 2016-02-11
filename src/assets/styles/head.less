@@ -93,20 +93,21 @@
       flex-grow: 1;
     }
 
-    #mobile-period-selector button {
+    #mobile-period-selector {
       .phone-portrait-display(@phone-portrait-period-dropdown-display);
       .phone-landscape-display(@phone-landscape-period-dropdown-display);
       .tablet-portrait-display(@tablet-portrait-period-dropdown-display);
       .tablet-landscape-display(@tablet-landscape-period-dropdown-display);
 
-      height: 34px;
-      font-size: @font-size-small;
-
-      @media only screen and (max-width : @text-shrink-threshold-width) { font-size: @font-size-tiny};
-
       display: none;
       align-self: center;
       margin-right: 12px;
+      margin-left: auto;
+
+      button {
+        height: 34px;
+        font-size: @font-size-small;
+      }
     }
 
     .delete-button {

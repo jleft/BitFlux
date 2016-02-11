@@ -2,7 +2,7 @@
   position:absolute;
   top:0;
   pointer-events: none;
-  padding-right: @bootstrap-padding-width;
+  padding-right: (@grid-gutter-width / 2);
 
   #overlay-primary-container {
     display: flex;
@@ -41,7 +41,7 @@
       .series-dropdown > .dropdown-toggle {
         width: 50px;
       }
-      
+
       .indicator-dropdown > .dropdown-toggle {
         width: 130px;
       }
@@ -59,7 +59,7 @@
     .phone-landscape-display(@phone-landscape-nav-display);
     .tablet-portrait-display(@tablet-portrait-nav-display);
     .tablet-landscape-display(@tablet-landscape-nav-display);
-    
+
     display: flex;
   }
 

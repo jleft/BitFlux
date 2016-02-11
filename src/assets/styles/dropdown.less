@@ -10,7 +10,10 @@
     font-size: @font-size-small;
     margin-right: 12px;
 
-    @media only screen and (max-width : @text-shrink-threshold-width) { font-size: @font-size-tiny};
+    @media only screen and (max-width : @text-shrink-threshold-width) {
+        font-size: @font-size-tiny !important;
+        margin-right: 6px;
+    };
   }
 
   .dropdown-menu {
@@ -25,7 +28,7 @@
       color: @font-colour;
       font-size: @font-size-small;
 
-      @media only screen and (max-width : @bootstrap-md-width) { font-size: @font-size-tiny};
+      @media only screen and (max-width : @screen-md) { font-size: @font-size-tiny; };
 
       &:hover,
       &:focus {
@@ -37,7 +40,7 @@
       padding-top: 8px;
       padding-bottom: 8px;
 
-      @media only screen and (max-width : @bootstrap-md-width) {
+      @media only screen and (max-width : @screen-md) {
         padding-top: 6px;
         padding-bottom: 6px;
       };
