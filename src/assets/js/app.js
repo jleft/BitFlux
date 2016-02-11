@@ -54,7 +54,9 @@ export default function() {
                                 <div class="series-dropdown dropdown selector-dropdown"></div> \
                                 <div class="indicator-dropdown dropdown selector-dropdown"></div> \
                             </div> \
-                            <div id="legend"></div> \
+                            <div id="legend"> \
+                                <svg id="tooltip"></svg> \
+                            </div> \
                         </div> \
                         <div id="overlay-primary-bottom"> \
                             <div class="edit-indicator-container"></div> \

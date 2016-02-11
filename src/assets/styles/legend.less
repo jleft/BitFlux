@@ -1,7 +1,6 @@
 #legend {
   .mobile-display(@mobile-device-legend-display);
 
-  display: flex;
   margin-top: 1px;
   margin-right: ((@grid-gutter-width / 2) + @y-axis-width);
   padding: 10px;
@@ -10,21 +9,17 @@
   font-size: @font-size-tiny;
   align-self: flex-end;
 
-  span:nth-child(2) {
-    min-width: 70px;
-  }
+  #tooltip {
+    padding-top: 5px;
+    width: 500px;
+    height: 20px;
+    justify-content: center;
 
-  .legendLabel, .legendValue {
-    display: inline-block
-  }
-
-  .legendLabel {
-    margin-right: 4px;
-    color: @legend-label-font-colour;
-  }
-
-  .legendValue {
-    min-width: 45px;
-    color: @legend-value-font-colour;
+    .label {
+      fill: @legend-label-font-colour;
+    }
+    .value {
+      fill: @legend-value-font-colour;
+    }
   }
 }
