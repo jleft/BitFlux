@@ -2,7 +2,7 @@
   position:absolute;
   top:0;
   pointer-events: none;
-  padding-right: @bootstrap-padding-width;
+  padding-right: (@grid-gutter-width / 2);
 
   #overlay-primary-container {
     display: flex;
@@ -12,6 +12,39 @@
       display: flex;
       flex-direction: column;
       flex: 0 0 40px;
+
+      .selectors {
+        .series-dropdown, .indicator-dropdown {
+          .phone-portrait-display(@mobile-device-overlay-selectors-display);
+          .phone-landscape-display(@mobile-device-overlay-selectors-display);
+          .tablet-portrait-display(@mobile-device-overlay-selectors-display);
+          .tablet-landscape-display(@mobile-device-overlay-selectors-display);
+        }
+
+        margin-top: 6px;
+
+        #mobile-product-dropdown {
+          .phone-portrait-display(@mobile-device-overlay-product-dropdown-display);
+          .phone-landscape-display(@mobile-device-overlay-product-dropdown-display);
+          .tablet-portrait-display(@mobile-device-overlay-product-dropdown-display);
+          .tablet-landscape-display(@mobile-device-overlay-product-dropdown-display);
+
+          display: none;
+
+          .dropdown-toggle {
+            background-color: fadeout(@model-product-dropdown-background-colour, 25%);
+            border: none;
+          }
+        }
+      }
+
+      .series-dropdown > .dropdown-toggle {
+        width: 50px;
+      }
+
+      .indicator-dropdown > .dropdown-toggle {
+        width: 130px;
+      }
     }
 
     #overlay-primary-bottom {
@@ -26,7 +59,7 @@
     .phone-landscape-display(@phone-landscape-nav-display);
     .tablet-portrait-display(@tablet-portrait-nav-display);
     .tablet-landscape-display(@tablet-landscape-nav-display);
-    
+
     display: flex;
   }
 

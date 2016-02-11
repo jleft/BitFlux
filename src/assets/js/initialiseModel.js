@@ -150,7 +150,7 @@ export default function() {
         navReset: model.chart.navigationReset(),
         headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
         legend: model.chart.legend(products.generated, periods.day1),
-        overlay: model.menu.overlay(),
+        overlay: model.menu.overlay([products.generated, products.quandl], products.generated),
         notificationMessages: model.notification.messages()
     };
 }

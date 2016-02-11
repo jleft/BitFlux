@@ -26,6 +26,7 @@ export default function() {
             var container = d3.select(this);
 
             var products = model.products;
+
             container.select('#product-dropdown')
                 .datum({
                     config: model.productConfig,

@@ -104,10 +104,9 @@
 @mask-transparent: @primary-black;
 @mask-opaque: @primary-white;
 
-// Sidebar
-@bootstrap-padding-width: 15px;
-@sidebar-width: 33.3%;
-@bootstrap-md-width : 991px;
+// Widths
+@text-shrink-threshold-width: @min-width-supported;
+@min-width-supported: 320px;
 
 // Menu
 @option-group-padding: 15px;
@@ -137,6 +136,7 @@
 
 // Selectors
 @selector-font-colour: @primary-blue;
+@model-product-dropdown-background-colour: @background-colour;
 
 // Overlay
 @overlay-background-colour: @background-colour;
@@ -168,26 +168,34 @@
 @phone-landscape-clear-all-display: @show;
 @phone-landscape-period-tab-display: @hide;
 @phone-landscape-period-dropdown-display: @show;
+@phone-landscape-spacer-display: @show;
 
 @phone-portrait-nav-display: @hide;
 @phone-portrait-clear-all-display: @show;
 @phone-portrait-period-tab-display: @hide;
 @phone-portrait-period-dropdown-display: @show;
+@phone-portrait-spacer-display: @show;
 
 // Tablet
 @tablet-landscape-nav-display: @hide;
 @tablet-landscape-clear-all-display: @hide;
 @tablet-landscape-period-tab-display: @show;
 @tablet-landscape-period-dropdown-display: @hide;
+@tablet-landscape-spacer-display: @hide;
 
 @tablet-portrait-nav-display: @show;
 @tablet-portrait-clear-all-display: @show;
 @tablet-portrait-period-tab-display: @hide;
 @tablet-portrait-period-dropdown-display: @show;
+@tablet-portrait-spacer-display: @show;
 
 // Tablet + phone
 @mobile-device-legend-display: @hide;
 @mobile-device-crosshair-display: @hide;
+@mobile-device-product-dropdown-display: @hide;
+@mobile-device-head-selectors-display: @show;
+@mobile-device-overlay-selectors-display: @hide;
+@mobile-device-overlay-product-dropdown-display: @show;
 
 @hide: ~'none !important';
 @show: flex;
