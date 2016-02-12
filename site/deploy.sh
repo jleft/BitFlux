@@ -46,13 +46,13 @@ cd master
 MASTER=$(git describe --tags --always  2>&1)
 echo "Building master... $MASTER"
 npm install --quiet
-grunt build --versionNumber="$MASTER"
+grunt build --versionNumber="v$MASTER"
 
 cd ../develop
 DEVELOP=$(git describe --tags --always  2>&1)
 echo "Building develop... $DEVELOP"
 npm install --quiet
-grunt build --versionNumber="$DEVELOP"
+grunt build --versionNumber="v$DEVELOP"
 
 echo "Creating directories for built application..."
 cd ../../dist
