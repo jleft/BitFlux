@@ -464,7 +464,20 @@ module.exports = function(grunt) {
         'Builds the application ready for production, with option for version number to be specified',
         function() {
             var version = grunt.option('versionNumber');
+
+            if (version === Infinity) {
+                grunt.log.warn('WARNING: version number interpreted as Infinity');
+            }
+
             if (version) {
+                // Site deploy script prefixes the version number with "v" to avoid issues with
+                // Git hashes which are > Number.MAX_VALUE being converted to Infinity
+                // The "v" is stripped here
+                // https://github.com/ScottLogic/BitFlux/issues/629
+                if (typeof version === 'string' && version.charAt(0) === 'v') {
+                    version = version.substring(1);
+                }
+                grunt.log.writeln('Version specified: ' + version);
                 grunt.config.set('template.production.options.data.version', version);
             }
             grunt.task.run('build:production');
