@@ -71,7 +71,10 @@ export default function() {
     var closeLine = fc.annotation.line()
       .orient('horizontal')
       .value(currentYValueAccessor)
-      .label('');
+      .label('')
+      .decorate(function(g) {
+          g.classed('close-line', true);
+      });
     closeLine.id = util.uid();
 
     var multi = fc.series.multi()
@@ -192,7 +195,7 @@ export default function() {
           .yDecorate(function(s) {
               var closePriceTick = s.selectAll('.tick')
                 .filter(function(d) { return d === latestPrice; })
-                .classed('closeLine', true);
+                .classed('close-line', true);
 
               var calloutHeight = 18;
               closePriceTick.select('path')
