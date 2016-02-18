@@ -1,5 +1,6 @@
 import d3 from 'd3';
 import fc from 'd3fc';
+import util from '../../util/util';
 import event from '../../event';
 import zoomBehavior from '../../behavior/zoom';
 
@@ -54,7 +55,7 @@ export default function() {
     d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'yTicks', 'xDomain', 'yDomain');
 
     secondary.dimensionChanged = function(container) {
-        zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+        zoomWidth = util.width(container.node()) - yAxisWidth;
     };
 
     return secondary;
