@@ -1,5 +1,6 @@
 import d3 from 'd3';
 import fc from 'd3fc';
+import util from '../util/util';
 
 export default function() {
     var xScale = fc.scale.dateTime();
@@ -24,7 +25,7 @@ export default function() {
     }
 
     xAxisChart.dimensionChanged = function(container) {
-        xScale.range([0, parseInt(container.style('width'), 10)]);
+        xScale.range([0, util.width(container.node())]);
     };
 
     return xAxisChart;
