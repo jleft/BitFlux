@@ -33,7 +33,9 @@ export default function() {
 
     var area = fc.series.area()
         .xValue(function(d) { return d.date; })
-        .yValue(function(d) { return d.close; });
+        .y1Value(function(d) { return d.close; })
+        .y0Value(function() { return yScale.domain()[0]; });
+
     var line = fc.series.line()
         .xValue(function(d) { return d.date; })
         .yValue(function(d) { return d.close; });
@@ -56,7 +58,6 @@ export default function() {
                 .attr('height', barHeight)
                 .attr('y', borderWidth);
             enter.select('.extent')
-                .attr('mask', 'url("#brush-mask")')
                 .attr('fill', 'url("#brush-gradient")');
 
             // Adds the handles to the brush sides
@@ -85,15 +86,26 @@ export default function() {
 
     var brushMask = fc.series.area()
         .xValue(function(d) { return d.date; })
-        .yValue(function(d) { return d.close; })
-        .xScale(xScale)
-        .yScale(yScale);
+        .y1Value(function(d) { return d.close; })
+        .y0Value(function(d) { return yScale.domain()[0]; })
+        .decorate(function(selection) {
+            selection.enter().attr('fill', 'url("#brush-gradient")');
+        });
+
+    var brushLine = fc.series.line()
+        .xValue(function(d) { return d.date; })
+        .yValue(function(d) { return d.close; });
 
     var layoutWidth;
 
     var sampler = fc.data.sampler.largestTriangleThreeBucket()
         .x(function(d) { return xScale(d.date); })
         .y(function(d) { return yScale(d.close); });
+
+    var brushMaskMulti = fc.series.multi()
+        .series([brushMask, brushLine])
+        .xScale(xScale)
+        .yScale(yScale);
 
     function setHide(selection, brushHide) {
         selection.select('.plot-area')
@@ -129,7 +141,7 @@ export default function() {
 
         selection.select('mask')
             .datum(data)
-            .call(brushMask);
+            .call(brushMaskMulti);
     }
 
     function nav(selection) {
