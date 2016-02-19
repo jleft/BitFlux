@@ -227,7 +227,7 @@ export default function() {
 
     // Call when the main layout is modified
     primary.dimensionChanged = function(container) {
-        zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+        zoomWidth = util.width(container.node()) - yAxisWidth;
     };
 
     return primary;
