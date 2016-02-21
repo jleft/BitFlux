@@ -1,6 +1,28 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.1.0] - 21-2-2016
+### Added
+- Unit test coverage reporter
+- Option to seed random number generator
+- Nicer menus for mobile
+
+### Changed
+- Legend only displayed when crosshair is active
+- Legend now uses d3fc tooltip component
+- Crisp edge shape-rendering now used on RSI annotations and latest price annotation
+- RSI annotations and latest price annotation dash frequency
+- d3fc dependency to 5.3.0
+- Development dependency versions
+
+### Fixed
+- Added padding to navigator y-extent to prevent series overlapping chart border
+- Centered indicator labels
+- Primary chart gridlines better adapt to ticks shown on y-axis
+- Prevent `Infinity` being set as application version number when deployed
+- Import correct font weight (Roboto 300)
+- Width calculations when dimensions change
+
 ## [1.0.1] - 1-2-2016
 ### Fixed
 - Build process updated to prevent errors in IE (dependencies are concatenated rather than use rollup)
@@ -205,7 +227,7 @@
 ## [0.2.0] - 12-08-2015
 ### Added
 - Close price annotation callout label on y-axis
-- Live Coinbase data source 
+- Live Coinbase data source
 - Historical Coinbase data source
 
 ### Changed
