@@ -22,9 +22,13 @@ export default function() {
         <div class="row head-menu head-row"> \
             <div class="col-md-12 head-sub-row"> \
                 <div id="product-dropdown" class="dropdown product-dropdown"></div> \
-                <div id="period-selector" class="hidden-xs hidden-sm"></div> \
-                <div id="mobile-period-selector" class="hidden-md hidden-lg dropdown"></div> \
-                <span id="clear-indicators" class="icon bf-icon-delete delete-button hidden-md hidden-lg"></span> \
+                <div class="selectors"> \
+                    <div class="series-dropdown dropdown selector-dropdown"></div> \
+                    <div class="indicator-dropdown dropdown selector-dropdown"></div> \
+                    <div id="mobile-period-selector" class="dropdown"></div> \
+                </div> \
+                <div id="period-selector"></div> \
+                <span id="clear-indicators" class="icon bf-icon-delete delete-button"></span> \
             </div> \
         </div> \
         <div class="row primary-row"> \
@@ -37,7 +41,7 @@ export default function() {
                     <div class="x-axis-row"> \
                         <svg id="x-axis-container"></svg> \
                     </div> \
-                    <div id="navbar-row" class="hidden-xs hidden-sm"> \
+                    <div id="navbar-row"> \
                         <svg id="navbar-container"></svg> \
                         <svg id="navbar-reset"></svg> \
                     </div> \
@@ -45,11 +49,14 @@ export default function() {
                 <div id="overlay"> \
                     <div id="overlay-primary-container"> \
                         <div id="overlay-primary-head"> \
-                            <div id="selectors"> \
-                                <div id="series-dropdown" class="dropdown selector-dropdown"></div> \
-                                <div id="indicator-dropdown" class="dropdown selector-dropdown"></div> \
+                            <div class="selectors"> \
+                                <div id="mobile-product-dropdown" class="dropdown"></div> \
+                                <div class="series-dropdown dropdown selector-dropdown"></div> \
+                                <div class="indicator-dropdown dropdown selector-dropdown"></div> \
                             </div> \
-                            <div id="legend" class="hidden-xs hidden-sm"></div> \
+                            <div id="legend"> \
+                                <svg id="tooltip"></svg> \
+                            </div> \
                         </div> \
                         <div id="overlay-primary-bottom"> \
                             <div class="edit-indicator-container"></div> \
@@ -65,7 +72,7 @@ export default function() {
                         <div class="edit-indicator-container"></div> \
                     </div> \
                     <div class="x-axis-row"></div> \
-                    <div id="overlay-navbar-row" class="hidden-xs hidden-sm"></div> \
+                    <div id="overlay-navbar-row"></div> \
                 </div> \
             </div> \
         </div> \
@@ -134,7 +141,7 @@ export default function() {
             .datum(model.headMenu)
             .call(headMenu);
 
-        containers.app.select('#selectors')
+        containers.app.selectAll('.selectors')
             .datum(model.selectors)
             .call(selectors);
 
@@ -249,6 +256,7 @@ export default function() {
         model.primaryChart.product = product;
         model.secondaryChart.product = product;
         model.legend.product = product;
+        model.overlay.selectedProduct = product;
     }
 
     function updateModelSelectedPeriod(period) {
@@ -390,7 +398,11 @@ export default function() {
     function initialiseOverlay() {
         return menu.overlay()
             .on(event.primaryChartIndicatorChange, onPrimaryIndicatorChange)
-            .on(event.secondaryChartChange, onSecondaryChartChange);
+            .on(event.secondaryChartChange, onSecondaryChartChange)
+            .on(event.dataProductChange, function(product) {
+                changeProduct(product.option);
+                render();
+            });
     }
 
     function onNotificationClose(id) {
@@ -413,7 +425,7 @@ export default function() {
             var productPeriodOverrides = d3.map();
             productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
             var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
-            model.headMenu.products = model.headMenu.products.concat(formattedProducts);
+            model.headMenu.products = model.overlay.products = model.headMenu.products.concat(formattedProducts);
         }
 
         render();

@@ -8,7 +8,7 @@
   .annotations {
     .annotation line {
       stroke: @gridline-colour;
-      stroke-dasharray: 20px;
+      stroke-dasharray: 8;
     }
   }
   .x-axis {
@@ -28,6 +28,10 @@
   .rsi {
     stroke: @rsi-line-colour;
     stroke-width: @stroke-width;
+
+    .annotation line {
+      shape-rendering: crispEdges;
+    }
   }
 
   .macd-divergence {

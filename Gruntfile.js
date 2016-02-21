@@ -31,6 +31,7 @@ module.exports = function(grunt) {
                 'assets/js/svg-innerhtml.js',
                 'assets/js/d3fc.js',
                 'assets/js/jquery.js',
+                'assets/js/seedrandom.js',
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
@@ -40,6 +41,7 @@ module.exports = function(grunt) {
                 'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
                 'node_modules/d3fc/dist/d3fc.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
+                'node_modules/seedrandom/seedrandom.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
             ],
             coverageDir: 'coverage'
@@ -113,6 +115,12 @@ module.exports = function(grunt) {
                 {
                     cwd: 'node_modules/jquery/dist',
                     src: ['jquery.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/seedrandom',
+                    src: ['seedrandom.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 }]
@@ -329,15 +337,37 @@ module.exports = function(grunt) {
                 ],
                 browserify: {
                     debug: true,
-                    transform: [['babelify', {
-                        plugins: ['transform-es2015-modules-commonjs']
-                    }]]
+                    transform: ['babelify']
                 }
             },
-            phantom: {
+            coverage: {
+                reporters: ['dots', 'coverage'],
                 browsers: ['PhantomJS'],
                 autoWatch: false,
-                singleRun: true
+                singleRun: true,
+                browserify: {
+                    transform: [
+                        require('browserify-istanbul')({
+                            instrumenter: require('isparta'),
+                            ignore: ['<%= meta.testJsFiles %>']
+                        }),
+                        'babelify'
+                    ]
+                },
+                coverageReporter: {
+                    reporters: [
+                        {
+                            type: 'text'
+                        },
+                        {
+                            type: 'text-summary'
+                        },
+                        {
+                            type: 'html',
+                            dir: '<%= meta.coverageDir %>'
+                        }
+                    ]
+                }
             },
             chrome: {
                 browsers: ['Chrome'],
@@ -419,7 +449,7 @@ module.exports = function(grunt) {
     grunt.registerTask('default', ['build']);
     grunt.registerTask('ci', [
         'build',
-        'test:phantom',
+        'test:coverage',
         'mobile:platforms',
         'mobile:prepare'
     ]);
@@ -428,13 +458,26 @@ module.exports = function(grunt) {
 
     grunt.registerTask('test', ['karma:all']);
     grunt.registerTask('test:chrome', ['karma:chrome']);
-    grunt.registerTask('test:phantom', ['karma:phantom']);
+    grunt.registerTask('test:coverage', ['karma:coverage']);
 
     grunt.registerTask('build',
         'Builds the application ready for production, with option for version number to be specified',
         function() {
             var version = grunt.option('versionNumber');
+
+            if (version === Infinity) {
+                grunt.log.warn('WARNING: version number interpreted as Infinity');
+            }
+
             if (version) {
+                // Site deploy script prefixes the version number with "v" to avoid issues with
+                // Git hashes which are > Number.MAX_VALUE being converted to Infinity
+                // The "v" is stripped here
+                // https://github.com/ScottLogic/BitFlux/issues/629
+                if (typeof version === 'string' && version.charAt(0) === 'v') {
+                    version = version.substring(1);
+                }
+                grunt.log.writeln('Version specified: ' + version);
                 grunt.config.set('template.production.options.data.version', version);
             }
             grunt.task.run('build:production');
@@ -487,7 +530,7 @@ module.exports = function(grunt) {
     grunt.registerTask('deploy', ['buildAndTest', 'gh-pages:origin']);
     grunt.registerTask('deploy:upstream', ['buildAndTest', 'gh-pages:upstream']);
 
-    grunt.registerTask('buildAndTest', ['build', 'test:phantom']);
+    grunt.registerTask('buildAndTest', ['build', 'test:coverage']);
     grunt.registerTask('dev', ['connect:watch', 'watch:dev']);
     grunt.registerTask('devTest', ['connect:watch', 'karma:chromeBackground:start', 'watch:devTest']);
 

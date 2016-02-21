@@ -1,15 +1,11 @@
-#selectors {
+.selectors {
   position: absolute;
   display: flex;
   left: 8px;
 
-  #indicator-dropdown a {
+  .indicator-dropdown a {
     padding-left: 10px;
     padding-right: 10px;
-  }
-
-  .selector-dropdown {
-    margin-right: 12px;
   }
 
   .selector-dropdown:first-child {
@@ -20,7 +16,6 @@
 
   .selector-dropdown:nth-child(2) {
     .dropdown-toggle {
-      width: 130px;
       font-size: @font-size-small;
       color: @primary-blue;
     }
@@ -29,7 +24,6 @@
   .dropdown-toggle {
     border: 1px solid @secondary-grey;
     height: 34px;
-    margin-top: 6px;
     pointer-events: visiblePainted;
   }
 

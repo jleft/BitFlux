@@ -67,12 +67,14 @@ export default function() {
     crosshair.id = util.uid();
 
     var gridlines = fc.annotation.gridline()
-      .yTicks(5)
       .xTicks(0);
     var closeLine = fc.annotation.line()
       .orient('horizontal')
       .value(currentYValueAccessor)
-      .label('');
+      .label('')
+      .decorate(function(g) {
+          g.classed('close-line', true);
+      });
     closeLine.id = util.uid();
 
     var multi = fc.series.multi()
@@ -193,7 +195,7 @@ export default function() {
           .yDecorate(function(s) {
               var closePriceTick = s.selectAll('.tick')
                 .filter(function(d) { return d === latestPrice; })
-                .classed('closeLine', true);
+                .classed('close-line', true);
 
               var calloutHeight = 18;
               closePriceTick.select('path')
@@ -203,6 +205,8 @@ export default function() {
               closePriceTick.select('text')
                 .attr('transform', 'translate(' + calloutHeight / 2 + ',1)');
           });
+
+        gridlines.yTicks(tickValues.length - 1);
 
         // Redraw
         primaryChart.plotArea(multi);
@@ -223,7 +227,7 @@ export default function() {
 
     // Call when the main layout is modified
     primary.dimensionChanged = function(container) {
-        zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+        zoomWidth = util.width(container.node()) - yAxisWidth;
     };
 
     return primary;

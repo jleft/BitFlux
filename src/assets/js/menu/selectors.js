@@ -29,7 +29,7 @@ export default function() {
                 return option.isSelected;
             }).indexOf(true);
 
-            container.select('#series-dropdown')
+            container.select('.series-dropdown')
                 .datum({
                     config: model.seriesSelector.config,
                     options: model.seriesSelector.options,
@@ -47,7 +47,7 @@ export default function() {
                     return option;
                 });
 
-            container.select('#indicator-dropdown')
+            container.select('.indicator-dropdown')
                 .datum({
                     config: model.indicatorSelector.config,
                     options: options,

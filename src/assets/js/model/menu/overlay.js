@@ -1,7 +1,12 @@
-export default function() {
+import dropdownConfig from './dropdownConfig';
+
+export default function(initialProducts, initialSelectedProduct) {
     return {
         primaryIndicators: [],
-        secondaryIndicators: []
+        secondaryIndicators: [],
+        productConfig: dropdownConfig(),
+        products: initialProducts,
+        selectedProduct: initialSelectedProduct
     };
 }
 

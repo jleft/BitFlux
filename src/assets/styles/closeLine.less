@@ -1,5 +1,5 @@
 .y-axis {
-  .closeLine {
+  .close-line {
     text {
       fill: @font-colour;
       font-size: @font-size-base;
@@ -15,7 +15,9 @@
 }
 
 .plot-area {
-  .annotation > line {
+  .annotation.close-line > line {
     stroke: @closing-colour;
+    stroke-dasharray: 4;
+    shape-rendering: crispEdges;
   }
 }
