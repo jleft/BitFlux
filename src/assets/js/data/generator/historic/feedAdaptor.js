@@ -51,7 +51,7 @@ export default function() {
         if (!arguments.length) {
             return dataGeneratorAdaptor;
         }
-        if (x !== null) {
+        if (x !== 'Data Generator') {
             throw new Error('Random Financial Data Generator does not support products.');
         }
         product = x;
