@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.1.1] - 23-2-2016
+### Fixed
+- When using BitFlux as module, changing the Quandl product now correctly updates the models, preventing issues in the overlay
+
 ## [1.1.0] - 21-2-2016
 ### Added
 - Unit test coverage reporter

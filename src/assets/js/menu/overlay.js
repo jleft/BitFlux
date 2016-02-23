@@ -31,7 +31,7 @@ export default function() {
                 .datum({
                     config: model.productConfig,
                     options: products.map(productAdaptor),
-                    selectedIndex: products.indexOf(model.selectedProduct)
+                    selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
                 })
                 .call(dataProductDropdown);
 

@@ -442,9 +442,14 @@ export default function() {
     app.changeQuandlProduct = function(productString) {
         var product = dataModel.product(productString, productString, [model.periods.day1], model.sources.quandl, '.3s');
         var existsInHeadMenuProducts = model.headMenu.products.some(function(p) { return p.id === product.id; });
+        var existsInOverlayProducts = model.overlay.products.some(function(p) { return p.id === product.id; });
 
         if (!existsInHeadMenuProducts) {
             model.headMenu.products.push(product);
+        }
+
+        if (!existsInOverlayProducts) {
+            model.overlay.products.push(product);
         }
 
         changeProduct(product);

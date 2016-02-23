@@ -1,6 +1,6 @@
 {
   "name": "BitFlux",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "dependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": {
       "version": "6.5.2",
