@@ -29,8 +29,10 @@ export default function() {
     var viewScale = fc.scale.dateTime();
 
     var area = fc.series.area()
+      .xValue(function(d) { return d.date; })
       .yValue(function(d) { return d.close; });
     var line = fc.series.line()
+      .xValue(function(d) { return d.date; })
       .yValue(function(d) { return d.close; });
     var brush = d3.svg.brush();
     var navMulti = fc.series.multi()
@@ -81,12 +83,12 @@ export default function() {
     var maskYScale = d3.scale.linear();
 
     var brushMask = fc.series.area()
+      .xValue(function(d) { return d.date; })
       .yValue(function(d) { return d.close; })
       .xScale(maskXScale)
       .yScale(maskYScale);
 
     var layoutWidth;
-
 
     function setHide(selection, brushHide) {
         selection.select('.plot-area')
