@@ -7,6 +7,7 @@ import base from './base';
 export default function() {
     var dispatch = d3.dispatch(event.viewChange);
     var volumeBar = fc.series.bar()
+      .xValue(function(d) { return d.date; })
       .yValue(function(d) { return d.volume; });
 
     var chart = base()
