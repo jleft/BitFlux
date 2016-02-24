@@ -7,6 +7,8 @@ export default function(initialProducts, initialSelectedProduct, initialSelected
         products: initialProducts,
         selectedProduct: initialSelectedProduct,
         selectedPeriod: initialSelectedPeriod,
-        alertMessages: []
+        alertMessages: [],
+        primaryIndicators: [],
+        secondaryIndicators: []
     };
 }
