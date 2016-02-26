@@ -84,7 +84,7 @@ export default function() {
 
     var model = initialiseModel();
 
-    var _dataInterface;
+    var _dataInterface = initialiseDataInterface();
 
     var charts = {
         primary: undefined,
@@ -504,7 +504,6 @@ export default function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
-        _dataInterface = initialiseDataInterface();
         headMenu = initialiseHeadMenu();
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
@@ -524,6 +523,10 @@ export default function() {
 
     fc.util.rebind(app, model.sources.quandl.historicFeed, {
         quandlApiKey: 'apiKey'
+    });
+
+    fc.util.rebind(app, _dataInterface, {
+        periodsOfDataToFetch: 'candlesOfData'
     });
 
     return app;

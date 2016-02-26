@@ -82,6 +82,14 @@ export default function() {
         }));
     }
 
+    dataInterface.candlesOfData = function(x) {
+        if (!arguments.length) {
+            return candlesOfData;
+        }
+        candlesOfData = x;
+        return dataInterface;
+    };
+
     d3.rebind(dataInterface, dispatch, 'on');
 
     return dataInterface;
