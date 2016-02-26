@@ -102,6 +102,8 @@ export default function() {
 
     var fetchCoinbaseProducts = false;
 
+    var proportionOfDataToDisplayByDefault = 0.2;
+
     var firstRender = true;
     function renderInternal() {
         if (firstRender) {
@@ -232,7 +234,7 @@ export default function() {
         var data = model.primaryChart.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
-        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, 0.2);
+        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
         onViewChange(navTimeDomain);
     }
 
@@ -457,6 +459,14 @@ export default function() {
         if (!firstRender) {
             render();
         }
+    };
+
+    app.proportionOfDataToDisplayByDefault = function(x) {
+        if (!arguments.length) {
+            return proportionOfDataToDisplayByDefault;
+        }
+        proportionOfDataToDisplayByDefault = x;
+        return app;
     };
 
     app.run = function(element) {
