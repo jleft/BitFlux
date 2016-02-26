@@ -104,6 +104,8 @@ export default function() {
 
     var proportionOfDataToDisplayByDefault = 0.2;
 
+    var indicators;
+
     var firstRender = true;
     function renderInternal() {
         if (firstRender) {
@@ -125,7 +127,7 @@ export default function() {
             .filter(function(d, i) { return i < charts.secondaries.length; })
             .each(function(d, i) {
                 d3.select(this)
-                    .attr('class', 'secondary-container ' + charts.secondaries[i].valueString)
+                    .attr('class', 'secondary-container secondary-' + charts.secondaries[i].valueString)
                     .call(charts.secondaries[i].option);
             });
 
@@ -199,12 +201,14 @@ export default function() {
 
     function onPrimaryIndicatorChange(indicator) {
         indicator.isSelected = !indicator.isSelected;
+        indicators[indicator.valueString] = indicator.isSelected;
         updatePrimaryChartIndicators();
         render();
     }
 
     function onSecondaryChartChange(_chart) {
         _chart.isSelected = !_chart.isSelected;
+        indicators[_chart.valueString] = _chart.isSelected;
         updateSecondaryCharts();
         render();
     }
@@ -433,6 +437,23 @@ export default function() {
         render();
     }
 
+    function initialiseIndicators() {
+        var _indicators = indicators || {};
+
+        model.selectors.indicatorSelector.options.forEach(function(indicator) {
+            if (_indicators[indicator.valueString]) {
+                indicator.isSelected = true;
+            } else {
+                _indicators[indicator.valueString] = false;
+            }
+        });
+
+        updatePrimaryChartIndicators();
+        updateSecondaryCharts();
+
+        return _indicators;
+    }
+
     app.fetchCoinbaseProducts = function(x) {
         if (!arguments.length) {
             return fetchCoinbaseProducts;
@@ -466,6 +487,14 @@ export default function() {
             return proportionOfDataToDisplayByDefault;
         }
         proportionOfDataToDisplayByDefault = x;
+        return app;
+    };
+
+    app.indicators = function(x) {
+        if (!arguments.length) {
+            return indicators;
+        }
+        indicators = x;
         return app;
     };
 
@@ -509,6 +538,7 @@ export default function() {
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
         toastNotifications = initialiseNotifications();
+        indicators = initialiseIndicators();
 
         updateLayout();
         initialiseResize();
