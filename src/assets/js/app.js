@@ -268,7 +268,9 @@ export default function() {
     }
 
     function changeProduct(product) {
-        loading(true);
+        if (!firstRender) {
+            loading(true);
+        }
         updateModelSelectedProduct(product);
         updateModelSelectedPeriod(product.periods[0]);
         _dataInterface(product.periods[0].seconds, product);
@@ -459,6 +461,8 @@ export default function() {
         if (!firstRender) {
             render();
         }
+
+        return app;
     };
 
     app.proportionOfDataToDisplayByDefault = function(x) {
