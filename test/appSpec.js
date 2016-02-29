@@ -32,7 +32,7 @@ describe('app', function() {
         // TODO
         xit('should return the application', function(done) {
             expect(application.changeQuandlProduct('GOOG')).toEqual(application);
-            setTimeout(function() { done(); }, 0);
+            setTimeout(function() { done(); }, 1000);
         });
     });
 
@@ -95,25 +95,25 @@ describe('app', function() {
             expect(element.childElementCount).toBe(0);
             application.run(element);
             expect(element.childElementCount).toBeGreaterThan(0);
-            setTimeout(function() { done(); }, 0);
+            setTimeout(function() { done(); }, 1000);
         });
         it('should run with by selecing an element by element name', function(done) {
             expect(div.node().childElementCount).toBe(0);
             application.run('div');
             expect(div.node().childElementCount).toBeGreaterThan(0);
-            setTimeout(function() { done(); }, 0);
+            setTimeout(function() { done(); }, 1000);
         });
         it('should run with by selecing an element by class name', function(done) {
             expect(divWithClass.node().childElementCount).toBe(0);
             application.run('.foo');
             expect(divWithClass.node().childElementCount).toBeGreaterThan(0);
-            setTimeout(function() { done(); }, 0);
+            setTimeout(function() { done(); }, 1000);
         });
         it('should run with by selecing an element by id', function(done) {
             expect(divWithId.node().childElementCount).toBe(0);
             application.run('#bar');
             expect(divWithId.node().childElementCount).toBeGreaterThan(0);
-            setTimeout(function() { done(); }, 0);
+            setTimeout(function() { done(); }, 1000);
         });
         it('should throw an error if it is called without an argument', function() {
             expect(function() {
