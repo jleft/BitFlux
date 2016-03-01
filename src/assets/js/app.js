@@ -104,8 +104,6 @@ export default function() {
 
     var proportionOfDataToDisplayByDefault = 0.2;
 
-    var indicators;
-
     var firstRender = true;
     function renderInternal() {
         if (firstRender) {
@@ -201,14 +199,12 @@ export default function() {
 
     function onPrimaryIndicatorChange(indicator) {
         indicator.isSelected = !indicator.isSelected;
-        indicators[indicator.valueString] = indicator.isSelected;
         updatePrimaryChartIndicators();
         render();
     }
 
     function onSecondaryChartChange(_chart) {
         _chart.isSelected = !_chart.isSelected;
-        indicators[_chart.valueString] = _chart.isSelected;
         updateSecondaryCharts();
         render();
     }
@@ -385,7 +381,7 @@ export default function() {
         model.overlay.primaryIndicators = model.primaryChart.indicators;
     }
 
-    function updateSecondaryCharts() {
+    function updateSecondaryChartModels() {
         charts.secondaries =
             model.selectors.indicatorSelector.options.filter(function(option) {
                 return option.isSelected && !option.isPrimary;
@@ -396,6 +392,10 @@ export default function() {
         });
 
         model.overlay.secondaryIndicators = charts.secondaries;
+    }
+
+    function updateSecondaryCharts() {
+        updateSecondaryChartModels();
         // TODO: Remove .remove! (could a secondary chart group component manage this?).
         containers.secondaries.selectAll('*').remove();
         updateLayout();
@@ -437,23 +437,6 @@ export default function() {
         render();
     }
 
-    function initialiseIndicators() {
-        var _indicators = indicators || {};
-
-        model.selectors.indicatorSelector.options.forEach(function(indicator) {
-            if (_indicators[indicator.valueString]) {
-                indicator.isSelected = true;
-            } else {
-                _indicators[indicator.valueString] = false;
-            }
-        });
-
-        updatePrimaryChartIndicators();
-        updateSecondaryCharts();
-
-        return _indicators;
-    }
-
     app.fetchCoinbaseProducts = function(x) {
         if (!arguments.length) {
             return fetchCoinbaseProducts;
@@ -492,9 +475,27 @@ export default function() {
 
     app.indicators = function(x) {
         if (!arguments.length) {
+            var indicators = [];
+            model.selectors.indicatorSelector.options.forEach(function(option) {
+                if (option.isSelected) {
+                    indicators.push(option.valueString);
+                }
+            });
             return indicators;
         }
-        indicators = x;
+
+        model.selectors.indicatorSelector.options.forEach(function(indicator) {
+            indicator.isSelected = x.some(function(indicatorValueStringToShow) { return indicatorValueStringToShow === indicator.valueString; });
+        });
+
+        updatePrimaryChartIndicators();
+        if (!firstRender) {
+            updateSecondaryCharts();
+            render();
+        } else {
+            updateSecondaryChartModels();
+        }
+
         return app;
     };
 
@@ -538,7 +539,6 @@ export default function() {
         selectors = initialiseSelectors();
         overlay = initialiseOverlay();
         toastNotifications = initialiseNotifications();
-        indicators = initialiseIndicators();
 
         updateLayout();
         initialiseResize();
