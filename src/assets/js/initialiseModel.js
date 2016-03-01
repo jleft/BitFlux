@@ -115,11 +115,11 @@ export default function() {
         var indicators = [
             movingAverageOption,
             bollingerBandsOption,
-            model.menu.option('Relative Strength Index', 'secondary-rsi',
+            model.menu.option('Relative Strength Index', 'rsi',
                 secondary.rsi(), 'bf-icon-rsi-indicator', false),
-            model.menu.option('MACD', 'secondary-macd',
+            model.menu.option('MACD', 'macd',
                 secondary.macd(), 'bf-icon-macd-indicator', false),
-            model.menu.option('Volume', 'secondary-volume',
+            model.menu.option('Volume', 'volume',
                 secondary.volume(), 'bf-icon-bar-series', false)
         ];
 
