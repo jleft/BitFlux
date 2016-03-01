@@ -84,7 +84,7 @@ export default function() {
 
     var model = initialiseModel();
 
-    var _dataInterface;
+    var _dataInterface = initialiseDataInterface();
 
     var charts = {
         primary: undefined,
@@ -101,6 +101,8 @@ export default function() {
     var toastNotifications;
 
     var fetchCoinbaseProducts = false;
+
+    var proportionOfDataToDisplayByDefault = 0.2;
 
     var firstRender = true;
     function renderInternal() {
@@ -123,7 +125,7 @@ export default function() {
             .filter(function(d, i) { return i < charts.secondaries.length; })
             .each(function(d, i) {
                 d3.select(this)
-                    .attr('class', 'secondary-container ' + charts.secondaries[i].valueString)
+                    .attr('class', 'secondary-container secondary-' + charts.secondaries[i].valueString)
                     .call(charts.secondaries[i].option);
             });
 
@@ -232,7 +234,7 @@ export default function() {
         var data = model.primaryChart.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
-        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, 0.2);
+        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
         onViewChange(navTimeDomain);
     }
 
@@ -379,7 +381,7 @@ export default function() {
         model.overlay.primaryIndicators = model.primaryChart.indicators;
     }
 
-    function updateSecondaryCharts() {
+    function updateSecondaryChartModels() {
         charts.secondaries =
             model.selectors.indicatorSelector.options.filter(function(option) {
                 return option.isSelected && !option.isPrimary;
@@ -390,6 +392,10 @@ export default function() {
         });
 
         model.overlay.secondaryIndicators = charts.secondaries;
+    }
+
+    function updateSecondaryCharts() {
+        updateSecondaryChartModels();
         // TODO: Remove .remove! (could a secondary chart group component manage this?).
         containers.secondaries.selectAll('*').remove();
         updateLayout();
@@ -459,6 +465,40 @@ export default function() {
         }
     };
 
+    app.proportionOfDataToDisplayByDefault = function(x) {
+        if (!arguments.length) {
+            return proportionOfDataToDisplayByDefault;
+        }
+        proportionOfDataToDisplayByDefault = x;
+        return app;
+    };
+
+    app.indicators = function(x) {
+        if (!arguments.length) {
+            var indicators = [];
+            model.selectors.indicatorSelector.options.forEach(function(option) {
+                if (option.isSelected) {
+                    indicators.push(option.valueString);
+                }
+            });
+            return indicators;
+        }
+
+        model.selectors.indicatorSelector.options.forEach(function(indicator) {
+            indicator.isSelected = x.some(function(indicatorValueStringToShow) { return indicatorValueStringToShow === indicator.valueString; });
+        });
+
+        updatePrimaryChartIndicators();
+        if (!firstRender) {
+            updateSecondaryCharts();
+            render();
+        } else {
+            updateSecondaryChartModels();
+        }
+
+        return app;
+    };
+
     app.run = function(element) {
         if (!element) {
             throw new Error('An element must be specified when running the application.');
@@ -494,7 +534,6 @@ export default function() {
         charts.primary = initialisePrimaryChart();
         charts.navbar = initialiseNav();
 
-        _dataInterface = initialiseDataInterface();
         headMenu = initialiseHeadMenu();
         navReset = initialiseNavReset();
         selectors = initialiseSelectors();
@@ -514,6 +553,10 @@ export default function() {
 
     fc.util.rebind(app, model.sources.quandl.historicFeed, {
         quandlApiKey: 'apiKey'
+    });
+
+    fc.util.rebind(app, _dataInterface, {
+        periodsOfDataToFetch: 'candlesOfData'
     });
 
     return app;

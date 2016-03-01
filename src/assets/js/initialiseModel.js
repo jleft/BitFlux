@@ -57,17 +57,20 @@ export default function() {
         var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'bf-icon-ohlc-series');
         ohlcOption.option.extentAccessor = ['high', 'low'];
 
-        var line = fc.series.line();
+        var line = fc.series.line()
+            .xValue(function(d) { return d.date; });
         line.id = util.uid();
         var lineOption = model.menu.option('Line', 'line', line, 'bf-icon-line-series');
         lineOption.option.extentAccessor = 'close';
 
-        var point = fc.series.point();
+        var point = fc.series.point()
+            .xValue(function(d) { return d.date; });
         point.id = util.uid();
         var pointOption = model.menu.option('Point', 'point', point, 'bf-icon-point-series');
         pointOption.option.extentAccessor = 'close';
 
-        var area = fc.series.area();
+        var area = fc.series.area()
+            .xValue(function(d) { return d.date; });
         area.id = util.uid();
         var areaOption = model.menu.option('Area', 'area', area, 'bf-icon-area-series');
         areaOption.option.extentAccessor = 'close';
@@ -93,6 +96,7 @@ export default function() {
                 select.enter()
                     .classed('movingAverage', true);
             })
+            .xValue(function(d) { return d.date; })
             .yValue(function(d) { return d.movingAverage; });
         movingAverage.id = util.uid();
 
@@ -111,11 +115,11 @@ export default function() {
         var indicators = [
             movingAverageOption,
             bollingerBandsOption,
-            model.menu.option('Relative Strength Index', 'secondary-rsi',
+            model.menu.option('Relative Strength Index', 'rsi',
                 secondary.rsi(), 'bf-icon-rsi-indicator', false),
-            model.menu.option('MACD', 'secondary-macd',
+            model.menu.option('MACD', 'macd',
                 secondary.macd(), 'bf-icon-macd-indicator', false),
-            model.menu.option('Volume', 'secondary-volume',
+            model.menu.option('Volume', 'volume',
                 secondary.volume(), 'bf-icon-bar-series', false)
         ];
 

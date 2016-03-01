@@ -1,6 +1,15 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.2.0] - 1-3-2016
+### Added
+- Option to set proportion of data to be displayed by default, when using BitFlux as a module
+- Option to set number of datums to be fetched, when using BitFlux as a module
+- Option to set which indicators to display, when using BitFlux as a module
+
+### Changed
+- d3fc dependency to 6.0.0
+
 ## [1.1.1] - 23-2-2016
 ### Fixed
 - When using BitFlux as module, changing the Quandl product now correctly updates the models, preventing issues in the overlay
