@@ -1,6 +1,11 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.3.0] - 3-3-2016
+### Changed
+- Quandl data source uses WIKI database, rather than YAHOO
+- Quandl data source uses adjusted OHLCV values, rather than unadjusted
+
 ## [1.2.0] - 1-3-2016
 ### Added
 - Option to set proportion of data to be displayed by default, when using BitFlux as a module
