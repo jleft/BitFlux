@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A cross-platform financial charting application to showcase the functionality of d3fc components">
+    <title>d3fc Showcase</title>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <script src="assets/js/d3.js"></script>
+    <script src="assets/js/css-layout.js"></script>
+    <script src="assets/js/d3fc.js"></script>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+
+    <div class="container" id="app-container">
+      <div class="row row-offcanvas-right head-menu head-row">
+        <div class="col-xs-12 col-sm-12 col-md-9">
+          <div class="pull-left">
+            <select id="type-selection" selected="type" class="form-control">
+              <option value="generated">Data generator</option>
+              <option value="bitcoin">Bitcoin data</option>
+            </select>
+            <select id="period-selection" selected="period" class="form-control">
+              <option value="3600">1 hr</option>
+              <option value="300">5 min</option>
+              <option value="60">1 min</option>
+            </select>
+          </div>
+          <div class="pull-right">
+            <div id="reset-button">
+              <button class="btn btn-default" type="button">Reset</button>
+            </div>
+            <div id="toggle-button">
+              <button class="btn btn-default visible-xs visible-sm" type="button">Toggle</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right primary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart primary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas sidebar-menu">
+          <div id="series-buttons" class="btn-group" data-toggle="buttons"></div>
+          <div id="y-value-accessor-buttons" class="btn-group" data-toggle="buttons"></div>
+          <div id="indicator-buttons" class="btn-group" data-toggle="buttons"></div>
+          <div id="secondary-chart-buttons" class="btn-group" data-toggle="buttons"></div>
+        </div>
+      </div>        
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right secondary-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart secondary"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+      <div class="row row-offcanvas-right x-axis-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart x-axis"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>        
+      <div class="row row-offcanvas-right nav-row">
+        <div class="col-xs-12 col-sm-12 col-md-9 col-chart">
+          <svg class="chart nav"></svg>
+        </div>
+        <div class="col-xs-4 col-sm-4 col-md-3 sidebar-offcanvas">
+        </div>
+      </div>
+    </div>
+    <script src="assets/js/app.js"></script>
+    <script src="//localhost:35729/livereload.js"></script>
+  </body>
+</html>
