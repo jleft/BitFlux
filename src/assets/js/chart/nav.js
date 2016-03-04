@@ -19,8 +19,10 @@ export default function() {
     var yExtentPadding = [0, 0.04];
 
     var dispatch = d3.dispatch(event.viewChange);
+    var xScale = fc.scale.dateTime();
+    var maskXScale = fc.scale.dateTime();
 
-    var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
+    var navChart = fc.chart.cartesian(xScale, d3.scale.linear())
       .yTicks(0)
       .margin({
           bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
@@ -79,7 +81,6 @@ export default function() {
           }
       });
 
-    var maskXScale = fc.scale.dateTime();
     var maskYScale = d3.scale.linear();
 
     var brushMask = fc.series.area()
@@ -130,6 +131,12 @@ export default function() {
     function nav(selection) {
         var model = selection.datum();
 
+        var discontinuityProvider = util.discontinuityProvider(model.product.source, model.sources.quandl);
+
+        xScale.discontinuityProvider(discontinuityProvider);
+        maskXScale.discontinuityProvider(discontinuityProvider);
+        viewScale.discontinuityProvider(discontinuityProvider);
+
         createDefs(selection, model.data);
 
         viewScale.domain(model.viewDomain);
@@ -146,6 +153,7 @@ export default function() {
           .yDomain(yExtent);
 
         brush.on('brush', function() {
+            console.log('brushing');
             var brushExtentIsEmpty = xEmpty(brush);
 
             // Hide the bar if the extent is empty

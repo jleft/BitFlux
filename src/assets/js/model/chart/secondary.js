@@ -1,8 +1,9 @@
-export default function(initialProduct) {
+export default function(initialProduct, sources) {
     return {
         data: [],
         viewDomain: [],
         trackingLatest: true,
-        product: initialProduct
+        product: initialProduct,
+        sources: sources
     };
 }

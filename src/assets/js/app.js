@@ -265,6 +265,8 @@ export default function() {
         model.secondaryChart.product = product;
         model.legend.product = product;
         model.overlay.selectedProduct = product;
+        model.xAxis.product = product;
+        model.nav.product = product;
     }
 
     function updateModelSelectedPeriod(period) {

@@ -4,6 +4,7 @@ import uid from './uid';
 import width from './width';
 import debounce from './debounce';
 import throttle from './throttle';
+import discontinuityProvider from './discontinuityProvider';
 
 export default {
     domain: domain,
@@ -11,5 +12,6 @@ export default {
     uid: uid,
     width: width,
     debounce: debounce,
-    throttle: throttle
+    throttle: throttle,
+    discontinuityProvider: discontinuityProvider
 };
