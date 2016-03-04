@@ -8,26 +8,6 @@
     fc = 'default' in fc ? fc['default'] : fc;
     $ = 'default' in $ ? $['default'] : $;
 
-    var event = {
-        crosshairChange: 'crosshairChange',
-        viewChange: 'viewChange',
-        newTrade: 'newTrade',
-        historicDataLoaded: 'historicDataLoaded',
-        historicFeedError: 'historicFeedError',
-        streamingFeedError: 'streamingFeedError',
-        streamingFeedClose: 'streamingFeedClose',
-        dataProductChange: 'dataProductChange',
-        dataPeriodChange: 'dataPeriodChange',
-        resetToLatest: 'resetToLatest',
-        clearAllPrimaryChartIndicatorsAndSecondaryCharts: 'clearAllPrimaryChartIndicatorsAndSecondaryCharts',
-        primaryChartSeriesChange: 'primaryChartSeriesChange',
-        primaryChartYValueAccessorChange: 'primaryChartYValueAccessorChange',
-        primaryChartIndicatorChange: 'primaryChartIndicatorChange',
-        secondaryChartChange: 'secondaryChartChange',
-        indicatorChange: 'indicatorChange',
-        notificationClose: 'notificationClose'
-    };
-
     function centerOnDate(domain, data, centerDate) {
         var dataExtent = fc.util.extent()
           .fields('date')(data);
@@ -247,13 +227,164 @@
         };
     }
 
+    function skipWeekendsProvider() {
+        var millisPerDay = 24 * 3600 * 1000;
+        var millisPerWorkWeek = millisPerDay * 5;
+        var millisPerWeek = millisPerDay * 7;
+
+        var skipWeekends = {};
+
+        function isWeekend(date) {
+            return date.getDay() === 0 || date.getDay() === 6;
+        }
+
+        skipWeekends.clampDown = function(date) {
+            if (date && isWeekend(date)) {
+                var daysToSubtract = date.getDay() === 0 ? 2 : 1;
+                // round the date up to midnight
+                var newDate = d3.time.day.ceil(date);
+                // then subtract the required number of days
+                return d3.time.day.offset(newDate, -daysToSubtract);
+            } else {
+                return date;
+            }
+        };
+
+        skipWeekends.clampUp = function(date) {
+            if (date && isWeekend(date)) {
+                var daysToAdd = date.getDay() === 0 ? 1 : 2;
+                // round the date down to midnight
+                var newDate = d3.time.day.floor(date);
+                // then add the required number of days
+                return d3.time.day.offset(newDate, daysToAdd);
+            } else {
+                return date;
+            }
+        };
+
+        // returns the number of included milliseconds (i.e. those which do not fall)
+        // within discontinuities, along this scale
+        skipWeekends.distance = function(startDate, endDate) {
+            startDate = skipWeekends.clampUp(startDate);
+            endDate = skipWeekends.clampDown(endDate);
+
+            // move the start date to the end of week boundary
+            var offsetStart = d3.time.saturday.ceil(startDate);
+            if (endDate < offsetStart) {
+                return endDate.getTime() - startDate.getTime();
+            }
+
+            var msAdded = offsetStart.getTime() - startDate.getTime();
+
+            // move the end date to the end of week boundary
+            var offsetEnd = d3.time.saturday.ceil(endDate);
+            var msRemoved = offsetEnd.getTime() - endDate.getTime();
+
+            // determine how many weeks there are between these two dates
+            var weeks = (offsetEnd.getTime() - offsetStart.getTime()) / millisPerWeek;
+
+            return weeks * millisPerWorkWeek + msAdded - msRemoved;
+        };
+
+        skipWeekends.offset = function(startDate, ms) {
+            var date = isWeekend(startDate) ? skipWeekends.clampUp(startDate) : startDate;
+            var remainingms = ms;
+
+            if (remainingms < 0) {
+                //
+                var startOfWeek = d3.time.monday.floor(date);
+                remainingms -= (startOfWeek.getTime() - date.getTime());
+
+                if (remainingms >= 0) {
+                    return new Date(date.getTime() + ms);
+                }
+
+                date = d3.time.day.offset(startOfWeek, -2);
+
+                // add all of the complete weeks to the date
+                var weeks = Math.floor(remainingms / millisPerWorkWeek);
+                date = d3.time.day.offset(date, weeks * 7);
+                remainingms -= weeks * millisPerWorkWeek;
+
+                // add the remaining time
+                date = new Date(date.getTime() + remainingms);
+                date = d3.time.day.offset(date, 2);
+                return date;
+            } else {
+                // move to the end of week boundary
+                var endOfWeek = d3.time.saturday.ceil(date);
+                remainingms -= (endOfWeek.getTime() - date.getTime());
+
+                // if the distance to the boundary is greater than the number of ms
+                // simply add the ms to the current date
+                if (remainingms < 0) {
+                    return new Date(date.getTime() + ms);
+                }
+
+                // skip the weekend
+                date = d3.time.day.offset(endOfWeek, 2);
+
+                // add all of the complete weeks to the date
+                var completeWeeks = Math.floor(remainingms / millisPerWorkWeek);
+                date = d3.time.day.offset(date, completeWeeks * 7);
+                remainingms -= completeWeeks * millisPerWorkWeek;
+
+                // add the remaining time
+                date = new Date(date.getTime() + remainingms);
+                return date;
+            }
+        };
+
+        skipWeekends.copy = function() { return skipWeekends; };
+
+        return skipWeekends;
+    }
+
+    function discontinuityProvider(productSource, discontinuousSources) {
+        var skipWeekends = false;
+
+        if (!Array.isArray(discontinuousSources)) {
+            discontinuousSources = [discontinuousSources];
+        }
+
+        discontinuousSources.forEach(function(discontinuousSource) {
+            if (productSource === discontinuousSource) {
+                skipWeekends = true;
+            }
+        });
+
+        return skipWeekends ? skipWeekendsProvider() : skipWeekendsProvider();
+        // return skipWeekends ? fc.scale.discontinuity.skipWeekends() : fc.scale.discontinuity.identity();
+    }
+
     var util = {
         domain: domain,
         layout: layout,
         uid: uid,
         width: width,
         debounce: debounce,
-        throttle: throttle
+        throttle: throttle,
+        discontinuityProvider: discontinuityProvider
+    };
+
+    var event = {
+        crosshairChange: 'crosshairChange',
+        viewChange: 'viewChange',
+        newTrade: 'newTrade',
+        historicDataLoaded: 'historicDataLoaded',
+        historicFeedError: 'historicFeedError',
+        streamingFeedError: 'streamingFeedError',
+        streamingFeedClose: 'streamingFeedClose',
+        dataProductChange: 'dataProductChange',
+        dataPeriodChange: 'dataPeriodChange',
+        resetToLatest: 'resetToLatest',
+        clearAllPrimaryChartIndicatorsAndSecondaryCharts: 'clearAllPrimaryChartIndicatorsAndSecondaryCharts',
+        primaryChartSeriesChange: 'primaryChartSeriesChange',
+        primaryChartYValueAccessorChange: 'primaryChartYValueAccessorChange',
+        primaryChartIndicatorChange: 'primaryChartIndicatorChange',
+        secondaryChartChange: 'secondaryChartChange',
+        indicatorChange: 'indicatorChange',
+        notificationClose: 'notificationClose'
     };
 
     function zoomBehavior(width) {
@@ -391,8 +522,11 @@
         var zoomWidth;
 
         function secondary(selection) {
-            selection.each(function(data) {
+            selection.each(function(model) {
+                xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+
                 var container = d3.select(this)
+                  .datum(model.data)
                   .call(chart);
 
                 var zoom = zoomBehavior(zoomWidth)
@@ -421,7 +555,7 @@
         d3.rebind(secondary, chart, 'yTickValues', 'yTickFormat', 'yTicks', 'xDomain', 'yDomain');
 
         secondary.dimensionChanged = function(container) {
-            zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+            zoomWidth = util.width(container.node()) - yAxisWidth;
         };
 
         return secondary;
@@ -463,7 +597,7 @@
               .xDomain(model.viewDomain)
               .yDomain(paddedYExtent);
 
-            selection.datum(model.data)
+            selection.datum(model)
               .call(chart);
         }
 
@@ -497,7 +631,7 @@
               .xDomain(model.viewDomain)
               .yDomain([0, 100]);
 
-            selection.datum(model.data)
+            selection.datum(model)
               .call(chart);
         }
 
@@ -513,6 +647,7 @@
     function volume() {
         var dispatch = d3.dispatch(event.viewChange);
         var volumeBar = fc.series.bar()
+          .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.volume; });
 
         var chart = base()
@@ -535,7 +670,7 @@
                     .xDomain(model.viewDomain)
                     .yDomain(paddedYExtent);
 
-                selection.datum(model.data)
+                selection.datum(model)
                     .call(chart);
             });
         }
@@ -571,8 +706,10 @@
         var yExtentPadding = [0, 0.04];
 
         var dispatch = d3.dispatch(event.viewChange);
+        var xScale = fc.scale.dateTime();
+        var maskXScale = fc.scale.dateTime();
 
-        var navChart = fc.chart.cartesian(fc.scale.dateTime(), d3.scale.linear())
+        var navChart = fc.chart.cartesian(xScale, d3.scale.linear())
           .yTicks(0)
           .margin({
               bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
@@ -581,8 +718,10 @@
         var viewScale = fc.scale.dateTime();
 
         var area = fc.series.area()
+          .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.close; });
         var line = fc.series.line()
+          .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.close; });
         var brush = d3.svg.brush();
         var navMulti = fc.series.multi()
@@ -629,16 +768,15 @@
               }
           });
 
-        var maskXScale = fc.scale.dateTime();
         var maskYScale = d3.scale.linear();
 
         var brushMask = fc.series.area()
+          .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.close; })
           .xScale(maskXScale)
           .yScale(maskYScale);
 
         var layoutWidth;
-
 
         function setHide(selection, brushHide) {
             selection.select('.plot-area')
@@ -679,6 +817,12 @@
 
         function nav(selection) {
             var model = selection.datum();
+
+            var discontinuityProvider = util.discontinuityProvider(model.product.source, model.sources.quandl);
+
+            xScale.discontinuityProvider(discontinuityProvider);
+            maskXScale.discontinuityProvider(discontinuityProvider);
+            viewScale.discontinuityProvider(discontinuityProvider);
 
             createDefs(selection, model.data);
 
@@ -783,6 +927,7 @@
 
     function xAxis() {
         var xScale = fc.scale.dateTime();
+
         var xAxis = d3.svg.axis()
           .scale(xScale)
           .orient('bottom');
@@ -799,12 +944,15 @@
         function xAxisChart(selection) {
             var model = selection.datum();
             xScale.domain(model.viewDomain);
+
+            xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+
             preventTicksMoreFrequentThanPeriod(model.period);
             selection.call(xAxis);
         }
 
         xAxisChart.dimensionChanged = function(container) {
-            xScale.range([0, parseInt(container.style('width'), 10)]);
+            xScale.range([0, util.width(container.node())]);
         };
 
         return xAxisChart;
@@ -977,7 +1125,10 @@
         var closeLine = fc.annotation.line()
           .orient('horizontal')
           .value(currentYValueAccessor)
-          .label('');
+          .label('')
+          .decorate(function(g) {
+              g.classed('close-line', true);
+          });
         closeLine.id = util.uid();
 
         var multi = fc.series.multi()
@@ -1046,7 +1197,7 @@
             var width = currentSeries.option.width(data);
 
             crosshair.decorate(function(selection) {
-                selection.classed('band hidden-xs hidden-sm', true);
+                selection.classed('band', true);
 
                 selection.selectAll('.vertical > line')
                   .style('stroke-width', width);
@@ -1055,7 +1206,6 @@
 
         function lineCrosshair(selection) {
             selection.classed('band', false)
-                .classed('hidden-xs hidden-sm', true)
                 .selectAll('line')
                 .style('stroke-width', null);
         }
@@ -1075,6 +1225,8 @@
             }
 
             primaryChart.xDomain(model.viewDomain);
+
+            xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
 
             crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
             updateCrosshairDecorate(model.data);
@@ -1098,7 +1250,7 @@
               .yDecorate(function(s) {
                   var closePriceTick = s.selectAll('.tick')
                     .filter(function(d) { return d === latestPrice; })
-                    .classed('closeLine', true);
+                    .classed('close-line', true);
 
                   var calloutHeight = 18;
                   closePriceTick.select('path')
@@ -1130,7 +1282,7 @@
 
         // Call when the main layout is modified
         primary.dimensionChanged = function(container) {
-            zoomWidth = parseInt(container.style('width'), 10) - yAxisWidth;
+            zoomWidth = util.width(container.node()) - yAxisWidth;
         };
 
         return primary;
@@ -1471,7 +1623,7 @@
                     .datum({
                         config: model.productConfig,
                         options: products.map(productAdaptor),
-                        selectedIndex: products.indexOf(model.selectedProduct)
+                        selectedIndex: products.map(function(p) { return p.id; }).indexOf(model.selectedProduct.id)
                     })
                     .call(dataProductDropdown);
 
@@ -1673,6 +1825,14 @@
             }));
         }
 
+        dataInterface.candlesOfData = function(x) {
+            if (!arguments.length) {
+                return candlesOfData;
+            }
+            candlesOfData = x;
+            return dataInterface;
+        };
+
         d3.rebind(dataInterface, dispatch, 'on');
 
         return dataInterface;
@@ -1846,11 +2006,13 @@
         };
     }
 
-    function nav$1() {
+    function nav$1(initialProduct, sources) {
         return {
             data: [],
             viewDomain: [],
-            trackingLatest: true
+            trackingLatest: true,
+            product: initialProduct,
+            sources: sources
         };
     }
 
@@ -1860,12 +2022,13 @@
         };
     }
 
-    function primary$1(initialProduct) {
+    function primary$1(initialProduct, sources) {
         var model = {
             data: [],
             trackingLatest: true,
             viewDomain: [],
-            selectorsChanged: true
+            selectorsChanged: true,
+            sources: sources
         };
 
         var _product = initialProduct;
@@ -1910,19 +2073,22 @@
         return model;
     }
 
-    function secondary$1(initialProduct) {
+    function secondary$1(initialProduct, sources) {
         return {
             data: [],
             viewDomain: [],
             trackingLatest: true,
-            product: initialProduct
+            product: initialProduct,
+            sources: sources
         };
     }
 
-    function xAxis$1(initialPeriod) {
+    function xAxis$1(initialProduct, initialPeriod, sources) {
         return {
             viewDomain: [],
-            period: initialPeriod
+            period: initialPeriod,
+            product: initialPeriod,
+            sources: sources
         };
     }
 
@@ -1955,7 +2121,7 @@
 
     function dataGeneratorAdaptor() {
 
-        var dataGenerator = fc.data.random.financial(),
+        var dataGenerator = fc.data.random.financial().filter(fc.data.random.filter.skipWeekends()),
             allowedPeriods = [60 * 60 * 24],
             candles,
             end,
@@ -2003,7 +2169,7 @@
             if (!arguments.length) {
                 return dataGeneratorAdaptor;
             }
-            if (x !== null) {
+            if (x !== 'Data Generator') {
                 throw new Error('Random Financial Data Generator does not support products.');
             }
             product = x;
@@ -2122,7 +2288,9 @@
 
     function quandlAdaptor() {
 
-        var historicFeed = fc.data.feed.quandl(),
+        var historicFeed = fc.data.feed.quandl()
+                .database('WIKI')
+                .columnNameMap(mapColumnNames),
             granularity,
             candles;
 
@@ -2130,6 +2298,27 @@
         var allowedPeriods = d3.map();
         allowedPeriods.set(60 * 60 * 24, 'daily');
         allowedPeriods.set(60 * 60 * 24 * 7, 'weekly');
+
+        // Map fields for WIKI database, to use all adjusted values
+        var columnNameMap = d3.map();
+        columnNameMap.set('Open', 'unadjustedOpen');
+        columnNameMap.set('High', 'unadjustedHigh');
+        columnNameMap.set('Low', 'unadjustedLow');
+        columnNameMap.set('Close', 'unadjustedClose');
+        columnNameMap.set('Volume', 'unadjustedVolume');
+        columnNameMap.set('Adj. Open', 'open');
+        columnNameMap.set('Adj. High', 'high');
+        columnNameMap.set('Adj. Low', 'low');
+        columnNameMap.set('Adj. Close', 'close');
+        columnNameMap.set('Adj. Volume', 'volume');
+
+        function mapColumnNames(colName) {
+            var mappedName = columnNameMap.get(colName);
+            if (!mappedName) {
+                mappedName = colName[0].toLowerCase() + colName.substr(1);
+            }
+            return mappedName;
+        }
 
         function quandlAdaptor(cb) {
             var startDate = d3.time.second.offset(historicFeed.end(), -candles * granularity);
@@ -2196,7 +2385,7 @@
 
         function initProducts() {
             return {
-                generated: model.data.product(null, 'Data Generator', [periods.day1], sources.generated, '.3s'),
+                generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
                 quandl: model.data.product('GOOG', 'GOOG', [periods.day1, periods.week1], sources.quandl, '.3s')
             };
         }
@@ -2218,17 +2407,20 @@
             var ohlcOption = model.menu.option('OHLC', 'ohlc', ohlc, 'bf-icon-ohlc-series');
             ohlcOption.option.extentAccessor = ['high', 'low'];
 
-            var line = fc.series.line();
+            var line = fc.series.line()
+                .xValue(function(d) { return d.date; });
             line.id = util.uid();
             var lineOption = model.menu.option('Line', 'line', line, 'bf-icon-line-series');
             lineOption.option.extentAccessor = 'close';
 
-            var point = fc.series.point();
+            var point = fc.series.point()
+                .xValue(function(d) { return d.date; });
             point.id = util.uid();
             var pointOption = model.menu.option('Point', 'point', point, 'bf-icon-point-series');
             pointOption.option.extentAccessor = 'close';
 
-            var area = fc.series.area();
+            var area = fc.series.area()
+                .xValue(function(d) { return d.date; });
             area.id = util.uid();
             var areaOption = model.menu.option('Area', 'area', area, 'bf-icon-area-series');
             areaOption.option.extentAccessor = 'close';
@@ -2254,6 +2446,7 @@
                     select.enter()
                         .classed('movingAverage', true);
                 })
+                .xValue(function(d) { return d.date; })
                 .yValue(function(d) { return d.movingAverage; });
             movingAverage.id = util.uid();
 
@@ -2272,11 +2465,11 @@
             var indicators = [
                 movingAverageOption,
                 bollingerBandsOption,
-                model.menu.option('Relative Strength Index', 'secondary-rsi',
+                model.menu.option('Relative Strength Index', 'rsi',
                     secondary.rsi(), 'bf-icon-rsi-indicator', false),
-                model.menu.option('MACD', 'secondary-macd',
+                model.menu.option('MACD', 'macd',
                     secondary.macd(), 'bf-icon-macd-indicator', false),
-                model.menu.option('Volume', 'secondary-volume',
+                model.menu.option('Volume', 'volume',
                     secondary.volume(), 'bf-icon-bar-series', false)
             ];
 
@@ -2303,11 +2496,11 @@
         return {
             periods: periods,
             sources: sources,
-            primaryChart: model.chart.primary(products.generated),
-            secondaryChart: model.chart.secondary(products.generated),
+            primaryChart: model.chart.primary(products.generated, sources),
+            secondaryChart: model.chart.secondary(products.generated, sources),
             selectors: initSelectors(),
-            xAxis: model.chart.xAxis(periods.day1),
-            nav: model.chart.nav(),
+            xAxis: model.chart.xAxis(products.generated, periods.day1, sources),
+            nav: model.chart.nav(products.generated, sources),
             navReset: model.chart.navigationReset(),
             headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
             legend: model.chart.legend(products.generated, periods.day1),
@@ -2403,7 +2596,7 @@
 
         var model = initialiseModel();
 
-        var _dataInterface;
+        var _dataInterface = initialiseDataInterface();
 
         var charts = {
             primary: undefined,
@@ -2420,6 +2613,8 @@
         var toastNotifications;
 
         var fetchCoinbaseProducts = false;
+
+        var proportionOfDataToDisplayByDefault = 0.2;
 
         var firstRender = true;
         function renderInternal() {
@@ -2442,7 +2637,7 @@
                 .filter(function(d, i) { return i < charts.secondaries.length; })
                 .each(function(d, i) {
                     d3.select(this)
-                        .attr('class', 'secondary-container ' + charts.secondaries[i].valueString)
+                        .attr('class', 'secondary-container secondary-' + charts.secondaries[i].valueString)
                         .call(charts.secondaries[i].option);
                 });
 
@@ -2551,7 +2746,7 @@
             var data = model.primaryChart.data;
             var dataDomain = fc.util.extent()
                 .fields('date')(data);
-            var navTimeDomain = util.domain.moveToLatest(dataDomain, data, 0.2);
+            var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
             onViewChange(navTimeDomain);
         }
 
@@ -2576,6 +2771,8 @@
             model.secondaryChart.product = product;
             model.legend.product = product;
             model.overlay.selectedProduct = product;
+            model.xAxis.product = product;
+            model.nav.product = product;
         }
 
         function updateModelSelectedPeriod(period) {
@@ -2698,7 +2895,7 @@
             model.overlay.primaryIndicators = model.primaryChart.indicators;
         }
 
-        function updateSecondaryCharts() {
+        function updateSecondaryChartModels() {
             charts.secondaries =
                 model.selectors.indicatorSelector.options.filter(function(option) {
                     return option.isSelected && !option.isPrimary;
@@ -2709,6 +2906,10 @@
             });
 
             model.overlay.secondaryIndicators = charts.secondaries;
+        }
+
+        function updateSecondaryCharts() {
+            updateSecondaryChartModels();
             // TODO: Remove .remove! (could a secondary chart group component manage this?).
             containers.secondaries.selectAll('*').remove();
             updateLayout();
@@ -2761,9 +2962,14 @@
         app.changeQuandlProduct = function(productString) {
             var product = data.product(productString, productString, [model.periods.day1], model.sources.quandl, '.3s');
             var existsInHeadMenuProducts = model.headMenu.products.some(function(p) { return p.id === product.id; });
+            var existsInOverlayProducts = model.overlay.products.some(function(p) { return p.id === product.id; });
 
             if (!existsInHeadMenuProducts) {
                 model.headMenu.products.push(product);
+            }
+
+            if (!existsInOverlayProducts) {
+                model.overlay.products.push(product);
             }
 
             changeProduct(product);
@@ -2771,6 +2977,40 @@
             if (!firstRender) {
                 render();
             }
+        };
+
+        app.proportionOfDataToDisplayByDefault = function(x) {
+            if (!arguments.length) {
+                return proportionOfDataToDisplayByDefault;
+            }
+            proportionOfDataToDisplayByDefault = x;
+            return app;
+        };
+
+        app.indicators = function(x) {
+            if (!arguments.length) {
+                var indicators = [];
+                model.selectors.indicatorSelector.options.forEach(function(option) {
+                    if (option.isSelected) {
+                        indicators.push(option.valueString);
+                    }
+                });
+                return indicators;
+            }
+
+            model.selectors.indicatorSelector.options.forEach(function(indicator) {
+                indicator.isSelected = x.some(function(indicatorValueStringToShow) { return indicatorValueStringToShow === indicator.valueString; });
+            });
+
+            updatePrimaryChartIndicators();
+            if (!firstRender) {
+                updateSecondaryCharts();
+                render();
+            } else {
+                updateSecondaryChartModels();
+            }
+
+            return app;
         };
 
         app.run = function(element) {
@@ -2808,7 +3048,6 @@
             charts.primary = initialisePrimaryChart();
             charts.navbar = initialiseNav();
 
-            _dataInterface = initialiseDataInterface();
             headMenu = initialiseHeadMenu();
             navReset = initialiseNavReset();
             selectors = initialiseSelectors();
@@ -2828,6 +3067,10 @@
 
         fc.util.rebind(app, model.sources.quandl.historicFeed, {
             quandlApiKey: 'apiKey'
+        });
+
+        fc.util.rebind(app, _dataInterface, {
+            periodsOfDataToFetch: 'candlesOfData'
         });
 
         return app;

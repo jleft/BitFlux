@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
 .bf-icon-andrews-pitchfork-tool {
   background: url("bf-icon-sprite-72ad6bfc.svg") no-repeat;
   background-position: 22.55639097744361% 44.44444444444444%;
@@ -7096,6 +7096,8 @@ text {
 
 .cartesian-chart, .multiples-chart {
   overflow: visible;
+  /* see: https://github.com/ScottLogic/d3fc/issues/779 */
+  vertical-align: middle;
 }
 
 .multiples-chart .label {
@@ -7266,7 +7268,8 @@ text {
   stroke-width: 1;
   stroke-dasharray: 3, 3;
 }
-.annotation text {
+.annotation .right-handle text,
+.annotation .top-handle text {
   text-anchor: end;
 }
 
@@ -8435,18 +8438,20 @@ fieldset[disabled] .btn-danger.active {
 #legend #tooltip .value {
   fill: #7B9FA1;
 }
-.y-axis .closeLine text {
+.y-axis .close-line text {
   fill: #FFFFFF;
   font-size: 16px;
   font-weight: 300;
   line-height: 1.5;
 }
-.y-axis .closeLine.tick > path {
+.y-axis .close-line.tick > path {
   stroke: #377EB8;
   fill: #377EB8;
 }
-.plot-area .annotation > line {
+.plot-area .annotation.close-line > line {
   stroke: #377EB8;
+  stroke-dasharray: 4;
+  shape-rendering: crispEdges;
 }
 .secondary-container {
   height: 100%;
@@ -8457,7 +8462,7 @@ fieldset[disabled] .btn-danger.active {
 }
 .secondary-container .annotations .annotation line {
   stroke: #3C4F53;
-  stroke-dasharray: 5px 2px;
+  stroke-dasharray: 8;
 }
 .secondary-container .x-axis path {
   stroke: #3C4F53;
@@ -8911,6 +8916,7 @@ fieldset[disabled] .btn-danger.active {
 }
 #overlay #overlay-primary-container #overlay-primary-head .series-dropdown > .dropdown-toggle {
   width: 50px;
+  padding: 0;
 }
 #overlay #overlay-primary-container #overlay-primary-head .indicator-dropdown > .dropdown-toggle {
   width: 130px;
