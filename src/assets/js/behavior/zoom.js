@@ -30,8 +30,13 @@ export default function(width) {
 
     function translateXZoom(translation) {
         var tx = zoomBehavior.translate()[0];
-        tx += translation;
-        zoomBehavior.translate([tx, 0]);
+
+        if (trackingLatest && tx < 0) {
+            zoomBehavior.translate([0, 0]);
+        } else {
+            tx += translation;
+            zoomBehavior.translate([tx, 0]);
+        }
     }
 
     function resetBehaviour() {
@@ -65,6 +70,7 @@ export default function(width) {
                   }
 
                   if (domain[0].getTime() !== domain[1].getTime()) {
+                      // console.log(domain);
                       dispatch.zoom(domain);
                   } else {
                       // Ensure the user can't zoom-in infinitely, causing the chart to fail to render
