@@ -131,11 +131,9 @@ export default function() {
     function nav(selection) {
         var model = selection.datum();
 
-        var discontinuityProvider = util.discontinuityProvider(model.product.source, model.sources.quandl);
-
-        xScale.discontinuityProvider(discontinuityProvider);
-        maskXScale.discontinuityProvider(discontinuityProvider);
-        viewScale.discontinuityProvider(discontinuityProvider);
+        xScale.discontinuityProvider(model.discontinuity);
+        maskXScale.discontinuityProvider(model.discontinuity);
+        viewScale.discontinuityProvider(model.discontinuity);
 
         createDefs(selection, model.data);
 
@@ -153,7 +151,6 @@ export default function() {
           .yDomain(yExtent);
 
         brush.on('brush', function() {
-            console.log('brushing');
             var brushExtentIsEmpty = xEmpty(brush);
 
             // Hide the bar if the extent is empty

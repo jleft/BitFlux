@@ -259,14 +259,23 @@ export default function() {
         model.nav.data = data;
     }
 
+    function updateDiscontinuity(productSource) {
+        var discontinuity = util.discontinuityProvider(productSource, model.discontinuousSources);
+
+        model.xAxis.discontinuity = discontinuity;
+        model.nav.discontinuity = discontinuity;
+        model.primaryChart.discontinuity = discontinuity;
+        model.secondaryChart.discontinuity = discontinuity;
+    }
+
     function updateModelSelectedProduct(product) {
         model.headMenu.selectedProduct = product;
         model.primaryChart.product = product;
         model.secondaryChart.product = product;
         model.legend.product = product;
         model.overlay.selectedProduct = product;
-        model.xAxis.product = product;
-        model.nav.product = product;
+
+        updateDiscontinuity(product.source);
     }
 
     function updateModelSelectedPeriod(period) {

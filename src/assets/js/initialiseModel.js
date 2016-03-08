@@ -139,18 +139,25 @@ export default function() {
         };
     }
 
+    function initDiscontinuity(productSource) {
+        return util.discontinuityProvider(productSource, discontinuousSources);
+    }
+
     var periods = initPeriods();
     var sources = initSources();
     var products = initProducts();
+    var discontinuousSources = [sources.quandl];
+    var initialDiscontinuity = initDiscontinuity(products.generated.source);
 
     return {
         periods: periods,
         sources: sources,
-        primaryChart: model.chart.primary(products.generated, sources),
-        secondaryChart: model.chart.secondary(products.generated, sources),
+        discontinuousSources: discontinuousSources,
+        primaryChart: model.chart.primary(products.generated, initialDiscontinuity),
+        secondaryChart: model.chart.secondary(products.generated, initialDiscontinuity),
         selectors: initSelectors(),
-        xAxis: model.chart.xAxis(products.generated, periods.day1, sources),
-        nav: model.chart.nav(products.generated, sources),
+        xAxis: model.chart.xAxis(periods.day1, initialDiscontinuity),
+        nav: model.chart.nav(initialDiscontinuity),
         navReset: model.chart.navigationReset(),
         headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
         legend: model.chart.legend(products.generated, periods.day1),

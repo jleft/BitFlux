@@ -1,7 +1,8 @@
 import fc from 'd3fc';
+import skipWeekends from '../scale/discontinuity/skipWeekends';
 
 export default function(productSource, discontinuousSources) {
-    var skipWeekends = false;
+    var skip = false;
 
     if (!Array.isArray(discontinuousSources)) {
         discontinuousSources = [discontinuousSources];
@@ -9,9 +10,9 @@ export default function(productSource, discontinuousSources) {
 
     discontinuousSources.forEach(function(discontinuousSource) {
         if (productSource === discontinuousSource) {
-            skipWeekends = true;
+            skip = true;
         }
     });
 
-    return skipWeekends ? fc.scale.discontinuity.skipWeekends() : fc.scale.discontinuity.identity();
+    return skip ? skipWeekends() : fc.scale.discontinuity.identity();
 }

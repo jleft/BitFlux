@@ -26,7 +26,7 @@ export default function() {
 
     function secondary(selection) {
         selection.each(function(model) {
-            xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+            xScale.discontinuityProvider(model.discontinuity);
 
             var container = d3.select(this)
               .datum(model.data)

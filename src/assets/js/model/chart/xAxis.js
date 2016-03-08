@@ -1,8 +1,7 @@
-export default function(initialProduct, initialPeriod, sources) {
+export default function(initialPeriod, initialDiscontinuity) {
     return {
         viewDomain: [],
         period: initialPeriod,
-        product: initialPeriod,
-        sources: sources
+        discontinuity: initialDiscontinuity
     };
 }
