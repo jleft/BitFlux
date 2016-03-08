@@ -25,7 +25,7 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "d3": "^3.5.12",
-    "d3fc": "^6.0.0",
+    "d3fc": "^7.0.0",
     "jquery": "^2.2.0",
     "seedrandom": "^2.4.2"
   },
