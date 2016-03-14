@@ -1,4 +1,5 @@
 import d3 from 'd3';
+import fc from 'd3fc';
 import centerOnDate from '../../../src/assets/js/util/domain/centerOnDate';
 import makeDatum from '../../helpers/makeDatum';
 
@@ -29,13 +30,13 @@ describe('util/domain/centerOnDate', function() {
     it('should center on a different date contained strictly within the valid range for the domain', function() {
         var centerDate = thursday;
 
-        var centerOnDateDomain = centerOnDate(domain, data, centerDate);
+        var centerOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), domain, data, centerDate);
 
         expect(centerOnDateDomain.length).toEqual(domain.length);
         expect(centerOnDateDomain[0]).toEqual(wednesday);
         expect(centerOnDateDomain[1]).toEqual(friday);
 
-        var shuffledCenterOnDateDomain = centerOnDate(reversedDomain, shuffledData, centerDate);
+        var shuffledCenterOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), reversedDomain, shuffledData, centerDate);
 
         expect(shuffledCenterOnDateDomain.length).toEqual(reversedDomain.length);
         expect(shuffledCenterOnDateDomain[0]).toEqual(wednesday);
@@ -45,13 +46,13 @@ describe('util/domain/centerOnDate', function() {
     it('should be able to center on itself', function() {
         var centerDate = wednesday;
 
-        var centerOnDateDomain = centerOnDate(domain, data, centerDate);
+        var centerOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), domain, data, centerDate);
 
         expect(centerOnDateDomain.length).toEqual(domain.length);
         expect(centerOnDateDomain[0]).toEqual(tuesday);
         expect(centerOnDateDomain[1]).toEqual(thursday);
 
-        var shuffledCenterOnDateDomain = centerOnDate(reversedDomain, shuffledData, centerDate);
+        var shuffledCenterOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), reversedDomain, shuffledData, centerDate);
 
         expect(shuffledCenterOnDateDomain.length).toEqual(reversedDomain.length);
         expect(shuffledCenterOnDateDomain[0]).toEqual(tuesday);
@@ -61,13 +62,13 @@ describe('util/domain/centerOnDate', function() {
     it('should be able to center on the earliest date of the domain', function() {
         var earliestDate = monday;
 
-        var centerOnDateDomain = centerOnDate(domain, data, earliestDate);
+        var centerOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), domain, data, earliestDate);
 
         expect(centerOnDateDomain.length).toEqual(domain.length);
         expect(centerOnDateDomain[0]).toEqual(monday);
         expect(centerOnDateDomain[1]).toEqual(wednesday);
 
-        var shuffledCenterOnDateDomain = centerOnDate(reversedDomain, shuffledData, earliestDate);
+        var shuffledCenterOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), reversedDomain, shuffledData, earliestDate);
 
         expect(shuffledCenterOnDateDomain.length).toEqual(reversedDomain.length);
         expect(shuffledCenterOnDateDomain[0]).toEqual(monday);
@@ -78,13 +79,13 @@ describe('util/domain/centerOnDate', function() {
     it('should be able to center on the latest date of the domain', function() {
         var latestDate = friday;
 
-        var centerOnDateDomain = centerOnDate(domain, data, latestDate);
+        var centerOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), domain, data, latestDate);
 
         expect(centerOnDateDomain.length).toEqual(domain.length);
         expect(centerOnDateDomain[0]).toEqual(wednesday);
         expect(centerOnDateDomain[1]).toEqual(friday);
 
-        var shuffledCenterOnDateDomain = centerOnDate(reversedDomain, shuffledData, latestDate);
+        var shuffledCenterOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), reversedDomain, shuffledData, latestDate);
 
         expect(shuffledCenterOnDateDomain.length).toEqual(reversedDomain.length);
         expect(shuffledCenterOnDateDomain[0]).toEqual(wednesday);
@@ -94,13 +95,13 @@ describe('util/domain/centerOnDate', function() {
     it('should not center on a different date that is not contained within the data domain range', function() {
         var centerDate = d3.time.day.offset(friday, 1);
 
-        var centerOnDateDomain = centerOnDate(domain, data, centerDate);
+        var centerOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), domain, data, centerDate);
 
         expect(centerOnDateDomain.length).toEqual(domain.length);
         expect(centerOnDateDomain[0]).toEqual(tuesday);
         expect(centerOnDateDomain[1]).toEqual(thursday);
 
-        var shuffledCenterOnDateDomain = centerOnDate(reversedDomain, shuffledData, centerDate);
+        var shuffledCenterOnDateDomain = centerOnDate(fc.scale.discontinuity.identity(), reversedDomain, shuffledData, centerDate);
 
         expect(shuffledCenterOnDateDomain.length).toEqual(reversedDomain.length);
         expect(shuffledCenterOnDateDomain[0]).toEqual(tuesday);

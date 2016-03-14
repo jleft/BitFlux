@@ -163,8 +163,11 @@ export default function() {
                 var brushExtentIsEmpty = xEmpty(brush);
                 setHide(selection, false);
                 if (brushExtentIsEmpty) {
-                    dispatch[event.viewChange](util.domain.centerOnDate(viewScale.domain(),
-                        model.data, brush.extent()[0][0]));
+                    dispatch[event.viewChange](util.domain.centerOnDate(
+                        model.discontinuity,
+                        viewScale.domain(),
+                        model.data,
+                        brush.extent()[0][0]));
                 }
             });
 

@@ -1,25 +1,34 @@
 import d3 from 'd3';
 import fc from 'd3fc';
 
-export default function(domain, data, centerDate) {
+export default function(discontinuityProvider, domain, data, centerDate) {
     var dataExtent = fc.util.extent()
-      .fields('date')(data);
-    var domainTimes = domain.map(function(d) { return d.getTime(); });
-    var domainTimeDifference = (d3.max(domainTimes) - d3.min(domainTimes)) / 1000;
+        .fields('date')(data);
+
+    var domainExtent = fc.util.extent()
+        .fields(fc.util.fn.identity)(domain);
+
+    var domainTimeDifference = discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
 
     if (centerDate.getTime() < dataExtent[0] || centerDate.getTime() > dataExtent[1]) {
-        return [new Date(d3.min(domainTimes)), new Date(d3.max(domainTimes))];
+        // TODO: is this tested by unit tests?
+        return domainExtent;
     }
 
-    var centeredDataDomain = [d3.time.second.offset(centerDate, -domainTimeDifference / 2),
-        d3.time.second.offset(centerDate, domainTimeDifference / 2)];
+    var centeredDataDomain = [
+        discontinuityProvider.offset(centerDate, -domainTimeDifference / 2),
+        discontinuityProvider.offset(centerDate, domainTimeDifference / 2)
+    ];
+
     var timeShift = 0;
     if (centeredDataDomain[1].getTime() > dataExtent[1].getTime()) {
-        timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime()) / 1000;
+        timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime());
     } else if (centeredDataDomain[0].getTime() < dataExtent[0].getTime()) {
-        timeShift = (dataExtent[0].getTime() - centeredDataDomain[0].getTime()) / 1000;
+        timeShift = (dataExtent[0].getTime() - centeredDataDomain[0].getTime());
     }
 
-    return [d3.time.second.offset(centeredDataDomain[0], timeShift),
-        d3.time.second.offset(centeredDataDomain[1], timeShift)];
+    return [
+        discontinuityProvider.offset(centeredDataDomain[0], timeShift),
+        discontinuityProvider.offset(centeredDataDomain[1], timeShift)
+    ];
 }
