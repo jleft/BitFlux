@@ -879,16 +879,16 @@
             selection.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
-            // var zoom = zoomBehavior(layoutWidth)
-            //   .scale(viewScale)
-            //   .trackingLatest(model.trackingLatest)
-            //   .allowPan(false)
-            //   .on('zoom', function(domain) {
-            //       dispatch[event.viewChange](domain);
-            //   });
+            var zoom = zoomBehavior(layoutWidth)
+              .scale(viewScale)
+              .trackingLatest(model.trackingLatest)
+              .allowPan(false)
+              .on('zoom', function(domain) {
+                  dispatch[event.viewChange](domain);
+              });
 
-            // selection.select('.plot-area')
-            //   .call(zoom);
+            selection.select('.plot-area')
+              .call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
