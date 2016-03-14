@@ -236,7 +236,11 @@ export default function() {
         var data = model.primaryChart.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
-        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
+        var navTimeDomain = util.domain.moveToLatest(
+            model.primaryChart.discontinuity,
+            dataDomain,
+            data,
+            proportionOfDataToDisplayByDefault);
         onViewChange(navTimeDomain);
     }
 
@@ -313,6 +317,7 @@ export default function() {
                 updateModelData(data);
                 if (model.primaryChart.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
+                        model.primaryChart.discontinuity,
                         model.primaryChart.viewDomain,
                         model.primaryChart.data);
                     onViewChange(newDomain);

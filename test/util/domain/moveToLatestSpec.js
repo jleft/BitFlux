@@ -1,3 +1,4 @@
+import fc from 'd3fc';
 import makeDatum from '../../helpers/makeDatum';
 import moveToLatest from '../../../src/assets/js/util/domain/moveToLatest';
 
@@ -15,13 +16,13 @@ describe('util/domain/moveToLatest', function() {
         var extent = [new Date(1000), new Date(6000)];
         var reversedExtent = [extent[1], extent[0]];
 
-        var moveToLatestExtent = moveToLatest(extent, data);
+        var moveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), extent, data);
 
         expect(moveToLatestExtent.length).toEqual(extent.length);
         expect(moveToLatestExtent[0].getTime()).toEqual(5000);
         expect(moveToLatestExtent[1].getTime()).toEqual(10000);
 
-        var reversedMoveToLatestExtent = moveToLatest(reversedExtent, reversedData);
+        var reversedMoveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), reversedExtent, reversedData);
 
         expect(reversedMoveToLatestExtent.length).toEqual(reversedExtent.length);
         expect(reversedMoveToLatestExtent[0].getTime()).toEqual(5000);
@@ -32,13 +33,13 @@ describe('util/domain/moveToLatest', function() {
         var extent = [new Date(1000), new Date(6000)];
         var reversedExtent = [extent[1], extent[0]];
 
-        var moveToLatestExtent = moveToLatest(extent, data);
+        var moveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), extent, data);
 
         expect(moveToLatestExtent.length).toEqual(extent.length);
         expect(moveToLatestExtent[0].getTime()).toEqual(5000);
         expect(moveToLatestExtent[1].getTime()).toEqual(10000);
 
-        var reversedMoveToLatestExtent = moveToLatest(reversedExtent, reversedData);
+        var reversedMoveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), reversedExtent, reversedData);
 
         expect(reversedMoveToLatestExtent.length).toEqual(reversedExtent.length);
         expect(reversedMoveToLatestExtent[0].getTime()).toEqual(5000);
@@ -49,13 +50,13 @@ describe('util/domain/moveToLatest', function() {
         var extent = [new Date(11000), new Date(16000)];
         var reversedExtent = [extent[1], extent[0]];
 
-        var moveToLatestExtent = moveToLatest(extent, data);
+        var moveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), extent, data);
 
         expect(moveToLatestExtent.length).toEqual(extent.length);
         expect(moveToLatestExtent[0].getTime()).toEqual(5000);
         expect(moveToLatestExtent[1].getTime()).toEqual(10000);
 
-        var reversedMoveToLatestExtent = moveToLatest(reversedExtent, reversedData);
+        var reversedMoveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), reversedExtent, reversedData);
 
         expect(reversedMoveToLatestExtent.length).toEqual(reversedExtent.length);
         expect(reversedMoveToLatestExtent[0].getTime()).toEqual(5000);
@@ -66,13 +67,13 @@ describe('util/domain/moveToLatest', function() {
         var extent = [new Date(1000), new Date(6000)];
         var reversedExtent = [extent[1], extent[0]];
 
-        var moveToLatestExtent = moveToLatest(extent, data, 0.2);
+        var moveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), extent, data, 0.2);
 
         expect(moveToLatestExtent.length).toEqual(extent.length);
         expect(moveToLatestExtent[0].getTime()).toEqual(9000);
         expect(moveToLatestExtent[1].getTime()).toEqual(10000);
 
-        var reversedMoveToLatestExtent = moveToLatest(reversedExtent, reversedData, 0.2);
+        var reversedMoveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), reversedExtent, reversedData, 0.2);
 
         expect(reversedMoveToLatestExtent.length).toEqual(reversedExtent.length);
         expect(reversedMoveToLatestExtent[0].getTime()).toEqual(9000);
@@ -83,13 +84,13 @@ describe('util/domain/moveToLatest', function() {
         var extent = [new Date(1000), new Date(20000)];
         var reversedExtent = [extent[1], extent[0]];
 
-        var moveToLatestExtent = moveToLatest(extent, data);
+        var moveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), extent, data);
 
         expect(moveToLatestExtent.length).toEqual(extent.length);
         expect(moveToLatestExtent[0].getTime()).toEqual(1000);
         expect(moveToLatestExtent[1].getTime()).toEqual(10000);
 
-        var reversedMoveToLatestExtent = moveToLatest(reversedExtent, reversedData);
+        var reversedMoveToLatestExtent = moveToLatest(fc.scale.discontinuity.identity(), reversedExtent, reversedData);
 
         expect(reversedMoveToLatestExtent.length).toEqual(reversedExtent.length);
         expect(reversedMoveToLatestExtent[0].getTime()).toEqual(1000);
