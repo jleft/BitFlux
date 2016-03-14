@@ -1,12 +1,13 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3'), require('d3fc'), require('jquery')) :
-    typeof define === 'function' && define.amd ? define(['d3', 'd3fc', 'jquery'], factory) :
-    (factory(global.d3,global.fc,global.$));
-}(this, function (d3,fc,$) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3'), require('d3fc'), require('jquery'), require('moment')) :
+    typeof define === 'function' && define.amd ? define(['d3', 'd3fc', 'jquery', 'moment'], factory) :
+    (factory(global.d3,global.fc,global.$,global.moment));
+}(this, function (d3,fc,$,moment) { 'use strict';
 
     d3 = 'default' in d3 ? d3['default'] : d3;
     fc = 'default' in fc ? fc['default'] : fc;
     $ = 'default' in $ ? $['default'] : $;
+    moment = 'default' in moment ? moment['default'] : moment;
 
     function centerOnDate(domain, data, centerDate) {
         var dataExtent = fc.util.extent()
@@ -227,7 +228,8 @@
         };
     }
 
-    function skipWeekendsProvider() {
+    // TODO: Temp until merged into d3fc
+    function skipWeekends() {
         var millisPerDay = 24 * 3600 * 1000;
         var millisPerWorkWeek = millisPerDay * 5;
         var millisPerWeek = millisPerDay * 7;
@@ -264,11 +266,37 @@
 
         // returns the number of included milliseconds (i.e. those which do not fall)
         // within discontinuities, along this scale
+        skipWeekends.distanceNew = function(startDate, endDate) {
+            if (startDate > endDate) {
+                var t = startDate;
+                startDate = endDate;
+                endDate = t;
+            }
+
+            startDate = skipWeekends.clampUp(startDate);
+            endDate = skipWeekends.clampDown(endDate);
+
+            var days = d3.time.days(startDate, endDate);
+            var ms = days.filter(function(day) { return !(day.getDay() === 0 || day.getDay() === 6); })
+                .reduce(function(previousValue, day) {
+                    previousValue += (d3.time.day.offset(day, 1) - d3.time.day(day));
+                    return previousValue;
+                }, 0);
+
+            var msBefore = 0;
+            var msAfter = 0;
+            if (days.length) {
+                msBefore = days[0] - startDate;
+                msAfter = endDate - days[days.length - 1];
+            }
+
+            return ms + msBefore + msAfter;
+        };
+
         skipWeekends.distance = function(startDate, endDate) {
             startDate = skipWeekends.clampUp(startDate);
             endDate = skipWeekends.clampDown(endDate);
 
-            // move the start date to the end of week boundary
             var offsetStart = d3.time.saturday.ceil(startDate);
             if (endDate < offsetStart) {
                 return endDate.getTime() - startDate.getTime();
@@ -281,7 +309,7 @@
             var msRemoved = offsetEnd.getTime() - endDate.getTime();
 
             // determine how many weeks there are between these two dates
-            var weeks = (offsetEnd.getTime() - offsetStart.getTime()) / millisPerWeek;
+            var weeks = Math.round((offsetEnd.getTime() - offsetStart.getTime()) / millisPerWeek);
 
             return weeks * millisPerWorkWeek + msAdded - msRemoved;
         };
@@ -291,7 +319,6 @@
             var remainingms = ms;
 
             if (remainingms < 0) {
-                //
                 var startOfWeek = d3.time.monday.floor(date);
                 remainingms -= (startOfWeek.getTime() - date.getTime());
 
@@ -301,12 +328,10 @@
 
                 date = d3.time.day.offset(startOfWeek, -2);
 
-                // add all of the complete weeks to the date
                 var weeks = Math.floor(remainingms / millisPerWorkWeek);
                 date = d3.time.day.offset(date, weeks * 7);
                 remainingms -= weeks * millisPerWorkWeek;
 
-                // add the remaining time
                 date = new Date(date.getTime() + remainingms);
                 date = d3.time.day.offset(date, 2);
                 return date;
@@ -341,7 +366,8 @@
     }
 
     function discontinuityProvider(productSource, discontinuousSources) {
-        var skipWeekends = false;
+        // return skipWeekends();
+        var skip = false;
 
         if (!Array.isArray(discontinuousSources)) {
             discontinuousSources = [discontinuousSources];
@@ -349,12 +375,12 @@
 
         discontinuousSources.forEach(function(discontinuousSource) {
             if (productSource === discontinuousSource) {
-                skipWeekends = true;
+                skip = true;
             }
         });
 
-        return skipWeekends ? skipWeekendsProvider() : skipWeekendsProvider();
-        // return skipWeekends ? fc.scale.discontinuity.skipWeekends() : fc.scale.discontinuity.identity();
+        // return skip ? skipWeekends() : identity();
+        return skip ? skipWeekends() : skipWeekends();
     }
 
     var util = {
@@ -398,25 +424,9 @@
         var allowZoom = true;
         var trackingLatest = true;
 
-        function controlPan(zoomExtent) {
-            // Don't pan off sides
-            if (zoomExtent[0] >= 0) {
-                return -zoomExtent[0];
-            } else if (zoomExtent[1] <= 0) {
-                return -zoomExtent[1];
-            }
-            return 0;
-        }
-
         function controlZoom(zoomExtent) {
             // If zooming, and about to pan off screen, do nothing
             return (zoomExtent[0] > 0 && zoomExtent[1] < 0);
-        }
-
-        function translateXZoom(translation) {
-            var tx = zoomBehavior.translate()[0];
-            tx += translation;
-            zoomBehavior.translate([tx, 0]);
         }
 
         function resetBehaviour() {
@@ -424,19 +434,28 @@
             zoomBehavior.scale(1);
         }
 
+        function clamp(value, min, max) {
+            return Math.min(Math.max(value, min), max);
+        }
+
         function zoom(selection) {
 
             var xExtent = fc.util.extent()
               .fields('date')(selection.datum().data);
 
+            var min = scale(xExtent[0]);
+            var max = scale(xExtent[1]);
+            var zoomPixelExtent = [min, max - width];
+
             zoomBehavior.x(scale)
               .on('zoom', function() {
-                  var min = scale(xExtent[0]);
-                  var max = scale(xExtent[1]);
+                  var t = d3.event.translate,
+                      tx = t[0];
 
-                  var maxDomainViewed = controlZoom([min, max - width]);
-                  var panningRestriction = controlPan([min, max - width]);
-                  translateXZoom(panningRestriction);
+                  var maxDomainViewed = controlZoom(zoomPixelExtent);
+
+                  tx = clamp(tx, -zoomPixelExtent[1], -zoomPixelExtent[0]);
+                  zoomBehavior.translate([tx, 0]);
 
                   var panned = (zoomBehavior.scale() === 1);
                   var zoomed = (zoomBehavior.scale() !== 1);
@@ -523,7 +542,7 @@
 
         function secondary(selection) {
             selection.each(function(model) {
-                xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+                xScale.discontinuityProvider(model.discontinuity);
 
                 var container = d3.select(this)
                   .datum(model.data)
@@ -723,7 +742,8 @@
         var line = fc.series.line()
           .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.close; });
-        var brush = d3.svg.brush();
+        var brush = d3.svg.brush()
+            .clamp([true, true]);
         var navMulti = fc.series.multi()
           .series([area, line, brush])
           .decorate(function(selection) {
@@ -818,11 +838,9 @@
         function nav(selection) {
             var model = selection.datum();
 
-            var discontinuityProvider = util.discontinuityProvider(model.product.source, model.sources.quandl);
-
-            xScale.discontinuityProvider(discontinuityProvider);
-            maskXScale.discontinuityProvider(discontinuityProvider);
-            viewScale.discontinuityProvider(discontinuityProvider);
+            xScale.discontinuityProvider(model.discontinuity);
+            maskXScale.discontinuityProvider(model.discontinuity);
+            viewScale.discontinuityProvider(model.discontinuity);
 
             createDefs(selection, model.data);
 
@@ -861,16 +879,16 @@
             selection.call(navChart);
 
             // Allow to zoom using mouse, but disable panning
-            var zoom = zoomBehavior(layoutWidth)
-              .scale(viewScale)
-              .trackingLatest(model.trackingLatest)
-              .allowPan(false)
-              .on('zoom', function(domain) {
-                  dispatch[event.viewChange](domain);
-              });
+            // var zoom = zoomBehavior(layoutWidth)
+            //   .scale(viewScale)
+            //   .trackingLatest(model.trackingLatest)
+            //   .allowPan(false)
+            //   .on('zoom', function(domain) {
+            //       dispatch[event.viewChange](domain);
+            //   });
 
-            selection.select('.plot-area')
-              .call(zoom);
+            // selection.select('.plot-area')
+            //   .call(zoom);
         }
 
         d3.rebind(nav, dispatch, 'on');
@@ -945,7 +963,7 @@
             var model = selection.datum();
             xScale.domain(model.viewDomain);
 
-            xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+            xScale.discontinuityProvider(model.discontinuity);
 
             preventTicksMoreFrequentThanPeriod(model.period);
             selection.call(xAxis);
@@ -1226,7 +1244,7 @@
 
             primaryChart.xDomain(model.viewDomain);
 
-            xScale.discontinuityProvider(util.discontinuityProvider(model.product.source, model.sources.quandl));
+            xScale.discontinuityProvider(model.discontinuity);
 
             crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
             updateCrosshairDecorate(model.data);
@@ -2006,13 +2024,12 @@
         };
     }
 
-    function nav$1(initialProduct, sources) {
+    function nav$1(initialDiscontinuity) {
         return {
             data: [],
             viewDomain: [],
             trackingLatest: true,
-            product: initialProduct,
-            sources: sources
+            discontinuity: initialDiscontinuity
         };
     }
 
@@ -2022,13 +2039,13 @@
         };
     }
 
-    function primary$1(initialProduct, sources) {
+    function primary$1(initialProduct, initialDiscontinuity) {
         var model = {
             data: [],
             trackingLatest: true,
             viewDomain: [],
             selectorsChanged: true,
-            sources: sources
+            discontinuity: initialDiscontinuity
         };
 
         var _product = initialProduct;
@@ -2073,22 +2090,21 @@
         return model;
     }
 
-    function secondary$1(initialProduct, sources) {
+    function secondary$1(initialProduct, initialDiscontinuity) {
         return {
             data: [],
             viewDomain: [],
             trackingLatest: true,
             product: initialProduct,
-            sources: sources
+            discontinuity: initialDiscontinuity
         };
     }
 
-    function xAxis$1(initialProduct, initialPeriod, sources) {
+    function xAxis$1(initialPeriod, initialDiscontinuity) {
         return {
             viewDomain: [],
             period: initialPeriod,
-            product: initialPeriod,
-            sources: sources
+            discontinuity: initialDiscontinuity
         };
     }
 
@@ -2121,7 +2137,7 @@
 
     function dataGeneratorAdaptor() {
 
-        var dataGenerator = fc.data.random.financial().filter(fc.data.random.filter.skipWeekends()),
+        var dataGenerator = fc.data.random.financial(),
             allowedPeriods = [60 * 60 * 24],
             candles,
             end,
@@ -2129,9 +2145,12 @@
             product = null;
 
         var dataGeneratorAdaptor = function(cb) {
+            dataGenerator.filter(fc.data.random.filter.skipWeekends());
             end.setHours(0, 0, 0, 0);
             var millisecondsPerDay = 24 * 60 * 60 * 1000;
-            dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay));
+            end = new Date(2016, 2, 11);
+            candles = 200;
+            dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay)); // TODO: use d3 time to offset
 
             var data = dataGenerator(candles);
             cb(null, data);
@@ -2489,18 +2508,25 @@
             };
         }
 
+        function initDiscontinuity(productSource) {
+            return util.discontinuityProvider(productSource, discontinuousSources);
+        }
+
         var periods = initPeriods();
         var sources = initSources();
         var products = initProducts();
+        var discontinuousSources = [sources.quandl];
+        var initialDiscontinuity = initDiscontinuity(products.generated.source);
 
         return {
             periods: periods,
             sources: sources,
-            primaryChart: model.chart.primary(products.generated, sources),
-            secondaryChart: model.chart.secondary(products.generated, sources),
+            discontinuousSources: discontinuousSources,
+            primaryChart: model.chart.primary(products.generated, initialDiscontinuity),
+            secondaryChart: model.chart.secondary(products.generated, initialDiscontinuity),
             selectors: initSelectors(),
-            xAxis: model.chart.xAxis(products.generated, periods.day1, sources),
-            nav: model.chart.nav(products.generated, sources),
+            xAxis: model.chart.xAxis(periods.day1, initialDiscontinuity),
+            nav: model.chart.nav(initialDiscontinuity),
             navReset: model.chart.navigationReset(),
             headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
             legend: model.chart.legend(products.generated, periods.day1),
@@ -2765,14 +2791,23 @@
             model.nav.data = data;
         }
 
+        function updateDiscontinuity(productSource) {
+            var discontinuity = util.discontinuityProvider(productSource, model.discontinuousSources);
+
+            model.xAxis.discontinuity = discontinuity;
+            model.nav.discontinuity = discontinuity;
+            model.primaryChart.discontinuity = discontinuity;
+            model.secondaryChart.discontinuity = discontinuity;
+        }
+
         function updateModelSelectedProduct(product) {
             model.headMenu.selectedProduct = product;
             model.primaryChart.product = product;
             model.secondaryChart.product = product;
             model.legend.product = product;
             model.overlay.selectedProduct = product;
-            model.xAxis.product = product;
-            model.nav.product = product;
+
+            updateDiscontinuity(product.source);
         }
 
         function updateModelSelectedPeriod(period) {
@@ -3090,6 +3125,23 @@
 
     BitFlux.app()
         .fetchCoinbaseProducts(true)
+        .quandlApiKey(null)
         .run('#app-container');
+
+
+    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 8)));
+    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 6)));
+    // console.log(skipWeekends().distance(new Date(2015, 9, 24), new Date(2015, 9, 25)));
+    // console.log(skipWeekends().distance(new Date(2015, 9, 25), new Date(2015, 9, 26)));
+    // console.log(skipWeekends().distance(new Date(2015, 9, 26), new Date(2015, 9, 27)));
+    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 5)));
+    // console.log(skipWeekends().distance(new Date(2015, 9, 23), new Date(2015, 9, 26)));
+    // console.log(skipWeekends().distance(new Date(2015, 9, 1), new Date(2015, 9, 30)));
+    // console.log(skipWeekends().distanceOld(new Date(2015, 9, 1), new Date(2015, 9, 30)));
+    //
+    // var startMoment = moment(new Date(2015, 9, 1));
+    // var endMoment = moment(new Date(2015, 9, 30));
+    // var distance = endMoment.diff(startMoment);
+    // console.log(distance);
 
 }));
