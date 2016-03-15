@@ -543,7 +543,7 @@
                   });
 
                 container.select('.plot-area-container')
-                  .datum({data: selection.datum()})
+                  .datum(model)
                   .call(zoom);
             });
         }
