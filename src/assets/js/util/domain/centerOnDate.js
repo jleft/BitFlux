@@ -21,9 +21,9 @@ export default function(discontinuityProvider, domain, data, centerDate) {
 
     var timeShift = 0;
     if (centeredDataDomain[1].getTime() > dataExtent[1].getTime()) {
-        timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime());
+        timeShift = discontinuityProvider.distance(centeredDataDomain[1], dataExtent[1]);
     } else if (centeredDataDomain[0].getTime() < dataExtent[0].getTime()) {
-        timeShift = (dataExtent[0].getTime() - centeredDataDomain[0].getTime());
+        timeShift = discontinuityProvider.distance(centeredDataDomain[0], dataExtent[0]);
     }
 
     return [
