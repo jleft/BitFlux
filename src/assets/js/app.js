@@ -264,7 +264,7 @@ export default function() {
     }
 
     function updateDiscontinuityProvider(productSource) {
-        var discontinuityProvider = util.discontinuityProvider(productSource, model.discontinuousSources);
+        var discontinuityProvider = productSource.discontinuityProvider;
 
         model.xAxis.discontinuityProvider = discontinuityProvider;
         model.nav.discontinuityProvider = discontinuityProvider;

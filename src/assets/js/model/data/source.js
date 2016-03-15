@@ -1,8 +1,9 @@
-export default function(historicFeed, historicNotificationFormatter, streamingFeed, streamingNotificationFormatter) {
+export default function(historicFeed, historicNotificationFormatter, streamingFeed, streamingNotificationFormatter, discontinuityProvider) {
     return {
         historicFeed: historicFeed,
         historicNotificationFormatter: historicNotificationFormatter,
         streamingFeed: streamingFeed,
-        streamingNotificationFormatter: streamingNotificationFormatter
+        streamingNotificationFormatter: streamingNotificationFormatter,
+        discontinuityProvider: discontinuityProvider
     };
 }
