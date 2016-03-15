@@ -237,7 +237,7 @@ export default function() {
         var dataDomain = fc.util.extent()
             .fields('date')(data);
         var navTimeDomain = util.domain.moveToLatest(
-            model.primaryChart.discontinuity,
+            model.primaryChart.discontinuityProvider,
             dataDomain,
             data,
             proportionOfDataToDisplayByDefault);
@@ -263,13 +263,13 @@ export default function() {
         model.nav.data = data;
     }
 
-    function updateDiscontinuity(productSource) {
-        var discontinuity = util.discontinuityProvider(productSource, model.discontinuousSources);
+    function updateDiscontinuityProvider(productSource) {
+        var discontinuityProvider = util.discontinuityProvider(productSource, model.discontinuousSources);
 
-        model.xAxis.discontinuity = discontinuity;
-        model.nav.discontinuity = discontinuity;
-        model.primaryChart.discontinuity = discontinuity;
-        model.secondaryChart.discontinuity = discontinuity;
+        model.xAxis.discontinuityProvider = discontinuityProvider;
+        model.nav.discontinuityProvider = discontinuityProvider;
+        model.primaryChart.discontinuityProvider = discontinuityProvider;
+        model.secondaryChart.discontinuityProvider = discontinuityProvider;
     }
 
     function updateModelSelectedProduct(product) {
@@ -279,7 +279,7 @@ export default function() {
         model.legend.product = product;
         model.overlay.selectedProduct = product;
 
-        updateDiscontinuity(product.source);
+        updateDiscontinuityProvider(product.source);
     }
 
     function updateModelSelectedPeriod(period) {
@@ -317,7 +317,7 @@ export default function() {
                 updateModelData(data);
                 if (model.primaryChart.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
-                        model.primaryChart.discontinuity,
+                        model.primaryChart.discontinuityProvider,
                         model.primaryChart.viewDomain,
                         model.primaryChart.data);
                     onViewChange(newDomain);

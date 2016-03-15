@@ -2,13 +2,13 @@ import candlestickSeries from '../../series/candlestick';
 import option from '../menu/option';
 import util from '../../util/util';
 
-export default function(initialProduct, initialDiscontinuity) {
+export default function(initialProduct, initialDiscontinuityProvider) {
     var model = {
         data: [],
         trackingLatest: true,
         viewDomain: [],
         selectorsChanged: true,
-        discontinuity: initialDiscontinuity
+        discontinuityProvider: initialDiscontinuityProvider
     };
 
     var _product = initialProduct;

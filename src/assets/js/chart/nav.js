@@ -131,9 +131,9 @@ export default function() {
     function nav(selection) {
         var model = selection.datum();
 
-        xScale.discontinuityProvider(model.discontinuity);
-        maskXScale.discontinuityProvider(model.discontinuity);
-        viewScale.discontinuityProvider(model.discontinuity);
+        xScale.discontinuityProvider(model.discontinuityProvider);
+        maskXScale.discontinuityProvider(model.discontinuityProvider);
+        viewScale.discontinuityProvider(model.discontinuityProvider);
 
         createDefs(selection, model.data);
 
@@ -164,7 +164,7 @@ export default function() {
                 setHide(selection, false);
                 if (brushExtentIsEmpty) {
                     dispatch[event.viewChange](util.domain.centerOnDate(
-                        model.discontinuity,
+                        model.discontinuityProvider,
                         viewScale.domain(),
                         model.data,
                         brush.extent()[0][0]));

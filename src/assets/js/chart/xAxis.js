@@ -22,7 +22,7 @@ export default function() {
         var model = selection.datum();
         xScale.domain(model.viewDomain);
 
-        xScale.discontinuityProvider(model.discontinuity);
+        xScale.discontinuityProvider(model.discontinuityProvider);
 
         preventTicksMoreFrequentThanPeriod(model.period);
         selection.call(xAxis);

@@ -62,7 +62,7 @@ export default function(width) {
                       domain = xExtent;
                   } else if (zoomed && trackingLatest) {
                       domain = util.domain.moveToLatest(
-                          selection.datum().discontinuity,
+                          selection.datum().discontinuityProvider,
                           domain,
                           selection.datum().data);
                   }

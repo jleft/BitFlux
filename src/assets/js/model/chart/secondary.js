@@ -1,9 +1,9 @@
-export default function(initialProduct, initialDiscontinuity) {
+export default function(initialProduct, initialDiscontinuityProvider) {
     return {
         data: [],
         viewDomain: [],
         trackingLatest: true,
         product: initialProduct,
-        discontinuity: initialDiscontinuity
+        discontinuityProvider: initialDiscontinuityProvider
     };
 }
