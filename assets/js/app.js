@@ -422,6 +422,13 @@
             return Math.min(Math.max(value, min), max);
         }
 
+        function clampDomain(domain, totalXExtent) {
+            var clampedDomain = [];
+            clampedDomain[0] = d3.max([totalXExtent[0], domain[0]]);
+            clampedDomain[1] = d3.min([totalXExtent[1], domain[1]]);
+            return clampedDomain;
+        }
+
         function zoom(selection) {
 
             var xExtent = fc.util.extent()
@@ -454,6 +461,8 @@
                               domain,
                               selection.datum().data);
                       }
+
+                      domain = clampDomain(domain, xExtent);
 
                       if (domain[0].getTime() !== domain[1].getTime()) {
                           dispatch.zoom(domain);
