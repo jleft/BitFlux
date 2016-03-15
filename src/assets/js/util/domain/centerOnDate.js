@@ -11,7 +11,6 @@ export default function(discontinuityProvider, domain, data, centerDate) {
     var domainTimeDifference = discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
 
     if (centerDate.getTime() < dataExtent[0] || centerDate.getTime() > dataExtent[1]) {
-        // TODO: is this tested by unit tests?
         return domainExtent;
     }
 
