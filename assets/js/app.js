@@ -1,35 +1,43 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3'), require('d3fc'), require('jquery'), require('moment')) :
-    typeof define === 'function' && define.amd ? define(['d3', 'd3fc', 'jquery', 'moment'], factory) :
-    (factory(global.d3,global.fc,global.$,global.moment));
-}(this, function (d3,fc,$,moment) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('d3'), require('d3fc'), require('jquery')) :
+    typeof define === 'function' && define.amd ? define(['d3', 'd3fc', 'jquery'], factory) :
+    (factory(global.d3,global.fc,global.$));
+}(this, function (d3,fc,$) { 'use strict';
 
     d3 = 'default' in d3 ? d3['default'] : d3;
     fc = 'default' in fc ? fc['default'] : fc;
     $ = 'default' in $ ? $['default'] : $;
-    moment = 'default' in moment ? moment['default'] : moment;
 
-    function centerOnDate(domain, data, centerDate) {
+    function centerOnDate(discontinuityProvider, domain, data, centerDate) {
         var dataExtent = fc.util.extent()
-          .fields('date')(data);
-        var domainTimes = domain.map(function(d) { return d.getTime(); });
-        var domainTimeDifference = (d3.max(domainTimes) - d3.min(domainTimes)) / 1000;
+            .fields('date')(data);
+
+        var domainExtent = fc.util.extent()
+            .fields(fc.util.fn.identity)(domain);
+
+        var domainTimeDifference = discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
 
         if (centerDate.getTime() < dataExtent[0] || centerDate.getTime() > dataExtent[1]) {
-            return [new Date(d3.min(domainTimes)), new Date(d3.max(domainTimes))];
+            // TODO: is this tested by unit tests?
+            return domainExtent;
         }
 
-        var centeredDataDomain = [d3.time.second.offset(centerDate, -domainTimeDifference / 2),
-            d3.time.second.offset(centerDate, domainTimeDifference / 2)];
+        var centeredDataDomain = [
+            discontinuityProvider.offset(centerDate, -domainTimeDifference / 2),
+            discontinuityProvider.offset(centerDate, domainTimeDifference / 2)
+        ];
+
         var timeShift = 0;
         if (centeredDataDomain[1].getTime() > dataExtent[1].getTime()) {
-            timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime()) / 1000;
+            timeShift = (dataExtent[1].getTime() - centeredDataDomain[1].getTime());
         } else if (centeredDataDomain[0].getTime() < dataExtent[0].getTime()) {
-            timeShift = (dataExtent[0].getTime() - centeredDataDomain[0].getTime()) / 1000;
+            timeShift = (dataExtent[0].getTime() - centeredDataDomain[0].getTime());
         }
 
-        return [d3.time.second.offset(centeredDataDomain[0], timeShift),
-            d3.time.second.offset(centeredDataDomain[1], timeShift)];
+        return [
+            discontinuityProvider.offset(centeredDataDomain[0], timeShift),
+            discontinuityProvider.offset(centeredDataDomain[1], timeShift)
+        ];
     }
 
     function filterDataInDateRange(domain, data) {
@@ -49,17 +57,20 @@
         return filteredData;
     }
 
-    function moveToLatest(domain, data, ratio) {
-        if (arguments.length < 3) {
+    function moveToLatest(discontinuityProvider, domain, data, ratio) {
+        if (arguments.length < 4) {
             ratio = 1;
         }
         var dataExtent = fc.util.extent()
-          .fields('date')(data);
-        var dataTimeExtent = (dataExtent[1].getTime() - dataExtent[0].getTime()) / 1000;
-        var domainTimes = domain.map(function(d) { return d.getTime(); });
-        var scaledDomainTimeDifference = ratio * (d3.max(domainTimes) - d3.min(domainTimes)) / 1000;
+            .fields('date')(data);
+
+        var domainExtent = fc.util.extent()
+            .fields(fc.util.fn.identity)(domain);
+
+        var dataTimeExtent = discontinuityProvider.distance(dataExtent[0], dataExtent[1]);
+        var scaledDomainTimeDifference = ratio * discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
         var scaledLiveDataDomain = scaledDomainTimeDifference < dataTimeExtent ?
-          [d3.time.second.offset(dataExtent[1], -scaledDomainTimeDifference), dataExtent[1]] : dataExtent;
+          [discontinuityProvider.offset(dataExtent[1], -scaledDomainTimeDifference), dataExtent[1]] : dataExtent;
         return scaledLiveDataDomain;
     }
 
@@ -266,37 +277,11 @@
 
         // returns the number of included milliseconds (i.e. those which do not fall)
         // within discontinuities, along this scale
-        skipWeekends.distanceNew = function(startDate, endDate) {
-            if (startDate > endDate) {
-                var t = startDate;
-                startDate = endDate;
-                endDate = t;
-            }
-
-            startDate = skipWeekends.clampUp(startDate);
-            endDate = skipWeekends.clampDown(endDate);
-
-            var days = d3.time.days(startDate, endDate);
-            var ms = days.filter(function(day) { return !(day.getDay() === 0 || day.getDay() === 6); })
-                .reduce(function(previousValue, day) {
-                    previousValue += (d3.time.day.offset(day, 1) - d3.time.day(day));
-                    return previousValue;
-                }, 0);
-
-            var msBefore = 0;
-            var msAfter = 0;
-            if (days.length) {
-                msBefore = days[0] - startDate;
-                msAfter = endDate - days[days.length - 1];
-            }
-
-            return ms + msBefore + msAfter;
-        };
-
         skipWeekends.distance = function(startDate, endDate) {
             startDate = skipWeekends.clampUp(startDate);
             endDate = skipWeekends.clampDown(endDate);
 
+            // move the start date to the end of week boundary
             var offsetStart = d3.time.saturday.ceil(startDate);
             if (endDate < offsetStart) {
                 return endDate.getTime() - startDate.getTime();
@@ -366,7 +351,6 @@
     }
 
     function discontinuityProvider(productSource, discontinuousSources) {
-        // return skipWeekends();
         var skip = false;
 
         if (!Array.isArray(discontinuousSources)) {
@@ -379,8 +363,8 @@
             }
         });
 
-        // return skip ? skipWeekends() : identity();
-        return skip ? skipWeekends() : skipWeekends();
+        // return skip ? skipWeekends() : fc.scale.discontinuity.identity();
+        return skipWeekends();
     }
 
     var util = {
@@ -465,7 +449,10 @@
                       if (maxDomainViewed) {
                           domain = xExtent;
                       } else if (zoomed && trackingLatest) {
-                          domain = util.domain.moveToLatest(domain, selection.datum().data);
+                          domain = util.domain.moveToLatest(
+                              selection.datum().discontinuity,
+                              domain,
+                              selection.datum().data);
                       }
 
                       if (domain[0].getTime() !== domain[1].getTime()) {
@@ -742,8 +729,7 @@
         var line = fc.series.line()
           .xValue(function(d) { return d.date; })
           .yValue(function(d) { return d.close; });
-        var brush = d3.svg.brush()
-            .clamp([true, true]);
+        var brush = d3.svg.brush();
         var navMulti = fc.series.multi()
           .series([area, line, brush])
           .decorate(function(selection) {
@@ -870,8 +856,11 @@
                     var brushExtentIsEmpty = xEmpty(brush);
                     setHide(selection, false);
                     if (brushExtentIsEmpty) {
-                        dispatch[event.viewChange](util.domain.centerOnDate(viewScale.domain(),
-                            model.data, brush.extent()[0][0]));
+                        dispatch[event.viewChange](util.domain.centerOnDate(
+                            model.discontinuity,
+                            viewScale.domain(),
+                            model.data,
+                            brush.extent()[0][0]));
                     }
                 });
 
@@ -2137,7 +2126,7 @@
 
     function dataGeneratorAdaptor() {
 
-        var dataGenerator = fc.data.random.financial(),
+        var dataGenerator = fc.data.random.financial().filter(fc.data.random.filter.skipWeekends()),
             allowedPeriods = [60 * 60 * 24],
             candles,
             end,
@@ -2145,12 +2134,10 @@
             product = null;
 
         var dataGeneratorAdaptor = function(cb) {
-            dataGenerator.filter(fc.data.random.filter.skipWeekends());
             end.setHours(0, 0, 0, 0);
             var millisecondsPerDay = 24 * 60 * 60 * 1000;
             end = new Date(2016, 2, 11);
-            candles = 200;
-            dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay)); // TODO: use d3 time to offset
+            dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay));
 
             var data = dataGenerator(candles);
             cb(null, data);
@@ -2772,7 +2759,11 @@
             var data = model.primaryChart.data;
             var dataDomain = fc.util.extent()
                 .fields('date')(data);
-            var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
+            var navTimeDomain = util.domain.moveToLatest(
+                model.primaryChart.discontinuity,
+                dataDomain,
+                data,
+                proportionOfDataToDisplayByDefault);
             onViewChange(navTimeDomain);
         }
 
@@ -2845,6 +2836,7 @@
                     updateModelData(data);
                     if (model.primaryChart.trackingLatest) {
                         var newDomain = util.domain.moveToLatest(
+                            model.primaryChart.discontinuity,
                             model.primaryChart.viewDomain,
                             model.primaryChart.data);
                         onViewChange(newDomain);
@@ -3125,23 +3117,6 @@
 
     BitFlux.app()
         .fetchCoinbaseProducts(true)
-        .quandlApiKey(null)
         .run('#app-container');
-
-
-    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 8)));
-    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 6)));
-    // console.log(skipWeekends().distance(new Date(2015, 9, 24), new Date(2015, 9, 25)));
-    // console.log(skipWeekends().distance(new Date(2015, 9, 25), new Date(2015, 9, 26)));
-    // console.log(skipWeekends().distance(new Date(2015, 9, 26), new Date(2015, 9, 27)));
-    // console.log(skipWeekends().distance(new Date(2016, 4, 5), new Date(2016, 4, 5)));
-    // console.log(skipWeekends().distance(new Date(2015, 9, 23), new Date(2015, 9, 26)));
-    // console.log(skipWeekends().distance(new Date(2015, 9, 1), new Date(2015, 9, 30)));
-    // console.log(skipWeekends().distanceOld(new Date(2015, 9, 1), new Date(2015, 9, 30)));
-    //
-    // var startMoment = moment(new Date(2015, 9, 1));
-    // var endMoment = moment(new Date(2015, 9, 30));
-    // var distance = endMoment.diff(startMoment);
-    // console.log(distance);
 
 }));
