@@ -86,6 +86,8 @@ export default function() {
 
     var _dataInterface = initialiseDataInterface();
 
+    var externalHistoricFeedErrorCallback;
+
     var charts = {
         primary: undefined,
         secondaries: [],
@@ -240,10 +242,14 @@ export default function() {
 
     function loading(isLoading, error) {
         var spinner = '<div class="spinner"></div>';
-        var errorMessage = '<div class="content alert alert-info">' + error + '</div>';
+        var obscure = arguments.length > 1 || isLoading;
 
+        var errorMessage = '';
+        if (error && error.length) {
+            errorMessage = '<div class="content alert alert-info">' + error + '</div>';
+        }
         containers.app.select('#loading-status-message')
-            .classed('hidden', !(isLoading || error))
+            .classed('hidden', !obscure)
             .html(error ? errorMessage : spinner);
     }
 
@@ -309,21 +315,26 @@ export default function() {
                 updateLayout();
             })
             .on(event.historicFeedError, function(err, source) {
-                loading(false, 'Error loading data. Please make your selection again, or refresh the page.');
-                var responseText = '';
-                try {
-                    var responseObject = JSON.parse(err.responseText);
-                    var formattedMessage = source.historicNotificationFormatter(responseObject);
-                    if (formattedMessage) {
-                        responseText = '. ' + formattedMessage;
+                if (externalHistoricFeedErrorCallback) {
+                    var error = externalHistoricFeedErrorCallback(err) || true;
+                    loading(false, error);
+                } else {
+                    loading(false, 'Error loading data. Please make your selection again, or refresh the page.');
+                    var responseText = '';
+                    try {
+                        var responseObject = JSON.parse(err.responseText);
+                        var formattedMessage = source.historicNotificationFormatter(responseObject);
+                        if (formattedMessage) {
+                            responseText = '. ' + formattedMessage;
+                        }
+                    } catch (e) {
+                        responseText = '';
                     }
-                } catch (e) {
-                    responseText = '';
-                }
-                var statusText = err.statusText || 'Unknown reason.';
-                var message = 'Error getting historic data: ' + statusText + responseText;
+                    var statusText = err.statusText || 'Unknown reason.';
+                    var message = 'Error getting historic data: ' + statusText + responseText;
 
-                addNotification(message);
+                    addNotification(message);
+                }
                 render();
             })
             .on(event.streamingFeedError, onStreamingFeedCloseOrError)
@@ -470,6 +481,14 @@ export default function() {
             return proportionOfDataToDisplayByDefault;
         }
         proportionOfDataToDisplayByDefault = x;
+        return app;
+    };
+
+    app.historicFeedErrorCallback = function(x) {
+        if (!arguments.length) {
+            return externalHistoricFeedErrorCallback;
+        }
+        externalHistoricFeedErrorCallback = x;
         return app;
     };
 
