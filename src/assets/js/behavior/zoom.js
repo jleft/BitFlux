@@ -27,10 +27,17 @@ export default function(width) {
         return Math.min(Math.max(value, min), max);
     }
 
-    function clampDomain(domain, totalXExtent) {
-        var clampedDomain = [];
-        clampedDomain[0] = d3.max([totalXExtent[0], domain[0]]);
-        clampedDomain[1] = d3.min([totalXExtent[1], domain[1]]);
+    function clampDomain(domain, data, totalXExtent) {
+        var clampedDomain = domain;
+
+        if (scale(data[0].date) > 0) {
+            clampedDomain[0] = scale.invert(scale(domain[0]) + scale(data[0].date));
+            clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
+        }
+
+        clampedDomain[0] = d3.max([totalXExtent[0], clampedDomain[0]]);
+        clampedDomain[1] = d3.min([totalXExtent[1], clampedDomain[1]]);
+
         return clampedDomain;
     }
 
@@ -67,7 +74,7 @@ export default function(width) {
                           selection.datum().data);
                   }
 
-                  domain = clampDomain(domain, xExtent);
+                  domain = clampDomain(domain, selection.datum().data, xExtent);
 
                   if (domain[0].getTime() !== domain[1].getTime()) {
                       dispatch.zoom(domain);
