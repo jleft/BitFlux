@@ -1,6 +1,14 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.4.0] - 16-3-2016
+### Added
+- Option to set historic feed error callback, when using BitFlux as a module
+- A weekend discontinuity provider (not currently used)
+
+### Changed
+- d3fc dependency to 7.0.0
+
 ## [1.3.0] - 3-3-2016
 ### Changed
 - Quandl data source uses WIKI database, rather than YAHOO
