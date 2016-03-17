@@ -31,7 +31,6 @@ export default function(width) {
         var clampedDomain = domain;
 
         if (scale(data[0].date) > 0) {
-            clampedDomain[0] = scale.invert(scale(domain[0]) + scale(data[0].date));
             clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
         }
 
