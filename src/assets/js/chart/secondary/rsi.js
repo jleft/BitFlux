@@ -24,7 +24,7 @@ export default function() {
           .xDomain(model.viewDomain)
           .yDomain([0, 100]);
 
-        selection.datum(model.data)
+        selection.datum(model)
           .call(chart);
     }
 

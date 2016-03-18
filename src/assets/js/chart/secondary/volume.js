@@ -30,7 +30,7 @@ export default function() {
                 .xDomain(model.viewDomain)
                 .yDomain(paddedYExtent);
 
-            selection.datum(model.data)
+            selection.datum(model)
                 .call(chart);
         });
     }

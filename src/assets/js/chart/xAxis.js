@@ -4,6 +4,7 @@ import util from '../util/util';
 
 export default function() {
     var xScale = fc.scale.dateTime();
+
     var xAxis = d3.svg.axis()
       .scale(xScale)
       .orient('bottom');
@@ -20,6 +21,9 @@ export default function() {
     function xAxisChart(selection) {
         var model = selection.datum();
         xScale.domain(model.viewDomain);
+
+        xScale.discontinuityProvider(model.discontinuityProvider);
+
         preventTicksMoreFrequentThanPeriod(model.period);
         selection.call(xAxis);
     }

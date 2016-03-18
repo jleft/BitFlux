@@ -25,8 +25,11 @@ export default function() {
     var zoomWidth;
 
     function secondary(selection) {
-        selection.each(function(data) {
+        selection.each(function(model) {
+            xScale.discontinuityProvider(model.discontinuityProvider);
+
             var container = d3.select(this)
+              .datum(model.data)
               .call(chart);
 
             var zoom = zoomBehavior(zoomWidth)
@@ -37,7 +40,7 @@ export default function() {
               });
 
             container.select('.plot-area-container')
-              .datum({data: selection.datum()})
+              .datum(model)
               .call(zoom);
         });
     }

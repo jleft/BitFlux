@@ -236,7 +236,11 @@ export default function() {
         var data = model.primaryChart.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
-        var navTimeDomain = util.domain.moveToLatest(dataDomain, data, proportionOfDataToDisplayByDefault);
+        var navTimeDomain = util.domain.moveToLatest(
+            model.primaryChart.discontinuityProvider,
+            dataDomain,
+            data,
+            proportionOfDataToDisplayByDefault);
         onViewChange(navTimeDomain);
     }
 
@@ -259,12 +263,23 @@ export default function() {
         model.nav.data = data;
     }
 
+    function updateDiscontinuityProvider(productSource) {
+        var discontinuityProvider = productSource.discontinuityProvider;
+
+        model.xAxis.discontinuityProvider = discontinuityProvider;
+        model.nav.discontinuityProvider = discontinuityProvider;
+        model.primaryChart.discontinuityProvider = discontinuityProvider;
+        model.secondaryChart.discontinuityProvider = discontinuityProvider;
+    }
+
     function updateModelSelectedProduct(product) {
         model.headMenu.selectedProduct = product;
         model.primaryChart.product = product;
         model.secondaryChart.product = product;
         model.legend.product = product;
         model.overlay.selectedProduct = product;
+
+        updateDiscontinuityProvider(product.source);
     }
 
     function updateModelSelectedPeriod(period) {
@@ -302,6 +317,7 @@ export default function() {
                 updateModelData(data);
                 if (model.primaryChart.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
+                        model.primaryChart.discontinuityProvider,
                         model.primaryChart.viewDomain,
                         model.primaryChart.data);
                     onViewChange(newDomain);

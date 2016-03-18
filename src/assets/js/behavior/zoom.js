@@ -13,25 +13,9 @@ export default function(width) {
     var allowZoom = true;
     var trackingLatest = true;
 
-    function controlPan(zoomExtent) {
-        // Don't pan off sides
-        if (zoomExtent[0] >= 0) {
-            return -zoomExtent[0];
-        } else if (zoomExtent[1] <= 0) {
-            return -zoomExtent[1];
-        }
-        return 0;
-    }
-
     function controlZoom(zoomExtent) {
         // If zooming, and about to pan off screen, do nothing
         return (zoomExtent[0] > 0 && zoomExtent[1] < 0);
-    }
-
-    function translateXZoom(translation) {
-        var tx = zoomBehavior.translate()[0];
-        tx += translation;
-        zoomBehavior.translate([tx, 0]);
     }
 
     function resetBehaviour() {
@@ -39,19 +23,41 @@ export default function(width) {
         zoomBehavior.scale(1);
     }
 
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function clampDomain(domain, data, totalXExtent) {
+        var clampedDomain = domain;
+
+        if (scale(data[0].date) > 0) {
+            clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
+        }
+
+        clampedDomain[0] = d3.max([totalXExtent[0], clampedDomain[0]]);
+        clampedDomain[1] = d3.min([totalXExtent[1], clampedDomain[1]]);
+
+        return clampedDomain;
+    }
+
     function zoom(selection) {
 
         var xExtent = fc.util.extent()
           .fields('date')(selection.datum().data);
 
+        var min = scale(xExtent[0]);
+        var max = scale(xExtent[1]);
+        var zoomPixelExtent = [min, max - width];
+
         zoomBehavior.x(scale)
           .on('zoom', function() {
-              var min = scale(xExtent[0]);
-              var max = scale(xExtent[1]);
+              var t = d3.event.translate,
+                  tx = t[0];
 
-              var maxDomainViewed = controlZoom([min, max - width]);
-              var panningRestriction = controlPan([min, max - width]);
-              translateXZoom(panningRestriction);
+              var maxDomainViewed = controlZoom(zoomPixelExtent);
+
+              tx = clamp(tx, -zoomPixelExtent[1], -zoomPixelExtent[0]);
+              zoomBehavior.translate([tx, 0]);
 
               var panned = (zoomBehavior.scale() === 1);
               var zoomed = (zoomBehavior.scale() !== 1);
@@ -61,8 +67,13 @@ export default function(width) {
                   if (maxDomainViewed) {
                       domain = xExtent;
                   } else if (zoomed && trackingLatest) {
-                      domain = util.domain.moveToLatest(domain, selection.datum().data);
+                      domain = util.domain.moveToLatest(
+                          selection.datum().discontinuityProvider,
+                          domain,
+                          selection.datum().data);
                   }
+
+                  domain = clampDomain(domain, selection.datum().data, xExtent);
 
                   if (domain[0].getTime() !== domain[1].getTime()) {
                       dispatch.zoom(domain);
