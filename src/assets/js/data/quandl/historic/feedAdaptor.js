@@ -35,11 +35,21 @@ export default function() {
         return mappedName;
     }
 
+    function normaliseDataDateToStartOfDay(data) {
+        return data.map(function(datum) {
+            datum.date.setHours(0, 0, 0, 0);
+            return datum;
+        });
+    }
+
     function quandlAdaptor(cb) {
         var startDate = d3.time.second.offset(historicFeed.end(), -candles * granularity);
         historicFeed.start(startDate)
             .collapse(allowedPeriods.get(granularity));
-        historicFeed(cb);
+        historicFeed(function(err, data) {
+            var normalisedData = normaliseDataDateToStartOfDay(data);
+            cb(err, normalisedData);
+        });
     }
 
     quandlAdaptor.candles = function(x) {
