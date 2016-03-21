@@ -32,7 +32,7 @@ export default function() {
                 null,
                 null,
                 null,
-                fc.scale.discontinuity.identity()),
+                skipWeekendsDiscontinuityProvider()),
             bitcoin: model.data.source(
                 coinbaseAdaptor(),
                 coinbaseHistoricErrorResponseFormatter,

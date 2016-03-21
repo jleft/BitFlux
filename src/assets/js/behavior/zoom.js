@@ -28,14 +28,14 @@ export default function(width) {
     }
 
     function clampDomain(domain, data, totalXExtent) {
-        var clampedDomain = domain;
+        var clampedDomain = [];
 
         if (scale(data[0].date) > 0) {
-            clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
+            // clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
         }
 
-        clampedDomain[0] = d3.max([totalXExtent[0], clampedDomain[0]]);
-        clampedDomain[1] = d3.min([totalXExtent[1], clampedDomain[1]]);
+        clampedDomain[0] = d3.max([totalXExtent[0], domain[0]]);
+        clampedDomain[1] = d3.min([totalXExtent[1], domain[1]]);
 
         return clampedDomain;
     }
@@ -59,6 +59,8 @@ export default function(width) {
               tx = clamp(tx, -zoomPixelExtent[1], -zoomPixelExtent[0]);
               zoomBehavior.translate([tx, 0]);
 
+              console.log(tx, zoomPixelExtent);
+
               var panned = (zoomBehavior.scale() === 1);
               var zoomed = (zoomBehavior.scale() !== 1);
 
@@ -73,7 +75,7 @@ export default function(width) {
                           selection.datum().data);
                   }
 
-                  domain = clampDomain(domain, selection.datum().data, xExtent);
+                  // domain = clampDomain(domain, selection.datum().data, xExtent);
 
                   if (domain[0].getTime() !== domain[1].getTime()) {
                       dispatch.zoom(domain);

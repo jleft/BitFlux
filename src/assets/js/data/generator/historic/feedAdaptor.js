@@ -3,7 +3,7 @@ import fc from 'd3fc';
 
 export default function() {
 
-    var dataGenerator = fc.data.random.financial(),
+    var dataGenerator = fc.data.random.financial().filter(fc.data.random.filter.skipWeekends()),
         allowedPeriods = [60 * 60 * 24],
         candles,
         end,
@@ -13,6 +13,7 @@ export default function() {
     var dataGeneratorAdaptor = function(cb) {
         end.setHours(0, 0, 0, 0);
         var millisecondsPerDay = 24 * 60 * 60 * 1000;
+        end = new Date(2016, 4, 6);
         dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay));
 
         var data = dataGenerator(candles);
