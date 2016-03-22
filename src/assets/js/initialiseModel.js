@@ -12,6 +12,7 @@ import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/e
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
 import notification from './notification/notification';
+import skipWeekendsDiscontinuityProvider from './scale/discontinuity/skipWeekends';
 
 export default function() {
     function initPeriods() {
@@ -26,17 +27,31 @@ export default function() {
 
     function initSources() {
         return {
-            generated: model.data.source(dataGeneratorAdaptor(), null, null),
-            bitcoin: model.data.source(coinbaseAdaptor(), coinbaseHistoricErrorResponseFormatter, coinbaseWebSocket(),
-                coinbaseStreamingErrorResponseFormatter),
-            quandl: model.data.source(quandlAdaptor(), quandlHistoricErrorResponseFormatter, null, null)
+            generated: model.data.source(
+                dataGeneratorAdaptor(),
+                null,
+                null,
+                null,
+                fc.scale.discontinuity.identity()),
+            bitcoin: model.data.source(
+                coinbaseAdaptor(),
+                coinbaseHistoricErrorResponseFormatter,
+                coinbaseWebSocket(),
+                coinbaseStreamingErrorResponseFormatter,
+                fc.scale.discontinuity.identity()),
+            quandl: model.data.source(
+                quandlAdaptor(),
+                quandlHistoricErrorResponseFormatter,
+                null,
+                null,
+                skipWeekendsDiscontinuityProvider())
         };
     }
 
     function initProducts() {
         return {
             generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
-            quandl: model.data.product('GOOG', 'GOOG', [periods.day1, periods.week1], sources.quandl, '.3s')
+            quandl: model.data.product('GOOG', 'GOOG', [periods.day1], sources.quandl, '.3s')
         };
     }
 
@@ -146,11 +161,11 @@ export default function() {
     return {
         periods: periods,
         sources: sources,
-        primaryChart: model.chart.primary(products.generated),
-        secondaryChart: model.chart.secondary(products.generated),
+        primaryChart: model.chart.primary(products.generated, products.generated.source.discontinuityProvider),
+        secondaryChart: model.chart.secondary(products.generated, products.generated.source.discontinuityProvider),
         selectors: initSelectors(),
-        xAxis: model.chart.xAxis(periods.day1),
-        nav: model.chart.nav(),
+        xAxis: model.chart.xAxis(periods.day1, products.generated.source.discontinuityProvider),
+        nav: model.chart.nav(products.generated.source.discontinuityProvider),
         navReset: model.chart.navigationReset(),
         headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
         legend: model.chart.legend(products.generated, periods.day1),

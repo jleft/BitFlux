@@ -1,7 +1,8 @@
-export default function() {
+export default function(initialDiscontinuityProvider) {
     return {
         data: [],
         viewDomain: [],
-        trackingLatest: true
+        trackingLatest: true,
+        discontinuityProvider: initialDiscontinuityProvider
     };
 }

@@ -172,6 +172,8 @@ export default function() {
 
         primaryChart.xDomain(model.viewDomain);
 
+        xScale.discontinuityProvider(model.discontinuityProvider);
+
         crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
         updateCrosshairDecorate(model.data);
 
