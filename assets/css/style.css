@@ -7091,7 +7091,7 @@ text {
 }
 
 .x-axis.bottom .label {
-  dominant-baseline: middle;
+  dominant-baseline: ideographic;
 }
 
 .cartesian-chart, .multiples-chart {

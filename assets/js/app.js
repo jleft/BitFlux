@@ -2393,7 +2393,7 @@
                     null,
                     null,
                     null,
-                    skipWeekendsDiscontinuityProvider()),
+                    fc.scale.discontinuity.identity()),
                 bitcoin: model.data.source(
                     coinbaseAdaptor(),
                     coinbaseHistoricErrorResponseFormatter,
@@ -2411,11 +2411,8 @@
 
         function initProducts() {
             return {
-                // generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
-                quandl: model.data.product('GOOG', 'GOOG', [periods.day1], sources.quandl, '.3s'),
-                quandl2: model.data.product('AAPL', 'AAPL', [periods.day1], sources.quandl, '.3s'),
-                quandl3: model.data.product('LNKD', 'LNKD', [periods.day1], sources.quandl, '.3s'),
-                quandl4: model.data.product('MSFT', 'MSFT', [periods.day1], sources.quandl, '.3s')
+                generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
+                quandl: model.data.product('GOOG', 'GOOG', [periods.day1, periods.week1], sources.quandl, '.3s')
             };
         }
 
@@ -2525,15 +2522,15 @@
         return {
             periods: periods,
             sources: sources,
-            primaryChart: model.chart.primary(products.quandl, products.quandl.source.discontinuityProvider),
-            secondaryChart: model.chart.secondary(products.quandl, products.quandl.source.discontinuityProvider),
+            primaryChart: model.chart.primary(products.generated, products.generated.source.discontinuityProvider),
+            secondaryChart: model.chart.secondary(products.generated, products.generated.source.discontinuityProvider),
             selectors: initSelectors(),
-            xAxis: model.chart.xAxis(periods.day1, products.quandl.source.discontinuityProvider),
-            nav: model.chart.nav(products.quandl.source.discontinuityProvider),
+            xAxis: model.chart.xAxis(periods.day1, products.generated.source.discontinuityProvider),
+            nav: model.chart.nav(products.generated.source.discontinuityProvider),
             navReset: model.chart.navigationReset(),
-            headMenu: model.menu.head([products.quandl, products.quandl2, products.quandl3, products.quandl4], products.quandl, periods.day1),
-            legend: model.chart.legend(products.quandl, periods.day1),
-            overlay: model.menu.overlay([products.quandl, products.quandl2, products.quandl3, products.quandl4], products.quandl),
+            headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
+            legend: model.chart.legend(products.generated, periods.day1),
+            overlay: model.menu.overlay([products.generated, products.quandl], products.generated),
             notificationMessages: model.notification.messages()
         };
     }
@@ -3151,8 +3148,7 @@
     }
 
     BitFlux.app()
-        .fetchCoinbaseProducts(false)
-        .quandlApiKey('ML1zzPw21E9-ddx9f5_y')
+        .fetchCoinbaseProducts(true)
         .run('#app-container');
 
 }));
