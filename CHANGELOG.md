@@ -1,6 +1,11 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.5.0] - 22-3-2016
+### Changed
+- Weekends skipped for Quandl data source
+- Weekly period removed from Quandl data source
+
 ## [1.4.0] - 16-3-2016
 ### Added
 - Option to set historic feed error callback, when using BitFlux as a module
