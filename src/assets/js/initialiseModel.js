@@ -51,7 +51,7 @@ export default function() {
     function initProducts() {
         return {
             generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
-            quandl: model.data.product('GOOG', 'GOOG', [periods.day1, periods.week1], sources.quandl, '.3s')
+            quandl: model.data.product('GOOG', 'GOOG', [periods.day1], sources.quandl, '.3s')
         };
     }
 
