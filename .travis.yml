@@ -9,7 +9,7 @@ notifications:
 after_success: bash ./site/deploy.sh
 cache:
   directories:
-    - node_modules/phantomjs-prebuilt
+    - node_modules
 env:
   global:
   - GH_REF: github.com/ScottLogic/BitFlux.git
