@@ -12,7 +12,6 @@
 
     .extent {
       stroke: none;
-      shape-rendering: crispEdges;
     }
 
     .background {
@@ -43,10 +42,12 @@
         .outer-handle {
           stroke: @primary-white;
           fill: @primary-dark-blue;
+          shape-rendering: auto;
         }
         .inner-handle {
           stroke: @primary-white;
           fill: @primary-white;
+          shape-rendering: auto;
         }
       }
     }
@@ -86,6 +87,7 @@
     .reset-button {
       stroke: @primary-white;
       fill: @primary-dark-blue;
+      shape-rendering: auto;
 
       &.active {
         fill: @primary-white;

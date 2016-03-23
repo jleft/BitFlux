@@ -23,46 +23,45 @@
         display: none;
       }
     }
-  }
 
-  .rsi {
-    stroke: @rsi-line-colour;
-    stroke-width: @stroke-width;
-
-    .annotation line {
-      shape-rendering: crispEdges;
+    .indicator {
+      stroke: @rsi-line-colour;
+      stroke-width: @stroke-width;
     }
   }
 
-  .macd-divergence {
+  &.secondary-macd {
+    .macd-divergence {
+      .bar {
+        stroke: @primary-blue;
+        fill: @secondary-grey;
+      }
+    }
+
+    .macd-signal {
+      .line {
+        stroke: @macd-signal-line-colour;
+        stroke-width: @stroke-width;
+      }
+    }
+
+    .macd {
+      .line {
+        stroke: @macd-line-colour;
+        stroke-width: @stroke-width;
+      }
+    }
+    .zero {
+      .annotation line {
+        visibility: hidden;
+      }
+    }
+  }
+
+  &.secondary-volume {
     .bar {
       stroke: @primary-blue;
       fill: @secondary-grey;
     }
-  }
-
-  .macd-signal {
-    .line {
-      stroke: @macd-signal-line-colour;
-      stroke-width: @stroke-width;
-    }
-  }
-
-  .macd {
-    .line {
-      stroke: @macd-line-colour;
-      stroke-width: @stroke-width;
-    }
-  }
-
-  .zero {
-    .annotation line {
-      visibility: hidden;
-    }
-  }
-
-  .bar {
-    stroke: @primary-blue;
-    fill: @secondary-grey;
   }
 }
