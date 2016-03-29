@@ -191,8 +191,8 @@ export default function() {
 
         // Find current tick values and add close price to this list, then set it explicitly below
         var latestPrice = currentYValueAccessor(model.data[model.data.length - 1]);
-        var tickValues = produceAnnotatedTickValues(yScale, [latestPrice]);
-        primaryChart.yTickValues(tickValues)
+        var tickValuesWithAnnotations = produceAnnotatedTickValues(yScale, [latestPrice]);
+        primaryChart.yTickValues(tickValuesWithAnnotations)
           .yDecorate(function(s) {
               var closePriceTick = s.selectAll('.tick')
                 .filter(function(d) { return d === latestPrice; })
@@ -207,7 +207,10 @@ export default function() {
                 .attr('transform', 'translate(' + calloutHeight / 2 + ',1)');
           });
 
-        gridlines.yTicks(tickValues.length - 1);
+        var tickValuesWithoutAnnotations = yScale.ticks.apply(yScale, []);
+        gridlines.yTickValues(tickValuesWithoutAnnotations);
+
+        console.log(tickValuesWithoutAnnotations.length, tickValuesWithAnnotations.length);
 
         // Redraw
         primaryChart.plotArea(multi);
