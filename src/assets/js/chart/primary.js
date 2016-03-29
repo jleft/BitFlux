@@ -210,8 +210,6 @@ export default function() {
         var tickValuesWithoutAnnotations = yScale.ticks.apply(yScale, []);
         gridlines.yTickValues(tickValuesWithoutAnnotations);
 
-        console.log(tickValuesWithoutAnnotations.length, tickValuesWithAnnotations.length);
-
         // Redraw
         primaryChart.plotArea(multi);
         selection.call(primaryChart);
