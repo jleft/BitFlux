@@ -342,7 +342,7 @@ module.exports = function(grunt) {
             },
             coverage: {
                 reporters: ['dots', 'coverage'],
-                browsers: ['PhantomJS'],
+                browsers: ['Firefox'],
                 autoWatch: false,
                 singleRun: true,
                 browserify: {
@@ -380,7 +380,7 @@ module.exports = function(grunt) {
                 singleRun: false
             },
             all: {
-                browsers: ['Chrome', 'Firefox', 'IE', 'PhantomJS'],
+                browsers: ['Chrome', 'Firefox', 'IE'],
                 autoWatch: true,
                 singleRun: false
             }
