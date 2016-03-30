@@ -75,6 +75,7 @@ export default function() {
                   [viewScale.domain()[0], navChart.yDomain()[0]],
                   [viewScale.domain()[1], navChart.yDomain()[1]]
               ]);
+              return null;
           } else {
               // This stops the brush data being overwritten by the point data
               return this.data;
