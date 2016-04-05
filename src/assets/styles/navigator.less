@@ -11,6 +11,7 @@
     margin-right: 0 !important;
 
     .extent {
+      fill: @secondary-orange;
       stroke: none;
     }
 
@@ -61,19 +62,21 @@
       .mask-background {
         fill: @mask-transparent;
       }
-      .area {
-        fill: @mask-opaque;
+
+      .line {
+        stroke-width: 1.2px;
+        stroke: @primary-white;
       }
     }
 
     #brush-gradient {
       // To change the gradient offsets, edit nav.js
       .brush-gradient-top {
-        stop-color: @navigator-extent-colour-top;
+        stop-color: darken(@mask-opaque, 40%);
       }
 
       .brush-gradient-bottom {
-        stop-color: @navigator-extent-colour-bottom;
+        stop-color: @mask-transparent;
       }
     }
   }
