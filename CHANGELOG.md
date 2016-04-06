@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.5.1] - 6-4-2016
+### Fixed
+- Specify correct root configuration file for ESLint to prevent deployment errors
+
 ## [1.5.0] - 22-3-2016
 ### Changed
 - Weekends skipped for Quandl data source
