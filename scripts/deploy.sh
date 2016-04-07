@@ -74,7 +74,7 @@ prepare_and_build_develop()
 
 echo "Deploying..."
 
-check_if_should_deploy
+# check_if_should_deploy
 
 cd site
 
