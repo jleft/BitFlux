@@ -14,9 +14,15 @@
     width: 500px;
     height: 20px;
     justify-content: center;
+    overflow: visible;
+
+    .cell {
+      dominant-baseline: auto;
+    }
 
     .label {
       fill: @legend-label-font-colour;
+      font-size: 12px;
     }
     .value {
       fill: @legend-value-font-colour;
