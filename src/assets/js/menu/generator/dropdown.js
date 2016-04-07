@@ -63,6 +63,10 @@ export default function() {
         listItemAnchors.append('span')
             .attr('class', 'name');
 
+        listItems.classed('selected', function(d, i) {
+            return model.selectedIndexes ? model.selectedIndexes.indexOf(i) > -1 : i === selectedIndex;
+        });
+
         listItems.selectAll('.icon')
             .attr('class', function(d) { return 'icon ' + d.icon; });
         listItems.selectAll('.name')

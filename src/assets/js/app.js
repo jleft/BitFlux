@@ -405,6 +405,7 @@ export default function() {
                 return option.isSelected && option.isPrimary;
             });
 
+        model.headMenu.primaryIndicators = model.primaryChart.indicators;
         model.overlay.primaryIndicators = model.primaryChart.indicators;
     }
 
@@ -418,6 +419,7 @@ export default function() {
             chartOption.option.on(event.viewChange, onViewChange);
         });
 
+        model.headMenu.secondaryIndicators = charts.secondaries;
         model.overlay.secondaryIndicators = charts.secondaries;
     }
 
@@ -458,7 +460,8 @@ export default function() {
             var productPeriodOverrides = d3.map();
             productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
             var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
-            model.headMenu.products = model.overlay.products = model.headMenu.products.concat(formattedProducts);
+            model.headMenu.products = model.headMenu.products.concat(formattedProducts);
+            model.overlay.products = model.headMenu.products;
         }
 
         render();
