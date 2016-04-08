@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- '4.2'
+  - '4.2'
 before_install: npm install -g grunt-cli
 install: npm install
 before_script:
@@ -8,11 +8,24 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 script:
-  - ./scripts/ci.sh
+  - "./scripts/ci.sh"
+before_deploy:
+  - "./scripts/prepare-github-release.sh"
+deploy:
+  provider: releases
+  api_key:
+    secure: wiYCJ6cfnPVggAKGujn6JtjUYRsEcscQcCbb9qB6CqAA49vXu7HyGX568OpjU6g2tNK1u4jnVTJq+H2uQGO9XsJMiV7D5qy+YDEasypfYv4Dx2Wf+0VnrlVgNvW7XEDziTtZA71Uli/ntfGPkpjIJU9wSXwTOC0FAq+mLzgnPsrN7avpc3gSvi77eWmnu99lUXa/F8pdd4j+DXrUmqDIP5+M8+mplvkUb5IQxeCT0o86ReVxMMZdLCz5nCLtSGd8fKjlmPspsRjSczDCpTJCVV7Vhq9lEtcu3bpXlSUNvc9v65zBb/NWu3WK+PHDUCHZQvSE4Rihd4JFiSi0aHWAnYDA1tQI0/+LJrSbkRrIg43VgAH15edybEwccLG3c3gAyGGLvHHBCeQDIJw/nTiTpRV+iYQSMMFRs0geHBk+BSjlBgt4xy6uaHOkTnA1UnyFphT0TUUjn4qmSeCzNoAXAnGLOttEgToBOldYVGTePFj3E6/HFRS26oqV3LzilNIlxfTDpEWzAj8/WAoV+Cs2AbkMGbzSuajqEN4y4cP7h9O2H651Tb7vs/QC4yZJoAvAfmkY2hHOPU4pJzmvDTBbHSfyw6ezUnrE80pTRXn8S/pESMk7TvDQgyr5ZLEwzh3xS+PKVUwP5mkYqXlY7PGUuXQlYgOpn2s3fXbkQOdUV0Q=
+  file:
+    - github-release-assets/dist.zip
+    - github-release-assets/dist.tar.gz
+  skip_cleanup: true
+  on:
+    repo: ScottLogic/BitFlux
+    tags: true
 notifications:
   slack:
     secure: thS2DH2l15+QD9MffNQX41PD3nEig8NsiHGbjWyS22n4P1MYkkoAFTqHnhZnzPHe/gYBlOMPxrQCC/WzAFJ0MIXK1CXNm37JALTL6YCc9hlOTQIOXdKM7Ql7nmeNx9eeK8qrHBN0WQqUwKAtdMeFubHBZkpLCeh2ifPw0hNrEe6bAfYdLap/32m0zgr+2UF2KiljXjyvKktLLpRhJ0BAH2HHRIA8KnssN3suwNl/RKJ45ipcagxgEEF0mrZlPOsWYDVNCRj23bQDO1P5PaUlgrzo0zDOflfa8aIqJaqvB505E9cGzhV5TNtehHJt38LOt85ErSX9cejaVUpaS155+YLsWJpQzmt8I3m47DDnmFCEja2toszTga2fhopnPguulSt6b8zSP2SyOmSWawqO7RNLoV2hFpdU+Mw2BL62stuyAoTGfYya+Qw5y2Sd4cRY7hZJS6mFaSGKOKeRVndSeqEyHa8j9CpYkrHDTht6NbNRzPOWuYiVSwYNGX67dab3ApiQRUH+Rf8ubAyyuJKkUrUm5s/zaXyHoWhe0azYIPHBOtHh4e0BMda8kJNpDO7MTSv9WCIpRbk7Jb6vGrPrUIkyAel2DaCaO0UzzLMv6jjvXeYqZTW6K+CIRo6V4Rqj7odhMLvi1DlLaf0fjGoJIScP7/xKVpzYRyRt+DNx9OU=
-after_success: ./scripts/deploy.sh
+after_success: "./scripts/deploy-site.sh"
 env:
   global:
   - GH_REF: github.com/ScottLogic/BitFlux.git
