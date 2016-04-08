@@ -45,7 +45,7 @@ export default function() {
         .decorate(function(selection) {
             var enter = selection.enter();
 
-            selection.select('.extent')
+            selection.selectAll('.background, .extent')
                 .attr('height', extentHeight)
                 .attr('y', backgroundStrokeWidth / 2);
 
@@ -73,10 +73,8 @@ export default function() {
         })
         .mapping(function(series) {
             if (series === brush) {
-                brush.extent([
-                    [viewScale.domain()[0], navChart.yDomain()[0]],
-                    [viewScale.domain()[1], navChart.yDomain()[1]]
-                ]);
+                brush.y(null)
+                    .extent(viewScale.domain());
                 return null;
             } else {
                 // This stops the brush data being overwritten by the point data
@@ -114,7 +112,7 @@ export default function() {
     }
 
     function xEmpty(navBrush) {
-        return ((navBrush.extent()[0][0] - navBrush.extent()[1][0]) === 0);
+        return (navBrush.extent()[0] - navBrush.extent()[1]) === 0;
     }
 
     function createDefs(selection, data) {
@@ -171,8 +169,9 @@ export default function() {
 
             // Hide the bar if the extent is empty
             setHide(selection, brushExtentIsEmpty);
+
             if (!brushExtentIsEmpty) {
-                dispatch[event.viewChange]([brush.extent()[0][0], brush.extent()[1][0]]);
+                dispatch[event.viewChange](brush.extent());
             }
         })
             .on('brushend', function() {
@@ -183,7 +182,7 @@ export default function() {
                         model.discontinuityProvider,
                         viewScale.domain(),
                         model.data,
-                        brush.extent()[0][0]));
+                        brush.extent()[0]));
                 }
             });
 
