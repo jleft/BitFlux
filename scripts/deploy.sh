@@ -48,6 +48,9 @@ prepare_and_build_master()
         rm -rf master
         mkdir -p master/dist
         cp -r ../../dist/* master/dist
+        cd master
+        MASTER=$(git describe --tags --always --dirty 2>&1)
+        cd ..
     fi
 }
 
@@ -69,6 +72,9 @@ prepare_and_build_develop()
         rm -rf develop
         mkdir -p develop/dist
         cp -r ../../dist/* develop/dist
+        cd develop
+        DEVELOP=$(git describe --tags --always --dirty 2>&1)
+        cd ..
     fi
 }
 
