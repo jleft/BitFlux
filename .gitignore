@@ -29,6 +29,7 @@ node_modules
 # Built files
 /dist
 sprite
+github-release-assets
 
 # Jasmine spec runner
 _SpecRunner.html

@@ -10,6 +10,14 @@ html, body {
   min-width: @min-width-supported;
 }
 
+svg {
+  shape-rendering: crispEdges;
+}
+
+path.line {
+  shape-rendering: auto;
+}
+  
 text {
   font-family: @font-family;
   font-weight: @font-weight-base;

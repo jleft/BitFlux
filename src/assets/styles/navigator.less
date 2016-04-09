@@ -11,8 +11,8 @@
     margin-right: 0 !important;
 
     .extent {
+      fill: @secondary-orange;
       stroke: none;
-      shape-rendering: crispEdges;
     }
 
     .background {
@@ -43,10 +43,12 @@
         .outer-handle {
           stroke: @primary-white;
           fill: @primary-dark-blue;
+          shape-rendering: auto;
         }
         .inner-handle {
           stroke: @primary-white;
           fill: @primary-white;
+          shape-rendering: auto;
         }
       }
     }
@@ -60,19 +62,21 @@
       .mask-background {
         fill: @mask-transparent;
       }
-      .area {
-        fill: @mask-opaque;
+
+      .line {
+        stroke-width: 1.2px;
+        stroke: @primary-white;
       }
     }
 
     #brush-gradient {
       // To change the gradient offsets, edit nav.js
       .brush-gradient-top {
-        stop-color: @navigator-extent-colour-top;
+        stop-color: darken(@mask-opaque, 40%);
       }
 
       .brush-gradient-bottom {
-        stop-color: @navigator-extent-colour-bottom;
+        stop-color: @mask-transparent;
       }
     }
   }
@@ -86,6 +90,7 @@
     .reset-button {
       stroke: @primary-white;
       fill: @primary-dark-blue;
+      shape-rendering: auto;
 
       &.active {
         fill: @primary-white;

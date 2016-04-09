@@ -41,11 +41,13 @@
 
   .area {
     fill: @area-fill;
+    shape-rendering: auto;
   }
 
   .point {
     stroke: @series-colour;
     fill: @series-colour;
+    shape-rendering: auto;
   }
 
   .gridline {
@@ -70,6 +72,7 @@
       fill: @crosshair-circle-colour;
       fill-opacity: @crosshair-circle-opacity;
       stroke: darken(@crosshair-circle-colour, 20%);
+      shape-rendering: auto;
     }
     .annotation > line {
       stroke: @crosshair-line-colour;

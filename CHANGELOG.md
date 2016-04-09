@@ -1,6 +1,14 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.5.2] - 9-4-2016
+### Added
+- Selected and hover styles for dropdown menu items
+- Release distribution files now published to GitHub Releases
+
+### Fixed
+- Navigator brush in IE
+
 ## [1.5.1] - 6-4-2016
 ### Fixed
 - Specify correct root configuration file for ESLint to prevent deployment errors

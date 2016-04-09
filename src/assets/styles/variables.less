@@ -51,9 +51,11 @@
 
 // Dropdown
 @dropdown-colour: @secondary-grey;
-@dropdown-hover: fade(@primary-white, 20%);
+@dropdown-hover-border: 1px solid @primary-white;
 @caret-colour: @primary-blue;
 @dropdown-button-border-color: @secondary-grey;
+@dropdown-selected-background: fade(@primary-white, 20%);
+@dropdown-selected-li-shadow: 1px 0 1px darken(@primary-white, 80%);
 
 // Plot Area
 @stroke-width: 1px;
@@ -91,8 +93,7 @@
 // Changes to height or bottom-margin must also be carried over in nav.js variables
 @navigator-height: 100px;
 @navigator-bottom-margin-from-javascript: 40px;   //Temporary variable until fully ported to flex
-@navigator-extent-colour-top: @secondary-orange;
-@navigator-extent-colour-bottom: lighten(@secondary-orange, 30%);
+@navigator-extent-colour: @secondary-orange;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
 @navigator-background-stroke-width: 2px;

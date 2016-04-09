@@ -342,7 +342,7 @@ module.exports = function(grunt) {
             },
             coverage: {
                 reporters: ['dots', 'coverage'],
-                browsers: ['PhantomJS'],
+                browsers: ['Firefox'],
                 autoWatch: false,
                 singleRun: true,
                 browserify: {
@@ -380,7 +380,7 @@ module.exports = function(grunt) {
                 singleRun: false
             },
             all: {
-                browsers: ['Chrome', 'Firefox', 'IE', 'PhantomJS'],
+                browsers: ['Chrome', 'Firefox', 'IE'],
                 autoWatch: true,
                 singleRun: false
             }
@@ -441,6 +441,29 @@ module.exports = function(grunt) {
         eslint: {
             js: {
                 src: ['<%= meta.ourJsFiles %>']
+            }
+        },
+
+        compress: {
+            zipDist: {
+                options: {
+                    archive: 'github-release-assets/dist.zip',
+                    mode: 'zip'
+                },
+                expand: true,
+                cwd: 'dist/',
+                src: ['**/*'],
+                dest: '/'
+            },
+            tarDist: {
+                options: {
+                    archive: 'github-release-assets/dist.tar.gz',
+                    mode: 'tgz'
+                },
+                expand: true,
+                cwd: 'dist/',
+                src: ['**/*'],
+                dest: '/'
             }
         }
 
