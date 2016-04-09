@@ -138,7 +138,7 @@
         "semi-spacing": 2,
         "semi": 2,
         "sort-vars": 0,
-        "keyword-spacing": ["error", {"before": true, "after": true}],
+        "keyword-spacing": [2, {"before": true, "after": true}],
         "space-before-blocks": 2,
         "space-in-brackets": 0,
         "space-in-parens": 2,
