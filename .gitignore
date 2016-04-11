@@ -30,6 +30,7 @@ node_modules
 /dist
 sprite
 github-release-assets
+github-release-downloads
 
 # Jasmine spec runner
 _SpecRunner.html

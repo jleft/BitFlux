@@ -32,17 +32,17 @@ check_if_should_deploy()
 
 prepare_and_build_master()
 {
-    if [ "${TRAVIS_BRANCH}" != "master" ]
+    if [ "1" == "1" ]
     then
-        echo "Cloning master..."
-        git clone --branch master --depth 1 https://github.com/ScottLogic/BitFlux.git master
-
-        cd master
-        MASTER=$(git describe --tags --always --dirty 2>&1)
-        echo "Building master... $MASTER"
-        npm install --quiet
-        grunt build --versionNumber="v$MASTER"
-        cd ..
+        echo "Getting latest release from GitHub Releases..."
+        cd ../..
+        bash ./scripts/get-latest-release.sh
+        MASTER=$(./scripts/get-latest-release-version.sh  2>&1)
+        echo "Version $MASTER downloaded."
+        cd site/temp
+        rm -rf master
+        mkdir -p master/dist
+        cp -r ../../github-release-downloads/dist/* master/dist
     else
         echo "Copying master..."
         rm -rf master
@@ -80,7 +80,7 @@ prepare_and_build_develop()
 
 echo "Deploying..."
 
-check_if_should_deploy
+# check_if_should_deploy
 
 echo "Creating temp directory for build..."
 cd site
@@ -90,7 +90,7 @@ cd temp
 
 prepare_and_build_master
 
-prepare_and_build_develop
+# prepare_and_build_develop
 
 echo "Creating directories for built application..."
 cd ../dist
@@ -101,28 +101,28 @@ mkdir develop
 
 echo "Copying built application files..."
 cp -r ../temp/master/dist/* master
-cp -r ../temp/develop/dist/* develop
+# cp -r ../temp/develop/dist/* develop
 rm -rf ../temp
 printf '{"timestamp":"%s","travis_build_number":"%s","master_version":"%s","develop_version":"%s"}\n' "$(date +%s)" "$TRAVIS_BUILD_NUMBER" "$MASTER" "$DEVELOP" > versions.json
 
 echo "Deploying to gh-pages..."
 
-# create a *new* Git repo
-git init
-
-# inside this git repo we'll pretend to be a new user
-git config user.name "Travis CI"
-git config user.email "jleftley@scottlogic.com"
-
-# The first and only commit to this new Git repo contains all the
-# files present with the commit message "Deploy to GitHub Pages".
-git add .
-git commit -m "Deploy to GitHub Pages"
-
-# Force push from the current repo's master branch to the remote
-# repo's gh-pages branch. (All previous history on the gh-pages branch
-# will be lost, since we are overwriting it.) We redirect any output to
-# /dev/null to hide any sensitive credential data that might otherwise be exposed.
-git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
+# # create a *new* Git repo
+# git init
+#
+# # inside this git repo we'll pretend to be a new user
+# git config user.name "Travis CI"
+# git config user.email "jleftley@scottlogic.com"
+#
+# # The first and only commit to this new Git repo contains all the
+# # files present with the commit message "Deploy to GitHub Pages".
+# git add .
+# git commit -m "Deploy to GitHub Pages"
+#
+# # Force push from the current repo's master branch to the remote
+# # repo's gh-pages branch. (All previous history on the gh-pages branch
+# # will be lost, since we are overwriting it.) We redirect any output to
+# # /dev/null to hide any sensitive credential data that might otherwise be exposed.
+# git push --force --quiet "https://${GH_TOKEN}@${GH_REF}" master:gh-pages > /dev/null 2>&1
 
 echo "Done."
