@@ -40,7 +40,10 @@ export default function() {
                 });
 
             container.select('.plot-area-container')
-                .datum({data: model.data})
+                .datum({
+                    data: model.data,
+                    discontinuityProvider: model.discontinuityProvider
+                })
                 .call(zoom);
         });
     }

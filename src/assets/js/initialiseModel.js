@@ -159,6 +159,7 @@ export default function() {
     var products = initProducts();
 
     return {
+        data: [],
         periods: periods,
         sources: sources,
         primaryChart: model.chart.primary(products.generated, products.generated.source.discontinuityProvider),
