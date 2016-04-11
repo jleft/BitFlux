@@ -5,6 +5,7 @@ import util from '../../util/util';
 export default function(initialProduct, initialDiscontinuityProvider) {
     var model = {
         data: [],
+        visibleData: [],
         trackingLatest: true,
         viewDomain: [],
         selectorsChanged: true,
