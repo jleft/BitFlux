@@ -1,7 +1,7 @@
 /*global window */
 import d3 from 'd3';
 import fc from 'd3fc';
-import charts from './chart/charts';
+import chartGroup from './chart/group';
 import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
@@ -75,7 +75,7 @@ export default function() {
     var model = initialiseModel();
 
     var _dataInterface = initialiseDataInterface();
-    var _charts = initialiseCharts();
+    var charts = initialiseCharts();
 
     var externalHistoricFeedErrorCallback;
 
@@ -99,7 +99,7 @@ export default function() {
         }
 
         containers.chartsAndOverlay.datum(model.charts)
-            .call(_charts);
+            .call(charts);
 
         containers.app.select('#navbar-reset')
             .datum(model.navReset)
@@ -132,7 +132,7 @@ export default function() {
 
     function updateLayout() {
         layoutRedrawnInNextRender = true;
-        util.layout(containers, _charts);
+        util.layout(containers, charts);
     }
 
     function initialiseResize() {
@@ -265,7 +265,7 @@ export default function() {
     }
 
     function initialiseCharts() {
-        return charts()
+        return chartGroup()
             .on(event.crosshairChange, onCrosshairChange)
             .on(event.viewChange, onViewChange);
     }
@@ -378,7 +378,7 @@ export default function() {
             return option.isSelected && !option.isPrimary;
         });
 
-        _charts.secondaries().charts(model.charts.secondary.indicators.map(function(indicator) {
+        charts.secondaries().charts(model.charts.secondary.indicators.map(function(indicator) {
             return indicator.option;
         }));
 

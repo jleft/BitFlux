@@ -1,4 +1,4 @@
-import charts from './charts';
+import group from './group';
 import legend from './legend';
 import nav from './nav';
 import navigationReset from './navigationReset';
@@ -7,7 +7,7 @@ import secondary from './secondary';
 import xAxis from './xAxis';
 
 export default {
-    charts: charts,
+    group: group,
     legend: legend,
     nav: nav,
     navigationReset: navigationReset,

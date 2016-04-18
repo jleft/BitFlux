@@ -4,6 +4,7 @@ import legend from './legend';
 import xAxis from './xAxis';
 import primary from './primary';
 import multiChart from './multiChart';
+import group from './group';
 
 export default {
     legend: legend,
@@ -11,5 +12,6 @@ export default {
     primary: primary,
     xAxis: xAxis,
     secondary: secondary,
-    multiChart: multiChart
+    multiChart: multiChart,
+    group: group
 };

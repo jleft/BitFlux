@@ -1,73 +1,74 @@
 import d3 from 'd3';
 import fc from 'd3fc';
 import event from '../event';
-import legend from './legend';
-import nav from './nav';
-import primary from './primary';
+import legendChart from './legend';
+import navChart from './nav';
+import primaryChart from './primary';
 import multiChart from './multiChart';
-import xAxis from './xAxis';
+import xAxisChart from './xAxis';
 
 export default function() {
     var dispatch = d3.dispatch(event.viewChange, event.crosshairChange);
-    var _legend = legend();
 
-    var _nav = nav()
+    var legend = legendChart();
+
+    var nav = navChart()
         .on(event.viewChange, dispatch[event.viewChange]);
 
-    var _primary = primary()
+    var primary = primaryChart()
         .on(event.viewChange, dispatch[event.viewChange])
         .on(event.crosshairChange, dispatch[event.crosshairChange]);
 
-    var _secondaries = multiChart()
+    var secondaryCharts = multiChart()
         .on(event.viewChange, dispatch[event.viewChange]);
 
-    var _xAxis = xAxis();
+    var xAxis = xAxisChart();
 
-    function charts(selection) {
+    function group(selection) {
         selection.each(function(model) {
             selection.select('#legend')
                 .datum(model.legend)
-                .call(_legend);
+                .call(legend);
 
             selection.select('#navbar-container')
                 .datum(model.nav)
-                .call(_nav);
+                .call(nav);
 
             selection.select('#primary-container')
                 .datum(model.primary)
-                .call(_primary);
+                .call(primary);
 
             selection.select('#secondaries-container')
                 .datum(model.secondary)
-                .call(_secondaries);
+                .call(secondaryCharts);
 
             selection.select('#x-axis-container')
                 .datum(model.xAxis)
-                .call(_xAxis);
+                .call(xAxis);
         });
     }
 
-    charts.legend = function() {
-        return _legend;
+    group.legend = function() {
+        return legend;
     };
 
-    charts.nav = function() {
-        return _nav;
+    group.nav = function() {
+        return nav;
     };
 
-    charts.primary = function() {
-        return _primary;
+    group.primary = function() {
+        return primary;
     };
 
-    charts.secondaries = function() {
-        return _secondaries;
+    group.secondaries = function() {
+        return secondaryCharts;
     };
 
-    charts.xAxis = function() {
-        return _xAxis;
+    group.xAxis = function() {
+        return xAxis;
     };
 
-    d3.rebind(charts, dispatch, 'on');
+    d3.rebind(group, dispatch, 'on');
 
-    return charts;
+    return group;
 }
