@@ -1,6 +1,7 @@
 /*global window */
 import d3 from 'd3';
 import fc from 'd3fc';
+import extensions from './extensions';
 import chartGroup from './chart/group';
 import menu from './menu/menu';
 import util from './util/util';
@@ -13,12 +14,6 @@ import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/e
 import initialiseModel from './initialiseModel';
 import getCoinbaseProducts from './data/coinbase/getProducts';
 import formatCoinbaseProducts from './data/coinbase/formatProducts';
-
-d3.selection.prototype.callIfVisible = function(callback) {
-    if (util.isVisible(this)) {
-        this.call(callback);
-    }
-};
 
 export default function() {
 
