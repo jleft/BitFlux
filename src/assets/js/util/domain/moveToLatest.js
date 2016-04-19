@@ -1,4 +1,3 @@
-import d3 from 'd3';
 import fc from 'd3fc';
 
 export default function(discontinuityProvider, domain, data, ratio) {

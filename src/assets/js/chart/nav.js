@@ -85,7 +85,7 @@ export default function() {
     var brushMask = fc.series.area()
         .xValue(function(d) { return d.date; })
         .y1Value(function(d) { return d.close; })
-        .y0Value(function(d) { return yScale.domain()[0]; })
+        .y0Value(function() { return yScale.domain()[0]; })
         .decorate(function(selection) {
             selection.enter().attr('fill', 'url("#brush-gradient")');
         });

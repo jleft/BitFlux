@@ -277,7 +277,7 @@ export default function() {
 
     function initialiseDataInterface() {
         return dataInterface()
-            .on(event.newTrade, function(data, source) {
+            .on(event.newTrade, function(data) {
                 updateModelData(data);
                 if (model.charts.primary.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
@@ -287,7 +287,7 @@ export default function() {
                     onViewChange(newDomain);
                 }
             })
-            .on(event.historicDataLoaded, function(data, source) {
+            .on(event.historicDataLoaded, function(data) {
                 loading(false);
                 updateModelData(data);
                 model.charts.legend.data = null;

@@ -1,7 +1,6 @@
 import d3 from 'd3';
 import fc from 'd3fc';
 import event from '../event';
-import menu from '../menu/menu';
 import editIndicatorGroup from './generator/editIndicatorGroup';
 import dropdown from './generator/dropdown';
 import productAdaptor from '../model/menu/productAdaptor';

@@ -5,11 +5,11 @@ export default function() {
     var xScale = fc.scale.dateTime();
     var yScale = d3.scale.linear();
     var barWidth = fc.util.fractionalBarWidth(0.75);
-    var xValue = function(d, i) { return d.date; };
+    var xValue = function(d) { return d.date; };
     var xValueScaled = function(d, i) { return xScale(xValue(d, i)); };
     var yLowValue = function(d) { return d.low; };
     var yHighValue = function(d) { return d.high; };
-    var yCloseValue = function(d, i) { return d.close; };
+    var yCloseValue = function(d) { return d.close; };
 
     var candlestickSvg = fc.svg.candlestick()
       .x(function(d) { return xScale(d.date); })

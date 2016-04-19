@@ -11,7 +11,6 @@ import coinbaseWebSocket from './data/coinbase/streaming/webSocket';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
-import notification from './notification/notification';
 import skipWeekendsDiscontinuityProvider from './scale/discontinuity/skipWeekends';
 
 export default function() {
