@@ -6,14 +6,14 @@ export default function() {
     var charts = [];
     var dispatch = d3.dispatch(event.viewChange);
 
-    function key(d) { return d.id; }
+    function key(d) { return d.option.id; }
 
     var secDataJoin = fc.util.dataJoin()
         .children(true)
         .selector('.secondary-container')
         .element('svg')
         .attr('class', function(d) {
-            return 'secondary-container secondary-' + d.name;
+            return 'secondary-container secondary-' + d.valueString;
         })
         .key(function(d) {
             // Issue with elements being regenerated due to data being overwritten. See:
@@ -25,14 +25,14 @@ export default function() {
         selection.each(function(model) {
             var secondaries = secDataJoin(this, charts);
 
-            secondaries.each(function(option) {
-                this.__secondaryChart__ = option;
+            secondaries.each(function(indicator) {
+                this.__secondaryChart__ = indicator;
 
-                option.on(event.viewChange, dispatch[event.viewChange]);
+                indicator.option.on(event.viewChange, dispatch[event.viewChange]);
 
                 d3.select(this)
                     .datum(model)
-                    .call(option);
+                    .call(indicator.option);
             });
         });
     }

@@ -24,6 +24,6 @@ export default function(containers, charts) {
     charts.nav().dimensionChanged(containers.navbar);
     charts.primary().dimensionChanged(containers.primary);
     charts.secondaries().charts().forEach(function(chart) {
-        chart.dimensionChanged(containers.secondaries);
+        chart.option.dimensionChanged(containers.secondaries);
     });
 }

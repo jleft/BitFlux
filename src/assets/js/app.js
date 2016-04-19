@@ -379,7 +379,7 @@ export default function() {
         });
 
         charts.secondaries().charts(model.charts.secondary.indicators.map(function(indicator) {
-            return indicator.option;
+            return indicator;
         }));
 
         model.overlay.secondaryIndicators = model.charts.secondary.indicators;
