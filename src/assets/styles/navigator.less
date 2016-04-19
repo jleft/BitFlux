@@ -3,7 +3,7 @@
   .phone-landscape-display(@phone-landscape-nav-display);
   .tablet-portrait-display(@tablet-portrait-nav-display);
   .tablet-landscape-display(@tablet-landscape-nav-display);
-  
+
   display: flex;
 
   #navbar-container {
@@ -82,23 +82,20 @@
   }
 
   #navbar-reset {
-    flex: 0 0 24px;
+    flex: 0 0 32px;
     height: 40px;
     opacity: 0.2;
-    margin: 10px 21px 0 15px;
+    margin: 10px 12px 0 15px;
 
     .reset-button {
       stroke: @primary-white;
       fill: @primary-dark-blue;
       shape-rendering: auto;
+      cursor: pointer;
 
       &.active {
         fill: @primary-white;
       }
-    }
-
-    .reset-button > path {
-      cursor: pointer;
     }
   }
 }
