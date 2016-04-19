@@ -1,4 +1,3 @@
-import d3 from 'd3';
 import fc from 'd3fc';
 
 export default function() {
@@ -49,7 +48,7 @@ export default function() {
 
     dataGeneratorAdaptor.product = function(x) {
         if (!arguments.length) {
-            return dataGeneratorAdaptor;
+            return product;
         }
         if (x !== 'Data Generator') {
             throw new Error('Random Financial Data Generator does not support products.');

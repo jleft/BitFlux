@@ -1,4 +1,3 @@
-/*global window */
 import fc from 'd3fc';
 
 var renderedOnce = false;

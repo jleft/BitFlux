@@ -2,8 +2,6 @@ import d3 from 'd3';
 import fc from 'd3fc';
 import util from '../util/util';
 import event from '../event';
-import option from '../model/menu/option';
-import candlestick from '../series/candlestick';
 import zoomBehavior from '../behavior/zoom';
 
 function calculateCloseAxisTagPath(width, height) {
@@ -181,7 +179,6 @@ export default function() {
         bollingerAlgorithm(model.data);
 
         // Scale y axis
-        var visibleData = util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
         // Add percentage padding either side of extreme high/lows
         var extentAccessors = getExtentAccessors(multi.series());
         var paddedYExtent = fc.util.extent()
@@ -200,7 +197,7 @@ export default function() {
 
               var calloutHeight = 18;
               closePriceTick.select('path')
-                .attr('d', function(d) {
+                .attr('d', function() {
                     return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, calloutHeight));
                 });
               closePriceTick.select('text')

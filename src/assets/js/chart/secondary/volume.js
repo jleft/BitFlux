@@ -1,6 +1,5 @@
 import d3 from 'd3';
 import fc from 'd3fc';
-import util from '../../util/util';
 import event from '../../event';
 import base from './base';
 
