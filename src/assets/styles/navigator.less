@@ -3,7 +3,7 @@
   .phone-landscape-display(@phone-landscape-nav-display);
   .tablet-portrait-display(@tablet-portrait-nav-display);
   .tablet-landscape-display(@tablet-landscape-nav-display);
-  
+
   display: flex;
 
   #navbar-container {
@@ -13,7 +13,6 @@
     .extent {
       fill: @secondary-orange;
       stroke: none;
-      shape-rendering: crispEdges;
     }
 
     .background {
@@ -44,10 +43,12 @@
         .outer-handle {
           stroke: @primary-white;
           fill: @primary-dark-blue;
+          shape-rendering: auto;
         }
         .inner-handle {
           stroke: @primary-white;
           fill: @primary-white;
+          shape-rendering: auto;
         }
       }
     }
