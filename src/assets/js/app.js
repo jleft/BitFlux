@@ -1,7 +1,7 @@
 /*global window */
+import './extensions';
 import d3 from 'd3';
 import fc from 'd3fc';
-import extensions from './extensions';
 import chartGroup from './chart/group';
 import menu from './menu/menu';
 import util from './util/util';
