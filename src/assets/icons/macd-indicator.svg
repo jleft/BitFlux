@@ -1,8 +1,8 @@
 <svg viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
   <g fill="none" fill-rule="evenodd" stroke="none">
-    <path fill="#7B9FA1" d="M18 11h1v3h-1zM20 11h1v3h-1zM22 11h1v3h-1zM16 12h1v2h-1zM14 12h1v2h-1zM12 14h1v2h-1zM6 14h1v2H6zM4 14h1v3H4zM8 14h1v3H8zM10 14h1v3h-1z"/>
-    <path d="M2 14h1v3H2v-3z" stroke="#979797" stroke-width=".01" fill="#7B9FA1"/>
-    <path d="M2 14l3.72-4 5.117 6h1.86l6.047-7 1.86 3H22" stroke="#7B9FA1"/>
-    <path d="M3 15.59L9.166 10l6.85 6H22" stroke="#7B9FA1" stroke-width=".5" stroke-dasharray="1"/>
+    <path fill="#7B9FA1" d="m 18,11 1,0 0,3 -1,0 z m 2,0 1,0 0,3 -1,0 z m 2,0 1,0 0,3 -1,0 z m -6,1 1,0 0,2 -1,0 z m -2,0 1,0 0,2 -1,0 z m -2,2 1,0 0,2 -1,0 z m -6,0 1,0 0,2 -1,0 z m -2,0 1,0 0,3 -1,0 z m 4,0 1,0 0,3 -1,0 z m 2,0 1,0 0,3 -1,0 z"/>
+    <path d="m 2,14 1,0 0,3 -1,0 z" stroke="#979797" stroke-width=".01" fill="#7B9FA1"/>
+    <path d="m 2,14 3.72,-4 5.117,6 1.86,0 6.047,-7 1.86,3 1.396,0" stroke="#7B9FA1"/>
+    <path d="M 3,15.59 9.166,10 16.016,16 22,16" stroke="#7B9FA1" stroke-width=".5" stroke-dasharray="1"/>
   </g>
 </svg>
