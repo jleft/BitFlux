@@ -162,7 +162,7 @@ export default function() {
             model.charts.primary.data);
         model.charts.primary.trackingLatest = trackingLatest;
         model.charts.secondary.trackingLatest = trackingLatest;
-        model.charts.trackingLatest = trackingLatest;
+        model.charts.nav.trackingLatest = trackingLatest;
         model.navReset.trackingLatest = trackingLatest;
         render();
     }
