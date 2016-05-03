@@ -7,13 +7,13 @@
       stroke: @moving-average-colour;
     }
   }
-  
+
   path.down {
     stroke: @candlestick-down-stroke;
     stroke-width: @stroke-width;
     fill: @candlestick-down-fill;
   }
-  
+
   path.up {
     stroke: @candlestick-up-stroke;
     stroke-width: @stroke-width;
@@ -40,8 +40,15 @@
   }
 
   .area {
-    fill: @area-fill;
     shape-rendering: auto;
+  }
+
+  .primary-area-series-gradient-top {
+    stop-color: @area-fill-top;
+  }
+
+  .primary-area-series-gradient-bottom {
+    stop-color: @area-fill-bottom;
   }
 
   .point {

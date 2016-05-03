@@ -86,6 +86,11 @@ export default function() {
             default:
                 return this.visibleData;
             }
+        })
+        .decorate(function(selection) {
+            selection.enter()
+                .select('.area')
+                .attr('fill', 'url("#primary-area-series-gradient")');
         });
 
     var xScale = fc.scale.dateTime();
@@ -99,6 +104,17 @@ export default function() {
           left: 0,
           bottom: 0,
           right: yAxisWidth
+      })
+      .decorate(function(selection) {
+          selection.enter()
+              .selectAll('defs')
+              .data([0])
+              .enter()
+              .append('defs')
+              .html('<linearGradient id="primary-area-series-gradient" x1="0%" x2="0%" y1="0%" y2="100%"> \
+                      <stop offset="0%" class="primary-area-series-gradient-top" /> \
+                      <stop offset="100%" class="primary-area-series-gradient-bottom" /> \
+                  </linearGradient>');
       });
 
     // Create and apply the Moving Average
@@ -118,8 +134,11 @@ export default function() {
         switch (currentSeries.valueString) {
         case 'line':
         case 'point':
+            currentSeries.option.yValue(currentYValueAccessor);
+            break;
         case 'area':
             currentSeries.option.yValue(currentYValueAccessor);
+            currentSeries.option.y0Value(function() { return yScale.domain()[0]; });
             break;
         default:
             break;
