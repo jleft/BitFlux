@@ -8,10 +8,7 @@ export default function() {
     var navHeight = 100; // Also maintain in variables.less
     var bottomMargin = 40; // Also maintain in variables.less
     var navChartHeight = navHeight - bottomMargin;
-    var backgroundStrokeWidth = 2; // Also maintain in variables.less
-    // Stroke is half inside half outside, so stroke/2 per border
-    var borderWidth = backgroundStrokeWidth / 2;
-    // should have been 2 * borderWidth, but for unknown reason it is incorrect in practice.
+    var borderWidth = 1; // Also maintain in variables.less
     var extentHeight = navChartHeight - borderWidth;
     var barHeight = extentHeight;
     var handleCircleCenter = borderWidth + barHeight / 2;
@@ -27,7 +24,9 @@ export default function() {
         .yTicks(0)
         .margin({
             bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
-        });
+        })
+        .xOuterTickSize(0)
+        .yOuterTickSize(0);
 
     var viewScale = fc.scale.dateTime();
 
@@ -47,7 +46,7 @@ export default function() {
 
             selection.selectAll('.background, .extent')
                 .attr('height', extentHeight)
-                .attr('y', backgroundStrokeWidth / 2);
+                .attr('y', borderWidth);
 
             // overload d3 styling for the brush handles
             // as Firefox does not react properly to setting these through less file.

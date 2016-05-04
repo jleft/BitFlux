@@ -9,6 +9,7 @@
   #navbar-container {
     min-height: @navigator-height;
     margin-right: 0 !important;
+    overflow: visible;
 
     .extent {
       fill: @secondary-orange;
@@ -21,36 +22,46 @@
       stroke-width: @navigator-background-stroke-width;
     }
 
-    .plot-area {
-      .multi {
-        .area {
-          fill: @gridline-colour;
-        }
-        path {
-          stroke: @navigator-colour;
-          stroke-width: @navigator-stroke;
+    .cartesian-chart {
+      overflow: visible;
+
+      .plot-area-container {
+        .plot-area {
+          overflow: visible;
+
+          .multi {
+            .area {
+              fill: @gridline-colour;
+            }
+            path {
+              stroke: @navigator-colour;
+              stroke-width: @navigator-stroke;
+            }
+          }
+          .n, .s, .ne, .nw, .se, .sw {
+            display: none; // Hide elements. Gave false impression of resizing ability.
+          }
+          .e, .w {
+            > rect {
+              fill: @navigator-stroke-colour;
+              stroke-width: 0;
+              visibility: visible !important;
+            }
+            .outer-handle {
+              stroke: @primary-white;
+              fill: @primary-dark-blue;
+              shape-rendering: auto;
+            }
+            .inner-handle {
+              stroke: @primary-white;
+              fill: @primary-white;
+              shape-rendering: auto;
+            }
+          }
+
         }
       }
-      .n, .s, .ne, .nw, .se, .sw {
-        display: none; // Hide elements. Gave false impression of resizing ability.
-      }
-      .e, .w {
-        > rect {
-          fill: @navigator-stroke-colour;
-          stroke-width: 0;
-          visibility: visible !important;
-        }
-        .outer-handle {
-          stroke: @primary-white;
-          fill: @primary-dark-blue;
-          shape-rendering: auto;
-        }
-        .inner-handle {
-          stroke: @primary-white;
-          fill: @primary-white;
-          shape-rendering: auto;
-        }
-      }
+
     }
 
     text {
