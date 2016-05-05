@@ -4,7 +4,8 @@
   "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
   "main": "index.js",
   "scripts": {
-    "test": "grunt ci"
+    "test": "grunt ci",
+    "shrinkwrap": "shrinkwarp --dev"
   },
   "repository": {
     "type": "git",
@@ -62,6 +63,7 @@
     "karma-ie-launcher": "^0.2.0",
     "karma-jasmine": "^0.3.6",
     "less-plugin-autoprefix": "^1.5.1",
+    "shrinkwarp": "^1.2.0",
     "time-grunt": "^1.3.0",
     "watchify": "^3.7.0"
   }
