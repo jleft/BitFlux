@@ -27,6 +27,7 @@
     "d3": "^3.5.16",
     "d3fc": "^7.0.0",
     "jquery": "^2.2.0",
+    "lodash": "^4.11.2",
     "seedrandom": "^2.4.2"
   },
   "devDependencies": {
