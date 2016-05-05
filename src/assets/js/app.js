@@ -1,7 +1,7 @@
 /*global window */
 import d3 from 'd3';
 import fc from 'd3fc';
-import chart from './chart/chart';
+import chartGroup from './chart/group';
 import menu from './menu/menu';
 import util from './util/util';
 import event from './event';
@@ -35,9 +35,7 @@ export default function() {
             <div id="charts" class="col-md-12"> \
                 <div id="charts-container"> \
                     <svg id="primary-container"></svg> \
-                    <svg class="secondary-container"></svg> \
-                    <svg class="secondary-container"></svg> \
-                    <svg class="secondary-container"></svg> \
+                    <div id="secondaries-container"></div> \
                     <div class="x-axis-row"> \
                         <svg id="x-axis-container"></svg> \
                     </div> \
@@ -62,15 +60,7 @@ export default function() {
                             <div class="edit-indicator-container"></div> \
                         </div> \
                     </div> \
-                    <div class="overlay-secondary-container"> \
-                        <div class="edit-indicator-container"></div> \
-                    </div> \
-                    <div class="overlay-secondary-container"> \
-                        <div class="edit-indicator-container"></div> \
-                    </div> \
-                    <div class="overlay-secondary-container"> \
-                        <div class="edit-indicator-container"></div> \
-                    </div> \
+                    <div id="overlay-secondaries-container"></div> \
                     <div class="x-axis-row"></div> \
                     <div id="overlay-navbar-row"></div> \
                 </div> \
@@ -85,16 +75,9 @@ export default function() {
     var model = initialiseModel();
 
     var _dataInterface = initialiseDataInterface();
+    var charts = initialiseCharts();
 
     var externalHistoricFeedErrorCallback;
-
-    var charts = {
-        primary: undefined,
-        secondaries: [],
-        xAxis: chart.xAxis(),
-        navbar: undefined,
-        legend: chart.legend()
-    };
 
     var overlay;
     var headMenu;
@@ -115,27 +98,8 @@ export default function() {
             containers.suspendLayout(false);
         }
 
-        containers.primary.datum(model.primaryChart)
-            .call(charts.primary);
-
-        containers.legend.datum(model.legend)
-            .call(charts.legend);
-
-        containers.secondaries.datum(model.secondaryChart)
-            // TODO: Add component: group of secondary charts.
-            // Then also move method layout.getSecondaryContainer into the group.
-            .filter(function(d, i) { return i < charts.secondaries.length; })
-            .each(function(d, i) {
-                d3.select(this)
-                    .attr('class', 'secondary-container secondary-' + charts.secondaries[i].valueString)
-                    .call(charts.secondaries[i].option);
-            });
-
-        containers.xAxis.datum(model.xAxis)
-            .call(charts.xAxis);
-
-        containers.navbar.datum(model.nav)
-            .call(charts.navbar);
+        containers.chartsAndOverlay.datum(model.charts)
+            .call(charts);
 
         containers.app.select('#navbar-reset')
             .datum(model.navReset)
@@ -184,17 +148,21 @@ export default function() {
 
     function onViewChange(domain) {
         var viewDomain = [domain[0], domain[1]];
-        model.primaryChart.viewDomain = viewDomain;
-        model.secondaryChart.viewDomain = viewDomain;
-        model.xAxis.viewDomain = viewDomain;
-        model.nav.viewDomain = viewDomain;
+        model.charts.primary.viewDomain = viewDomain;
+        model.charts.secondary.viewDomain = viewDomain;
+        model.charts.xAxis.viewDomain = viewDomain;
+        model.charts.nav.viewDomain = viewDomain;
+
+        var visibleData = util.domain.filterDataInDateRange(viewDomain, model.data);
+        model.charts.primary.visibleData = visibleData;
+        model.charts.secondary.visibleData = visibleData;
 
         var trackingLatest = util.domain.trackingLatestData(
-            model.primaryChart.viewDomain,
-            model.primaryChart.data);
-        model.primaryChart.trackingLatest = trackingLatest;
-        model.secondaryChart.trackingLatest = trackingLatest;
-        model.nav.trackingLatest = trackingLatest;
+            model.charts.primary.viewDomain,
+            model.charts.primary.data);
+        model.charts.primary.trackingLatest = trackingLatest;
+        model.charts.secondary.trackingLatest = trackingLatest;
+        model.charts.nav.trackingLatest = trackingLatest;
         model.navReset.trackingLatest = trackingLatest;
         render();
     }
@@ -212,7 +180,7 @@ export default function() {
     }
 
     function onCrosshairChange(dataPoint) {
-        model.legend.data = dataPoint;
+        model.charts.legend.data = dataPoint;
         render();
     }
 
@@ -233,11 +201,11 @@ export default function() {
     }
 
     function resetToLatest() {
-        var data = model.primaryChart.data;
+        var data = model.charts.primary.data;
         var dataDomain = fc.util.extent()
             .fields('date')(data);
         var navTimeDomain = util.domain.moveToLatest(
-            model.primaryChart.discontinuityProvider,
+            model.charts.primary.discontinuityProvider,
             dataDomain,
             data,
             proportionOfDataToDisplayByDefault);
@@ -258,34 +226,35 @@ export default function() {
     }
 
     function updateModelData(data) {
-        model.primaryChart.data = data;
-        model.secondaryChart.data = data;
-        model.nav.data = data;
+        model.data = data;
+        model.charts.primary.data = data;
+        model.charts.secondary.data = data;
+        model.charts.nav.data = data;
     }
 
     function updateDiscontinuityProvider(productSource) {
         var discontinuityProvider = productSource.discontinuityProvider;
 
-        model.xAxis.discontinuityProvider = discontinuityProvider;
-        model.nav.discontinuityProvider = discontinuityProvider;
-        model.primaryChart.discontinuityProvider = discontinuityProvider;
-        model.secondaryChart.discontinuityProvider = discontinuityProvider;
+        model.charts.xAxis.discontinuityProvider = discontinuityProvider;
+        model.charts.nav.discontinuityProvider = discontinuityProvider;
+        model.charts.primary.discontinuityProvider = discontinuityProvider;
+        model.charts.secondary.discontinuityProvider = discontinuityProvider;
     }
 
     function updateModelSelectedProduct(product) {
         model.headMenu.selectedProduct = product;
-        model.primaryChart.product = product;
-        model.secondaryChart.product = product;
-        model.legend.product = product;
         model.overlay.selectedProduct = product;
+        model.charts.primary.product = product;
+        model.charts.secondary.product = product;
+        model.charts.legend.product = product;
 
         updateDiscontinuityProvider(product.source);
     }
 
     function updateModelSelectedPeriod(period) {
         model.headMenu.selectedPeriod = period;
-        model.xAxis.period = period;
-        model.legend.period = period;
+        model.charts.xAxis.period = period;
+        model.charts.legend.period = period;
     }
 
     function changeProduct(product) {
@@ -295,14 +264,9 @@ export default function() {
         _dataInterface(product.periods[0].seconds, product);
     }
 
-    function initialisePrimaryChart() {
-        return chart.primary()
+    function initialiseCharts() {
+        return chartGroup()
             .on(event.crosshairChange, onCrosshairChange)
-            .on(event.viewChange, onViewChange);
-    }
-
-    function initialiseNav() {
-        return chart.nav()
             .on(event.viewChange, onViewChange);
     }
 
@@ -313,20 +277,20 @@ export default function() {
 
     function initialiseDataInterface() {
         return dataInterface()
-            .on(event.newTrade, function(data, source) {
+            .on(event.newTrade, function(data) {
                 updateModelData(data);
-                if (model.primaryChart.trackingLatest) {
+                if (model.charts.primary.trackingLatest) {
                     var newDomain = util.domain.moveToLatest(
-                        model.primaryChart.discontinuityProvider,
-                        model.primaryChart.viewDomain,
-                        model.primaryChart.data);
+                        model.charts.primary.discontinuityProvider,
+                        model.charts.primary.viewDomain,
+                        model.charts.primary.data);
                     onViewChange(newDomain);
                 }
             })
-            .on(event.historicDataLoaded, function(data, source) {
+            .on(event.historicDataLoaded, function(data) {
                 loading(false);
                 updateModelData(data);
-                model.legend.data = null;
+                model.charts.legend.data = null;
                 resetToLatest();
                 updateLayout();
             })
@@ -370,8 +334,8 @@ export default function() {
                 render();
             })
             .on(event.clearAllPrimaryChartIndicatorsAndSecondaryCharts, function() {
-                model.primaryChart.indicators.forEach(deselectOption);
-                charts.secondaries.forEach(deselectOption);
+                model.charts.primary.indicators.forEach(deselectOption);
+                model.charts.secondary.indicators.forEach(deselectOption);
 
                 updatePrimaryChartIndicators();
                 updateSecondaryCharts();
@@ -391,7 +355,7 @@ export default function() {
     function initialiseSelectors() {
         return menu.selectors()
             .on(event.primaryChartSeriesChange, function(series) {
-                model.primaryChart.series = series;
+                model.charts.primary.series = series;
                 selectOption(series, model.selectors.seriesSelector.options);
                 render();
             })
@@ -400,33 +364,30 @@ export default function() {
     }
 
     function updatePrimaryChartIndicators() {
-        model.primaryChart.indicators =
+        model.charts.primary.indicators =
             model.selectors.indicatorSelector.options.filter(function(option) {
                 return option.isSelected && option.isPrimary;
             });
 
-        model.headMenu.primaryIndicators = model.primaryChart.indicators;
-        model.overlay.primaryIndicators = model.primaryChart.indicators;
+        model.overlay.primaryIndicators = model.charts.primary.indicators;
+        model.headMenu.primaryIndicators = model.charts.primary.indicators;
     }
 
     function updateSecondaryChartModels() {
-        charts.secondaries =
-            model.selectors.indicatorSelector.options.filter(function(option) {
-                return option.isSelected && !option.isPrimary;
-            });
-        // TODO: This doesn't seem to be a concern of menu.
-        charts.secondaries.forEach(function(chartOption) {
-            chartOption.option.on(event.viewChange, onViewChange);
+        model.charts.secondary.indicators = model.selectors.indicatorSelector.options.filter(function(option) {
+            return option.isSelected && !option.isPrimary;
         });
 
-        model.headMenu.secondaryIndicators = charts.secondaries;
-        model.overlay.secondaryIndicators = charts.secondaries;
+        charts.secondaries().charts(model.charts.secondary.indicators.map(function(indicator) {
+            return indicator;
+        }));
+
+        model.overlay.secondaryIndicators = model.charts.secondary.indicators;
+        model.headMenu.secondaryIndicators = model.charts.secondary.indicators;
     }
 
     function updateSecondaryCharts() {
         updateSecondaryChartModels();
-        // TODO: Remove .remove! (could a secondary chart group component manage this?).
-        containers.secondaries.selectAll('*').remove();
         updateLayout();
     }
 
@@ -553,11 +514,11 @@ export default function() {
             charts: chartsContainer,
             chartsAndOverlay: chartsAndOverlayContainer,
             primary: chartsContainer.select('#primary-container'),
-            secondaries: chartsContainer.selectAll('.secondary-container'),
+            secondaries: chartsContainer.select('#secondaries-container'),
             xAxis: chartsContainer.select('#x-axis-container'),
             navbar: chartsContainer.select('#navbar-container'),
             overlay: overlayContainer,
-            overlaySecondaries: overlayContainer.selectAll('.overlay-secondary-container'),
+            overlaySecondaries: overlayContainer.select('#overlay-secondaries-container'),
             legend: appContainer.select('#legend'),
             suspendLayout: function(value) {
                 var self = this;
@@ -568,9 +529,6 @@ export default function() {
                 });
             }
         };
-
-        charts.primary = initialisePrimaryChart();
-        charts.navbar = initialiseNav();
 
         headMenu = initialiseHeadMenu();
         navReset = initialiseNavReset();

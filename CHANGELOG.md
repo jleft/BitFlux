@@ -1,6 +1,17 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.6.0] - 5-5-2016
+### Added
+- Component to manage secondary charts
+- Gradient style for primary chart area series
+
+### Changed
+- Only render visible data on primary and secondary charts
+- New style for navigator reset button
+- Improvements to icon sharpness
+- Navigator brush handles no longer cropped
+
 ## [1.5.2] - 9-4-2016
 ### Added
 - Selected and hover styles for dropdown menu items

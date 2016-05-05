@@ -1,5 +1,4 @@
 import d3 from 'd3';
-import fc from 'd3fc';
 import event from '../event';
 import dropdown from './generator/dropdown';
 

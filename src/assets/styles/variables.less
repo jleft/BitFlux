@@ -59,8 +59,9 @@
 
 // Plot Area
 @stroke-width: 1px;
-@area-fill: fade(@series-colour, 75%);
 @series-colour: @secondary-orange;
+@area-fill-top: fade(@series-colour, 75%);
+@area-fill-bottom: fade(@series-colour, 10%);
 
 // Plot Area - Candlestick
 @candlestick-down-stroke: @secondary-orange;
@@ -96,7 +97,7 @@
 @navigator-extent-colour: @secondary-orange;
 @navigator-colour: @primary-blue;
 @navigator-background-colour: @secondary-dark-blue;
-@navigator-background-stroke-width: 2px;
+@navigator-background-stroke-width: 1px;
 @navigator-stroke: 1px;
 @navigator-stroke-colour: @primary-white;
 @navigator-selection-border-colour: @primary-white;

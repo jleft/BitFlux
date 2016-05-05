@@ -1,6 +1,6 @@
 {
   "name": "BitFlux",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
   "main": "index.js",
   "scripts": {
@@ -48,7 +48,7 @@
     "grunt-eslint": "^18.0.0",
     "grunt-gh-pages": "^1.0.0",
     "grunt-karma": "^0.12.1",
-    "grunt-rollup": "^0.6.1",
+    "grunt-rollup": "^0.7.1",
     "grunt-svg-sprite": "^1.2.19",
     "grunt-template": "^0.2.3",
     "isparta": "^4.0.0",

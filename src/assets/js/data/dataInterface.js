@@ -1,5 +1,4 @@
 import d3 from 'd3';
-import fc from 'd3fc';
 import callbackInvalidator from './callbackInvalidator';
 import collectOhlc from './collectOhlc';
 import event from '../event';

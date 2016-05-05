@@ -1,6 +1,5 @@
 import d3 from 'd3';
 import fc from 'd3fc';
-import util from '../../util/util';
 import event from '../../event';
 import base from './base';
 
@@ -11,11 +10,11 @@ export default function() {
       .yValue(function(d) { return d.volume; });
 
     var chart = base()
-      .series([volumeBar])
-      .yTicks(4)
-      .on(event.viewChange, function(domain) {
-          dispatch[event.viewChange](domain);
-      });
+        .series([volumeBar])
+        .yTicks(4)
+        .on(event.viewChange, function(domain) {
+            dispatch[event.viewChange](domain);
+        });
 
     function volume(selection) {
         selection.each(function(model) {
@@ -30,8 +29,7 @@ export default function() {
                 .xDomain(model.viewDomain)
                 .yDomain(paddedYExtent);
 
-            selection.datum(model)
-                .call(chart);
+            selection.call(chart);
         });
     }
 

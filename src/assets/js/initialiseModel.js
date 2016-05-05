@@ -11,11 +11,10 @@ import coinbaseWebSocket from './data/coinbase/streaming/webSocket';
 import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
-import notification from './notification/notification';
 import skipWeekendsDiscontinuityProvider from './scale/discontinuity/skipWeekends';
 
 export default function() {
-    function initPeriods() {
+    function initialisePeriods() {
         return {
             week1: model.data.period('Weekly', 60 * 60 * 24 * 7, {unit: d3.time.week, value: 1}, '%b %d'),
             day1: model.data.period('Daily', 60 * 60 * 24, {unit: d3.time.day, value: 1}, '%b %d'),
@@ -25,7 +24,7 @@ export default function() {
         };
     }
 
-    function initSources() {
+    function initialiseSources() {
         return {
             generated: model.data.source(
                 dataGeneratorAdaptor(),
@@ -48,14 +47,14 @@ export default function() {
         };
     }
 
-    function initProducts() {
+    function initialiseProducts() {
         return {
             generated: model.data.product('Data Generator', 'Data Generator', [periods.day1], sources.generated, '.3s'),
             quandl: model.data.product('GOOG', 'GOOG', [periods.day1], sources.quandl, '.3s')
         };
     }
 
-    function initSeriesSelector() {
+    function initialiseSeriesSelector() {
 
         var candlestick = candlestickSeries();
         candlestick.id = util.uid();
@@ -103,7 +102,7 @@ export default function() {
         return model.menu.selector(config, options);
     }
 
-    function initIndicatorOptions() {
+    function initialiseIndicatorOptions() {
         var secondary = chart.secondary;
 
         var movingAverage = fc.series.line()
@@ -127,49 +126,65 @@ export default function() {
         bollingerBandsOption.option.extentAccessor = [function(d) { return d.bollingerBands.lower; },
             function(d) { return d.bollingerBands.upper; }];
 
+        var rsi = secondary.rsi();
+        rsi.id = util.uid();
+
+        var macd = secondary.macd();
+        macd.id = util.uid();
+
+        var volume = secondary.volume();
+        volume.id = util.uid();
+
         var indicators = [
             movingAverageOption,
             bollingerBandsOption,
             model.menu.option('Relative Strength Index', 'rsi',
-                secondary.rsi(), 'bf-icon-rsi-indicator', false),
+                rsi, 'bf-icon-rsi-indicator', false),
             model.menu.option('MACD', 'macd',
-                secondary.macd(), 'bf-icon-macd-indicator', false),
+                macd, 'bf-icon-macd-indicator', false),
             model.menu.option('Volume', 'volume',
-                secondary.volume(), 'bf-icon-bar-series', false)
+                volume, 'bf-icon-bar-series', false)
         ];
 
         return indicators;
     }
 
-    function initIndicatorSelector() {
+    function initialiseIndicatorSelector() {
         var config = model.menu.dropdownConfig('Add Indicator', false, true);
 
-        return model.menu.selector(config, initIndicatorOptions());
+        return model.menu.selector(config, initialiseIndicatorOptions());
     }
 
-    function initSelectors() {
+    function initialiseSelectors() {
         return {
-            seriesSelector: initSeriesSelector(),
-            indicatorSelector: initIndicatorSelector()
+            seriesSelector: initialiseSeriesSelector(),
+            indicatorSelector: initialiseIndicatorSelector()
         };
     }
 
-    var periods = initPeriods();
-    var sources = initSources();
-    var products = initProducts();
+    function initialiseCharts() {
+        var legend = model.chart.legend(products.generated, periods.day1);
+        var nav = model.chart.nav(products.generated.source.discontinuityProvider);
+        var primary = model.chart.primary(products.generated, products.generated.source.discontinuityProvider);
+        var secondary = model.chart.secondary(products.generated, products.generated.source.discontinuityProvider);
+        var xAxis = model.chart.xAxis(periods.day1, products.generated.source.discontinuityProvider);
+
+        return model.chart.group(legend, nav, primary, secondary, xAxis);
+    }
+
+    var periods = initialisePeriods();
+    var sources = initialiseSources();
+    var products = initialiseProducts();
 
     return {
+        data: [],
         periods: periods,
         sources: sources,
-        primaryChart: model.chart.primary(products.generated, products.generated.source.discontinuityProvider),
-        secondaryChart: model.chart.secondary(products.generated, products.generated.source.discontinuityProvider),
-        selectors: initSelectors(),
-        xAxis: model.chart.xAxis(periods.day1, products.generated.source.discontinuityProvider),
-        nav: model.chart.nav(products.generated.source.discontinuityProvider),
+        selectors: initialiseSelectors(),
         navReset: model.chart.navigationReset(),
         headMenu: model.menu.head([products.generated, products.quandl], products.generated, periods.day1),
-        legend: model.chart.legend(products.generated, periods.day1),
         overlay: model.menu.overlay([products.generated, products.quandl], products.generated),
-        notificationMessages: model.notification.messages()
+        notificationMessages: model.notification.messages(),
+        charts: initialiseCharts()
     };
 }

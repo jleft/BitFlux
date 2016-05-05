@@ -2,8 +2,6 @@ import d3 from 'd3';
 import fc from 'd3fc';
 import util from '../util/util';
 import event from '../event';
-import option from '../model/menu/option';
-import candlestick from '../series/candlestick';
 import zoomBehavior from '../behavior/zoom';
 
 function calculateCloseAxisTagPath(width, height) {
@@ -86,8 +84,13 @@ export default function() {
             case crosshair:
                 return crosshairData;
             default:
-                return this.data;
+                return this.visibleData;
             }
+        })
+        .decorate(function(selection) {
+            selection.enter()
+                .select('.area')
+                .attr('fill', 'url("#primary-area-series-gradient")');
         });
 
     var xScale = fc.scale.dateTime();
@@ -101,6 +104,17 @@ export default function() {
           left: 0,
           bottom: 0,
           right: yAxisWidth
+      })
+      .decorate(function(selection) {
+          selection.enter()
+              .selectAll('defs')
+              .data([0])
+              .enter()
+              .append('defs')
+              .html('<linearGradient id="primary-area-series-gradient" x1="0%" x2="0%" y1="0%" y2="100%"> \
+                      <stop offset="0%" class="primary-area-series-gradient-top" /> \
+                      <stop offset="100%" class="primary-area-series-gradient-bottom" /> \
+                  </linearGradient>');
       });
 
     // Create and apply the Moving Average
@@ -120,8 +134,11 @@ export default function() {
         switch (currentSeries.valueString) {
         case 'line':
         case 'point':
+            currentSeries.option.yValue(currentYValueAccessor);
+            break;
         case 'area':
             currentSeries.option.yValue(currentYValueAccessor);
+            currentSeries.option.y0Value(function() { return yScale.domain()[0]; });
             break;
         default:
             break;
@@ -174,19 +191,18 @@ export default function() {
 
         xScale.discontinuityProvider(model.discontinuityProvider);
 
-        crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.data));
-        updateCrosshairDecorate(model.data);
+        crosshair.snap(fc.util.seriesPointSnapXOnly(currentSeries.option, model.visibleData));
+        updateCrosshairDecorate(model.visibleData);
 
         movingAverage(model.data);
         bollingerAlgorithm(model.data);
 
         // Scale y axis
-        var visibleData = util.domain.filterDataInDateRange(primaryChart.xDomain(), model.data);
         // Add percentage padding either side of extreme high/lows
         var extentAccessors = getExtentAccessors(multi.series());
         var paddedYExtent = fc.util.extent()
             .fields(extentAccessors)
-            .pad(0.08)(visibleData);
+            .pad(0.08)(model.visibleData);
         primaryChart.yDomain(paddedYExtent);
 
         // Find current tick values and add close price to this list, then set it explicitly below
@@ -200,7 +216,7 @@ export default function() {
 
               var calloutHeight = 18;
               closePriceTick.select('path')
-                .attr('d', function(d) {
+                .attr('d', function() {
                     return d3.svg.area()(calculateCloseAxisTagPath(yAxisWidth, calloutHeight));
                 });
               closePriceTick.select('text')
