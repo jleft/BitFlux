@@ -90,7 +90,7 @@ cd temp
 
 prepare_and_build_master
 
-# prepare_and_build_develop
+prepare_and_build_develop
 
 echo "Creating directories for built application..."
 cd ../dist
