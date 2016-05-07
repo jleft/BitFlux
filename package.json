@@ -44,7 +44,7 @@
     "grunt-contrib-less": "^1.3.0",
     "grunt-contrib-uglify": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-cordovacli": "^0.8.2",
+    "grunt-cordovacli": "^1.0.1",
     "grunt-eslint": "^18.1.0",
     "grunt-gh-pages": "^1.1.0",
     "grunt-karma": "^1.0.0",
