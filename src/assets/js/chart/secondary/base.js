@@ -35,15 +35,13 @@ export default function() {
             var zoom = zoomBehavior(zoomWidth)
                 .scale(xScale)
                 .trackingLatest(trackingLatest)
+                .discontinuityProvider(model.discontinuityProvider)
+                .dataDateExtent(fc.util.extent().fields('date')(model.data))
                 .on('zoom', function(domain) {
                     dispatch[event.viewChange](domain);
                 });
 
             container.select('.plot-area-container')
-                .datum({
-                    data: model.data,
-                    discontinuityProvider: model.discontinuityProvider
-                })
                 .call(zoom);
         });
     }

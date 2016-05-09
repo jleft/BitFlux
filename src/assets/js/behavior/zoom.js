@@ -1,5 +1,4 @@
 import d3 from 'd3';
-import fc from 'd3fc';
 import util from '../util/util';
 
 export default function(width) {
@@ -8,6 +7,8 @@ export default function(width) {
 
     var zoomBehavior = d3.behavior.zoom();
     var scale;
+    var discontinuityProvider;
+    var dataDateExtent;
 
     var allowPan = true;
     var allowZoom = true;
@@ -27,11 +28,11 @@ export default function(width) {
         return Math.min(Math.max(value, min), max);
     }
 
-    function clampDomain(domain, data, totalXExtent) {
+    function clampDomain(domain, totalXExtent) {
         var clampedDomain = domain;
 
-        if (scale(data[0].date) > 0) {
-            clampedDomain[1] = scale.invert(scale(domain[1]) + scale(data[0].date));
+        if (scale(dataDateExtent[0]) > 0) {
+            clampedDomain[1] = scale.invert(scale(domain[1]) + scale(dataDateExtent[0]));
         }
 
         clampedDomain[0] = d3.max([totalXExtent[0], clampedDomain[0]]);
@@ -41,12 +42,8 @@ export default function(width) {
     }
 
     function zoom(selection) {
-
-        var xExtent = fc.util.extent()
-          .fields('date')(selection.datum().data);
-
-        var min = scale(xExtent[0]);
-        var max = scale(xExtent[1]);
+        var min = scale(dataDateExtent[0]);
+        var max = scale(dataDateExtent[1]);
         var zoomPixelExtent = [min, max - width];
 
         zoomBehavior.x(scale)
@@ -65,15 +62,12 @@ export default function(width) {
               if ((panned && allowPan) || (zoomed && allowZoom)) {
                   var domain = scale.domain();
                   if (maxDomainViewed) {
-                      domain = xExtent;
+                      domain = dataDateExtent;
                   } else if (zoomed && trackingLatest) {
-                      domain = util.domain.moveToLatest(
-                          selection.datum().discontinuityProvider,
-                          domain,
-                          selection.datum().data);
+                      domain = util.domain.moveToLatest(discontinuityProvider, domain, dataDateExtent);
                   }
 
-                  domain = clampDomain(domain, selection.datum().data, xExtent);
+                  domain = clampDomain(domain, dataDateExtent);
 
                   if (domain[0].getTime() !== domain[1].getTime()) {
                       dispatch.zoom(domain);
@@ -120,6 +114,22 @@ export default function(width) {
             return scale;
         }
         scale = x;
+        return zoom;
+    };
+
+    zoom.discontinuityProvider = function(x) {
+        if (!arguments.length) {
+            return discontinuityProvider;
+        }
+        discontinuityProvider = x;
+        return zoom;
+    };
+
+    zoom.dataDateExtent = function(x) {
+        if (!arguments.length) {
+            return dataDateExtent;
+        }
+        dataDateExtent = x;
         return zoom;
     };
 
