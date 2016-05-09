@@ -173,35 +173,35 @@ export default function() {
                 dispatch[event.viewChange](brush.extent());
             }
         })
-            .on('brushend', function() {
-                var brushExtentIsEmpty = xEmpty(brush);
-                setHide(selection, false);
-                if (brushExtentIsEmpty) {
-                    dispatch[event.viewChange](util.domain.centerOnDate(
-                        model.discontinuityProvider,
-                        viewScale.domain(),
-                        model.data,
-                        brush.extent()[0]));
-                }
-            });
+        .on('brushend', function() {
+            var brushExtentIsEmpty = xEmpty(brush);
+            setHide(selection, false);
+            if (brushExtentIsEmpty) {
+                dispatch[event.viewChange](util.domain.centerOnDate(
+                    model.discontinuityProvider,
+                    viewScale.domain(),
+                    model.data,
+                    brush.extent()[0]));
+            }
+        });
 
         navChart.plotArea(navMulti);
-        selection.datum({data: sampledData}).call(navChart);
+
+        selection.datum({data: sampledData})
+            .call(navChart);
 
         // Allow to zoom using mouse, but disable panning
         var zoom = zoomBehavior(layoutWidth)
             .scale(viewScale)
             .trackingLatest(model.trackingLatest)
+            .discontinuityProvider(model.discontinuityProvider)
+            .dataDateExtent(fc.util.extent().fields('date')(model.data))
             .allowPan(false)
             .on('zoom', function(domain) {
                 dispatch[event.viewChange](domain);
             });
 
         selection.select('.plot-area')
-            .datum({
-                data: model.data,
-                discontinuityProvider: model.discontinuityProvider
-            })
             .call(zoom);
     }
 
