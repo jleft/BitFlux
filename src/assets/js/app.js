@@ -207,7 +207,7 @@ export default function() {
         var navTimeDomain = util.domain.moveToLatest(
             model.charts.primary.discontinuityProvider,
             dataDomain,
-            data,
+            dataDomain,
             proportionOfDataToDisplayByDefault);
         onViewChange(navTimeDomain);
     }
@@ -283,7 +283,7 @@ export default function() {
                     var newDomain = util.domain.moveToLatest(
                         model.charts.primary.discontinuityProvider,
                         model.charts.primary.viewDomain,
-                        model.charts.primary.data);
+                        fc.util.extent().fields('date')(model.charts.primary.data));
                     onViewChange(newDomain);
                 }
             })

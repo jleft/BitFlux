@@ -1,18 +1,17 @@
 import fc from 'd3fc';
 
-export default function(discontinuityProvider, domain, data, ratio) {
+export default function(discontinuityProvider, viewDomainDateExtent, dataDateExtent, ratio) {
     if (arguments.length < 4) {
         ratio = 1;
     }
-    var dataExtent = fc.util.extent()
-        .fields('date')(data);
 
-    var domainExtent = fc.util.extent()
-        .fields(fc.util.fn.identity)(domain);
+    // Ensure the earlier data is first in the array
+    var sortedViewDomainExtent = fc.util.extent().fields(fc.util.fn.identity)(viewDomainDateExtent);
+    var sortedDataExtent = fc.util.extent().fields(fc.util.fn.identity)(dataDateExtent);
 
-    var dataTimeExtent = discontinuityProvider.distance(dataExtent[0], dataExtent[1]);
-    var scaledDomainTimeDifference = ratio * discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
+    var dataTimeExtent = discontinuityProvider.distance(sortedDataExtent[0], sortedDataExtent[1]);
+    var scaledDomainTimeDifference = ratio * discontinuityProvider.distance(sortedViewDomainExtent[0], sortedViewDomainExtent[1]);
     var scaledLiveDataDomain = scaledDomainTimeDifference < dataTimeExtent ?
-      [discontinuityProvider.offset(dataExtent[1], -scaledDomainTimeDifference), dataExtent[1]] : dataExtent;
+      [discontinuityProvider.offset(sortedDataExtent[1], -scaledDomainTimeDifference), sortedDataExtent[1]] : sortedDataExtent;
     return scaledLiveDataDomain;
 }

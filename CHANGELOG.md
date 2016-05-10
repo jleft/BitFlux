@@ -1,6 +1,13 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.6.1] - 10-5-2016
+### Changed
+- Updated development dependencies
+
+### Fixed
+- Zoom on the navigator
+
 ## [1.6.0] - 5-5-2016
 ### Added
 - Component to manage secondary charts
