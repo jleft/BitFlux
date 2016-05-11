@@ -291,7 +291,7 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.js': ['src/assets/js/main.js']
+                    'dist/assets/js/app.min.js': ['src/assets/js/main.js']
                 }
             }
         },
@@ -312,7 +312,7 @@ module.exports = function(grunt) {
             },
             production: {
                 files: {
-                    'dist/assets/js/app.min.js': ['dist/assets/js/app.js']
+                    'dist/assets/js/app.min.js': ['dist/assets/js/app.min.js']
                 }
             },
             module: {
