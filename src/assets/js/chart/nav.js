@@ -3,6 +3,7 @@ import fc from 'd3fc';
 import util from '../util/util';
 import event from '../event';
 import zoomBehavior from '../behavior/zoom';
+import responsiveTickCount from '../scale/responsiveTickCount';
 
 export default function() {
     var navHeight = 100; // Also maintain in variables.less
@@ -161,7 +162,8 @@ export default function() {
             .fields(['low', 'high']).pad(yExtentPadding)(filteredData);
 
         navChart.xDomain(fc.util.extent().fields('date')(sampledData))
-            .yDomain(yExtent);
+            .yDomain(yExtent)
+            .xTicks(responsiveTickCount(layoutWidth, 100, 2));
 
         brush.on('brush', function() {
             var brushExtentIsEmpty = xEmpty(brush);
