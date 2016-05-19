@@ -47,8 +47,12 @@ export default function() {
         historicFeed.start(startDate)
             .collapse(allowedPeriods.get(granularity));
         historicFeed(function(err, data) {
-            var normalisedData = normaliseDataDateToStartOfDay(data);
-            cb(err, normalisedData);
+            if (err) {
+                cb(err);
+            } else {
+                var normalisedData = normaliseDataDateToStartOfDay(data);
+                cb(err, normalisedData);
+            }
         });
     }
 
