@@ -40,7 +40,12 @@ var intervals = [
 export default function() {
     var domain,
         ticks = 10,
-        minimumTickInterval;
+        minimumTickInterval,
+        discontinuityProvider;
+
+    function extentSpan(extent) {
+        return discontinuityProvider.distance(extent[0], extent[1]);
+    }
 
     function scaleExtent(scaleDomain) {
         var start = scaleDomain[0],
@@ -50,7 +55,7 @@ export default function() {
 
     function tickIntervalForMultiYearInterval(mappedDomain, m) {
         var extent = scaleExtent(mappedDomain.map(function(d) { return d / year; })),
-            span = extent[1] - extent[0],
+            span = extentSpan(extent),
             step = Math.pow(10, Math.floor(Math.log(span / m) / Math.LN10)),
             err = m / span * step;
 
@@ -78,7 +83,7 @@ export default function() {
     }
 
     function tickInterval(extent, count) {
-        var span = extent[1] - extent[0],
+        var span = extentSpan(extent),
             target = span / count,
             i = d3.bisector(function(d) { return d.duration; }).right(intervals, target);
 
@@ -142,6 +147,15 @@ export default function() {
             return minimumTickInterval;
         }
         minimumTickInterval = x;
+        return tickValues;
+    };
+
+
+    tickValues.discontinuityProvider = function(x) {
+        if (!arguments.length) {
+            return discontinuityProvider;
+        }
+        discontinuityProvider = x;
         return tickValues;
     };
 
