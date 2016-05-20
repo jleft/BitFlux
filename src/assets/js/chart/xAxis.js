@@ -41,6 +41,7 @@ export default function() {
             period = model.period;
 
         var tickValues = ticks.domain(xScale.domain())
+            .discontinuityProvider(model.discontinuityProvider)
             .ticks(tickCount)
             .minimumTickInterval([period.d3TimeInterval.unit, period.d3TimeInterval.value])();
 

@@ -12,6 +12,7 @@ function createInterval(interval, step, duration, format) {
     return { interval: interval, step: step, duration: duration, format: format };
 }
 
+// 2 days doesn't work well with weekends skipped
 var intervals = [
     [d3.time.second, 1, second, '%H:%M,%d %b'],
     [d3.time.second, 5, 5 * second, '%H:%M,%d %b'],
@@ -26,7 +27,6 @@ var intervals = [
     [d3.time.hour, 6, 6 * hour, '%H:%M,%d %b'],
     [d3.time.hour, 12, 12 * hour, '%H:%M,%d %b'],
     [d3.time.day, 1, day, '%a %d,%b %Y'],
-    // [d3.time.day, 2, 2 * day, '%a %d,%b %Y'], 2 days doesn't work well with weekends skipped
     [d3.time.week, 1, week, '%d %b,%Y'],
     [d3.time.month, 1, month, '%B,%Y'],
     [d3.time.month, 3, 3 * month, '%B,%Y'],
@@ -40,7 +40,12 @@ var intervals = [
 export default function() {
     var domain,
         ticks = 10,
-        minimumTickInterval;
+        minimumTickInterval,
+        discontinuityProvider;
+
+    function extentSpan(extent) {
+        return discontinuityProvider.distance(extent[0], extent[1]);
+    }
 
     function scaleExtent(scaleDomain) {
         var start = scaleDomain[0],
@@ -78,7 +83,7 @@ export default function() {
     }
 
     function tickInterval(extent, count) {
-        var span = extent[1] - extent[0],
+        var span = extentSpan(extent),
             target = span / count,
             i = d3.bisector(function(d) { return d.duration; }).right(intervals, target);
 
@@ -142,6 +147,15 @@ export default function() {
             return minimumTickInterval;
         }
         minimumTickInterval = x;
+        return tickValues;
+    };
+
+
+    tickValues.discontinuityProvider = function(x) {
+        if (!arguments.length) {
+            return discontinuityProvider;
+        }
+        discontinuityProvider = x;
         return tickValues;
     };
 
