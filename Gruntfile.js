@@ -326,8 +326,8 @@ module.exports = function(grunt) {
             options: {
                 configFile: 'karma.conf.js',
                 preprocessors: {
-                    'src/assets/js/**/*.js': ['browserify'],
-                    'test/**/*.js': ['browserify']
+                    '<%= meta.srcJsFiles %>': ['browserify'],
+                    '<%= meta.testJsFiles %>': ['browserify']
                 },
                 exclude: ['src/assets/js/main.js'],
                 files: [
