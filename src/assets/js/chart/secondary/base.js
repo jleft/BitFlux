@@ -36,7 +36,7 @@ export default function() {
                 .scale(xScale)
                 .trackingLatest(trackingLatest)
                 .discontinuityProvider(model.discontinuityProvider)
-                .dataDateExtent(fc.util.extent().fields('date')(model.data))
+                .dataDateExtent(fc.util.extent().fields(['date'])(model.data))
                 .on('zoom', function(domain) {
                     dispatch[event.viewChange](domain);
                 });

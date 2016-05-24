@@ -32,7 +32,7 @@ export default function() {
         algorithm(model.data);
 
         var paddedYExtent = fc.util.extent()
-            .fields('macd')
+            .fields(['macd'])
             .symmetricalAbout(0)
             .pad(0.08)(model.data.map(function(d) { return d.macd; }));
         chart.trackingLatest(model.trackingLatest)

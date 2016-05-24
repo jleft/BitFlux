@@ -30,6 +30,7 @@ module.exports = function(grunt) {
                 'assets/js/d3-legend.js',
                 'assets/js/svg-innerhtml.js',
                 'assets/js/d3fc.js',
+                'assets/js/d3fc-rebind.js',
                 'assets/js/jquery.js',
                 'assets/js/seedrandom.js',
                 'assets/js/bootstrap.js'
@@ -40,6 +41,7 @@ module.exports = function(grunt) {
                 'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
                 'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
                 'node_modules/d3fc/dist/d3fc.min.js',
+                'node_modules/d3fc-rebind/build/d3fc-rebind.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/seedrandom/seedrandom.min.js',
                 'node_modules/bootstrap/dist/js/bootstrap.min.js'
@@ -103,6 +105,12 @@ module.exports = function(grunt) {
                 {
                     cwd: 'node_modules/d3fc/dist/',
                     src: ['d3fc.js'],
+                    dest: 'dist/assets/js',
+                    expand: true
+                },
+                {
+                    cwd: 'node_modules/d3fc-rebind/build/',
+                    src: ['d3fc-rebind.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 },
@@ -270,6 +278,7 @@ module.exports = function(grunt) {
                 globals: {
                     d3: 'd3',
                     d3fc: 'fc',
+                    'd3fc-rebind': 'fc_rebind',
                     jquery: '$'
                 }
             },

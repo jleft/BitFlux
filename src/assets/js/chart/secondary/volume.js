@@ -19,7 +19,7 @@ export default function() {
     function volume(selection) {
         selection.each(function(model) {
             var paddedYExtent = fc.util.extent()
-                .fields('volume')
+                .fields(['volume'])
                 .pad(0.08)(model.data);
             if (paddedYExtent[0] < 0) {
                 paddedYExtent[0] = 0;

@@ -1,6 +1,7 @@
 /*global window */
 import d3 from 'd3';
 import fc from 'd3fc';
+import fcRebind from 'd3fc-rebind';
 import chartGroup from './chart/group';
 import menu from './menu/menu';
 import util from './util/util';
@@ -203,7 +204,7 @@ export default function() {
     function resetToLatest() {
         var data = model.charts.primary.data;
         var dataDomain = fc.util.extent()
-            .fields('date')(data);
+            .fields(['date'])(data);
         var navTimeDomain = util.domain.moveToLatest(
             model.charts.primary.discontinuityProvider,
             dataDomain,
@@ -283,7 +284,7 @@ export default function() {
                     var newDomain = util.domain.moveToLatest(
                         model.charts.primary.discontinuityProvider,
                         model.charts.primary.viewDomain,
-                        fc.util.extent().fields('date')(model.charts.primary.data));
+                        fc.util.extent().fields(['date'])(model.charts.primary.data));
                     onViewChange(newDomain);
                 }
             })
@@ -547,13 +548,13 @@ export default function() {
         }
     };
 
-    fc.util.rebind(app, model.sources.quandl.historicFeed, {
-        quandlApiKey: 'apiKey'
-    });
+    fcRebind.rebindAll(app, model.sources.quandl.historicFeed, fcRebind.includeMap({
+        'apiKey': 'quandlApiKey'
+    }));
 
-    fc.util.rebind(app, _dataInterface, {
-        periodsOfDataToFetch: 'candlesOfData'
-    });
+    fcRebind.rebindAll(app, _dataInterface, fcRebind.includeMap({
+        'candlesOfData': 'periodsOfDataToFetch'
+    }));
 
     return app;
 }
