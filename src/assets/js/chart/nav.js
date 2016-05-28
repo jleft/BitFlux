@@ -16,7 +16,6 @@ export default function() {
     var handleBarWidth = 2;
     var yExtentPadding = [0, 0.04];
     var numberOfSamples = 200;
-    var xAxisTextYOffset = '0.71em';
 
     var dispatch = d3.dispatch(event.viewChange);
     var xScale = fc.scale.dateTime();
@@ -28,12 +27,7 @@ export default function() {
             bottom: bottomMargin      // Variable also in navigator.less - should be used once ported to flex
         })
         .xOuterTickSize(0)
-        .yOuterTickSize(0)
-        .decorate(function(selection) {
-            selection.enter()
-                .selectAll('.x-axis text')
-                .attr('dy', xAxisTextYOffset);
-        });
+        .yOuterTickSize(0);
 
     var viewScale = fc.scale.dateTime();
 
