@@ -25,22 +25,14 @@ module.exports = function(grunt) {
                 '<%= meta.testJsFiles %>'
             ],
             developmentVendorJsFiles: [
-                'assets/js/d3.js',
-                'assets/js/css-layout.js',
-                'assets/js/d3-legend.js',
-                'assets/js/svg-innerhtml.js',
-                'assets/js/d3fc.js',
+                'assets/js/d3fc.bundle.js',
                 'assets/js/d3fc-rebind.js',
                 'assets/js/jquery.js',
                 'assets/js/seedrandom.js',
                 'assets/js/bootstrap.js'
             ],
             vendorJsFiles: [
-                'node_modules/d3/d3.min.js',
-                'node_modules/d3fc/node_modules/css-layout/dist/css-layout.min.js',
-                'node_modules/d3fc/node_modules/d3-svg-legend/d3-legend.min.js',
-                'node_modules/d3fc/node_modules/svg-innerhtml/svg-innerhtml.js',
-                'node_modules/d3fc/dist/d3fc.min.js',
+                'node_modules/d3fc/dist/d3fc.bundle.min.js',
                 'node_modules/d3fc-rebind/build/d3fc-rebind.min.js',
                 'node_modules/jquery/dist/jquery.min.js',
                 'node_modules/seedrandom/seedrandom.min.js',
@@ -79,32 +71,8 @@ module.exports = function(grunt) {
         copy: {
             js: {
                 files: [{
-                    cwd: 'node_modules/d3/',
-                    src: ['d3.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/node_modules/css-layout/dist/',
-                    src: ['css-layout.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/node_modules/d3-svg-legend/',
-                    src: ['d3-legend.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
-                    cwd: 'node_modules/d3fc/node_modules/svg-innerhtml/',
-                    src: ['svg-innerhtml.js'],
-                    dest: 'dist/assets/js',
-                    expand: true
-                },
-                {
                     cwd: 'node_modules/d3fc/dist/',
-                    src: ['d3fc.js'],
+                    src: ['d3fc.bundle.js'],
                     dest: 'dist/assets/js',
                     expand: true
                 },
