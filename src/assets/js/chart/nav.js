@@ -134,7 +134,7 @@ export default function() {
             height: navChartHeight
         });
 
-        xScale.domain(fc.util.extent().fields('date')(data));
+        xScale.domain(fc.util.extent().fields(['date'])(data));
         yScale.domain(fc.util.extent().fields(['low', 'high']).pad(yExtentPadding)(data));
 
         selection.select('mask')
@@ -156,12 +156,12 @@ export default function() {
         viewScale.domain(model.viewDomain);
 
         var filteredData = util.domain.filterDataInDateRange(
-            fc.util.extent().fields('date')(sampledData),
+            fc.util.extent().fields(['date'])(sampledData),
             sampledData);
         var yExtent = fc.util.extent()
             .fields(['low', 'high']).pad(yExtentPadding)(filteredData);
 
-        navChart.xDomain(fc.util.extent().fields('date')(sampledData))
+        navChart.xDomain(fc.util.extent().fields(['date'])(sampledData))
             .yDomain(yExtent)
             .xTicks(responsiveTickCount(layoutWidth, 100, 2));
 
@@ -197,7 +197,7 @@ export default function() {
             .scale(viewScale)
             .trackingLatest(model.trackingLatest)
             .discontinuityProvider(model.discontinuityProvider)
-            .dataDateExtent(fc.util.extent().fields('date')(model.data))
+            .dataDateExtent(fc.util.extent().fields(['date'])(model.data))
             .allowPan(false)
             .on('zoom', function(domain) {
                 dispatch[event.viewChange](domain);

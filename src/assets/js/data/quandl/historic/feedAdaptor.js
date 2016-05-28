@@ -1,5 +1,6 @@
 import d3 from 'd3';
 import fc from 'd3fc';
+import fcRebind from 'd3fc-rebind';
 
 export default function() {
 
@@ -75,11 +76,11 @@ export default function() {
         return quandlAdaptor;
     };
 
-    fc.util.rebind(quandlAdaptor, historicFeed, {
-        end: 'end',
-        product: 'dataset',
-        apiKey: 'apiKey'
-    });
+    fcRebind.rebindAll(quandlAdaptor, historicFeed, fcRebind.includeMap({
+        'end': 'end',
+        'dataset': 'product',
+        'apiKey': 'apiKey'
+    }));
 
     return quandlAdaptor;
 }
