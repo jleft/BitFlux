@@ -6,7 +6,8 @@ import base from './base';
 export default function() {
     var dispatch = d3.dispatch(event.viewChange);
     var renderer = fc.indicator.renderer.relativeStrengthIndex();
-    var algorithm = fc.indicator.algorithm.relativeStrengthIndex();
+    var algorithm = fc.indicator.algorithm.relativeStrengthIndex()
+        .value(function(d) { return d.close; });
     var tickValues = [renderer.lowerValue(), 50, renderer.upperValue()];
 
     var chart = base()
