@@ -450,8 +450,8 @@ module.exports = function(grunt) {
     grunt.registerTask('ci', [
         'build',
         'test:coverage',
-        'mobile:platforms',
-        'mobile:prepare'
+        'cordovacli:addIos',
+        'cordovacli:prepareIos'
     ]);
 
     grunt.registerTask('check', ['eslint']);
