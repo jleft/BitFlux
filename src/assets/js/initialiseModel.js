@@ -5,10 +5,10 @@ import chart from './chart/chart';
 import util from './util/util';
 import candlestickSeries from './series/candlestick';
 import dataGeneratorAdaptor from './data/generator/historic/feedAdaptor';
-import coinbaseAdaptor from './data/coinbase/historic/feedAdaptor';
-import coinbaseHistoricErrorResponseFormatter from './data/coinbase/historic/errorResponseFormatter';
-import coinbaseWebSocket from './data/coinbase/streaming/webSocket';
-import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
+import gdaxAdaptor from './data/gdax/historic/feedAdaptor';
+import gdaxHistoricErrorResponseFormatter from './data/gdax/historic/errorResponseFormatter';
+import gdaxWebSocket from './data/gdax/streaming/webSocket';
+import gdaxStreamingErrorResponseFormatter from './data/gdax/streaming/errorResponseFormatter';
 import quandlAdaptor from './data/quandl/historic/feedAdaptor';
 import quandlHistoricErrorResponseFormatter from './data/quandl/historic/errorResponseFormatter';
 import skipWeekendsDiscontinuityProvider from './scale/discontinuity/skipWeekends';
@@ -33,10 +33,10 @@ export default function() {
                 null,
                 fc.scale.discontinuity.identity()),
             bitcoin: model.data.source(
-                coinbaseAdaptor(),
-                coinbaseHistoricErrorResponseFormatter,
-                coinbaseWebSocket(),
-                coinbaseStreamingErrorResponseFormatter,
+                gdaxAdaptor(),
+                gdaxHistoricErrorResponseFormatter,
+                gdaxWebSocket(),
+                gdaxStreamingErrorResponseFormatter,
                 fc.scale.discontinuity.identity()),
             quandl: model.data.source(
                 quandlAdaptor(),

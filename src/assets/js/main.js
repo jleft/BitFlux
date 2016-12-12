@@ -10,5 +10,5 @@ if (seed) {
 }
 
 BitFlux.app()
-    .fetchCoinbaseProducts(true)
+    .fetchGdaxProducts(true)
     .run('#app-container');

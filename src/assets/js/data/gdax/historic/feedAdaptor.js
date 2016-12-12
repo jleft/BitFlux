@@ -1,32 +1,32 @@
 import d3 from 'd3';
-import fc from 'd3fc';
+import { feedGdax } from 'd3fc-financial-feed';
 import debounce from '../../../util/debounce';
 
 export default function() {
-    var rateLimit = 1000;       // The coinbase API has a limit of 1 request per second
+    var rateLimit = 1000;       // The GDAX API has a limit of 1 request per second
 
-    var historicFeed = fc.data.feed.coinbase(),
+    var historicFeed = feedGdax(),
         candles;
 
-    var coinbaseAdaptor = debounce(function coinbaseAdaptor(cb) {
+    var gdaxAdaptor = debounce(function gdaxAdaptor(cb) {
         var startDate = d3.time.second.offset(historicFeed.end(), -candles * historicFeed.granularity());
         historicFeed.start(startDate);
         historicFeed(cb);
     }, rateLimit);
 
-    coinbaseAdaptor.candles = function(x) {
+    gdaxAdaptor.candles = function(x) {
         if (!arguments.length) {
             return candles;
         }
         candles = x;
-        return coinbaseAdaptor;
+        return gdaxAdaptor;
     };
 
-    coinbaseAdaptor.apiKey = function() {
+    gdaxAdaptor.apiKey = function() {
         throw new Error('Not implemented.');
     };
 
-    d3.rebind(coinbaseAdaptor, historicFeed, 'end', 'granularity', 'product');
+    d3.rebind(gdaxAdaptor, historicFeed, 'end', 'granularity', 'product');
 
-    return coinbaseAdaptor;
+    return gdaxAdaptor;
 }
