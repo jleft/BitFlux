@@ -210,8 +210,7 @@ export default function() {
         var tickValuesWithAnnotations = produceAnnotatedTickValues(yScale, [latestPrice]);
         primaryChart.yTickValues(tickValuesWithAnnotations)
           .yDecorate(function(s) {
-              var closePriceTick = s.selectAll('.tick')
-                .filter(function(d) { return d === latestPrice; })
+              var closePriceTick = s.filter(function(d) { return d === latestPrice; })
                 .classed('close-line', true);
 
               var calloutHeight = 18;
