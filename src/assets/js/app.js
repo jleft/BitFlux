@@ -10,10 +10,10 @@ import dataInterface from './data/dataInterface';
 import notification from './notification/notification';
 import messageModel from './model/notification/message';
 import dataModel from './model/data/data';
-import coinbaseStreamingErrorResponseFormatter from './data/coinbase/streaming/errorResponseFormatter';
+import gdaxStreamingErrorResponseFormatter from './data/gdax/streaming/errorResponseFormatter';
 import initialiseModel from './initialiseModel';
-import getCoinbaseProducts from './data/coinbase/getProducts';
-import formatCoinbaseProducts from './data/coinbase/formatProducts';
+import getGdaxProducts from './data/gdax/getProducts';
+import formatGdaxProducts from './data/gdax/formatProducts';
 
 export default function() {
 
@@ -86,7 +86,7 @@ export default function() {
     var selectors;
     var toastNotifications;
 
-    var fetchCoinbaseProducts = false;
+    var fetchGdaxProducts = false;
 
     var proportionOfDataToDisplayByDefault = 0.2;
 
@@ -192,8 +192,8 @@ export default function() {
         } else {
             // #515 (https://github.com/ScottLogic/BitFlux/issues/515)
             // (TODO) prevents errors when formatting streaming close/error messages when product changes.
-            // As we only have a coinbase streaming source at the moment, this is a suitable fix for now
-            message = coinbaseStreamingErrorResponseFormatter(streamingEvent);
+            // As we only have a GDAX streaming source at the moment, this is a suitable fix for now
+            message = gdaxStreamingErrorResponseFormatter(streamingEvent);
         }
         if (message) {
             addNotification(message);
@@ -412,16 +412,16 @@ export default function() {
             .on(event.notificationClose, onNotificationClose);
     }
 
-    function addCoinbaseProducts(error, bitcoinProducts) {
+    function addGdaxProducts(error, bitcoinProducts) {
         if (error) {
             var statusText = error.statusText || 'Unknown reason.';
-            var message = 'Error retrieving Coinbase products: ' + statusText;
+            var message = 'Error retrieving GDAX products: ' + statusText;
             model.notificationMessages.messages.unshift(messageModel(message));
         } else {
             var defaultPeriods = [model.periods.hour1, model.periods.day1];
             var productPeriodOverrides = d3.map();
             productPeriodOverrides.set('BTC-USD', [model.periods.minute1, model.periods.minute5, model.periods.hour1, model.periods.day1]);
-            var formattedProducts = formatCoinbaseProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
+            var formattedProducts = formatGdaxProducts(bitcoinProducts, model.sources.bitcoin, defaultPeriods, productPeriodOverrides);
             model.headMenu.products = model.headMenu.products.concat(formattedProducts);
             model.overlay.products = model.headMenu.products;
         }
@@ -429,11 +429,11 @@ export default function() {
         render();
     }
 
-    app.fetchCoinbaseProducts = function(x) {
+    app.fetchGdaxProducts = function(x) {
         if (!arguments.length) {
-            return fetchCoinbaseProducts;
+            return fetchGdaxProducts;
         }
-        fetchCoinbaseProducts = x;
+        fetchGdaxProducts = x;
         return app;
     };
 
@@ -541,8 +541,8 @@ export default function() {
         initialiseResize();
         _dataInterface(model.headMenu.selectedPeriod.seconds, model.headMenu.selectedProduct);
 
-        if (fetchCoinbaseProducts) {
-            getCoinbaseProducts(addCoinbaseProducts);
+        if (fetchGdaxProducts) {
+            getGdaxProducts(addGdaxProducts);
         } else if (model.sources.bitcoin) {
             delete model.sources.bitcoin;
         }
