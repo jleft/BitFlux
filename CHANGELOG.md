@@ -1,6 +1,18 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.7.0] - 14-12-2016
+### Changed
+- x-axis label styles
+- Improved tick generation
+- Normalised data generator dates/times
+- Updated development dependencies
+
+### Fixed
+- Dropdown toggle in Firefox
+- Quandl feed error messages
+- Coinbase feed has been renamed to GDAX, following a [rebrand](https://blog.coinbase.com/coinbase-exchange-is-now-gdax-adds-ether-trading-a82cc628aa79#.sy8kxyghb)
+
 ## [1.6.1] - 10-5-2016
 ### Changed
 - Updated development dependencies
