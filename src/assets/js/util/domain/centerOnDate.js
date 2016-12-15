@@ -2,10 +2,10 @@ import fc from 'd3fc';
 
 export default function(discontinuityProvider, domain, data, centerDate) {
     var dataExtent = fc.util.extent()
-        .fields('date')(data);
+        .fields(['date'])(data);
 
     var domainExtent = fc.util.extent()
-        .fields(fc.util.fn.identity)(domain);
+        .fields([fc.util.fn.identity])(domain);
 
     var domainTimeDifference = discontinuityProvider.distance(domainExtent[0], domainExtent[1]);
 

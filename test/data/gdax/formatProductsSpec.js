@@ -1,5 +1,5 @@
 import d3 from 'd3';
-import formatProducts from '../../../src/assets/js/data/coinbase/formatProducts';
+import formatProducts from '../../../src/assets/js/data/gdax/formatProducts';
 
 var min1 = 60;
 var min5 = 300;
@@ -9,7 +9,7 @@ var defaultPeriods = [hr1, day1];
 var productPeriodOverrides = d3.map();
 productPeriodOverrides.set('BTC-USD', [min1, min5, hr1, day1]);
 
-describe('data/coinbase/formatProducts', function() {
+describe('data/gdax/formatProducts', function() {
     describe('product periods', function() {
         it('should assign the correct default periods if a product if not specified as an override', function() {
             var btcgbp = [{ id: 'BTC-GBP' }];

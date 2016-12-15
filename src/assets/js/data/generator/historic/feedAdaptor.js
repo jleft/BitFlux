@@ -1,3 +1,4 @@
+import d3 from 'd3';
 import fc from 'd3fc';
 
 export default function() {
@@ -11,9 +12,8 @@ export default function() {
 
     var dataGeneratorAdaptor = function(cb) {
         end.setHours(0, 0, 0, 0);
-        var millisecondsPerDay = 24 * 60 * 60 * 1000;
-        dataGenerator.startDate(new Date(end - (candles - 1) * millisecondsPerDay));
-
+        var startDate = d3.time.day.offset(end, -(candles - 1));
+        dataGenerator.startDate(startDate);
         var data = dataGenerator(candles);
         cb(null, data);
     };

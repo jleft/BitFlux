@@ -14,7 +14,7 @@ describe('util/domain/moveToLatest', function() {
     var wednesday = new Date(2015, 7, 19);
 
     beforeEach(function() {
-        dataDateExtent = fc.util.extent().fields('date')([makeDatum(1000), makeDatum(10000)]);
+        dataDateExtent = fc.util.extent().fields(['date'])([makeDatum(1000), makeDatum(10000)]);
         reversedDataDateExtent = [dataDateExtent[1], dataDateExtent[0]];
     });
 

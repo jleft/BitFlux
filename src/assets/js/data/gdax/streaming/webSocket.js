@@ -1,7 +1,7 @@
 /*global WebSocket */
 import d3 from 'd3';
 
-// https://docs.exchange.coinbase.com/#websocket-feed
+// https://docs.gdax.com/#websocket-feed
 
 export default function() {
 
@@ -11,7 +11,7 @@ export default function() {
     var socket;
 
     var webSocket = function(url, subscribe) {
-        url = url || 'wss://ws-feed.exchange.coinbase.com';
+        url = url || 'wss://ws-feed.gdax.com';
         subscribe = subscribe || {
             'type': 'subscribe',
             'product_id': product
