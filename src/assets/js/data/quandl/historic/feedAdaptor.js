@@ -1,8 +1,15 @@
 import d3 from 'd3';
 import fc from 'd3fc';
 import fcRebind from 'd3fc-rebind';
+import Bottleneck from 'bottleneck';
 
 export default function() {
+
+    // Concurrent calls to the Quandl API are prohibited
+    // https://blog.quandl.com/change-quandl-api-limits
+    var maxConcurrentRequests = 1;
+    var delayBetweenRequests = 50;
+    var limiter = new Bottleneck(maxConcurrentRequests, delayBetweenRequests);
 
     var historicFeed = fc.data.feed.quandl()
             .database('WIKI')
@@ -47,7 +54,7 @@ export default function() {
         var startDate = d3.time.second.offset(historicFeed.end(), -candles * granularity);
         historicFeed.start(startDate)
             .collapse(allowedPeriods.get(granularity));
-        historicFeed(function(err, data) {
+        limiter.submit(historicFeed, function(err, data) {
             if (err) {
                 cb(err);
             } else {
