@@ -79,7 +79,9 @@ export default function() {
     fcRebind.rebindAll(quandlAdaptor, historicFeed, fcRebind.includeMap({
         'end': 'end',
         'dataset': 'product',
-        'apiKey': 'apiKey'
+        'apiKey': 'apiKey',
+        'database': 'database',
+        'columnNameMap': 'columnNameMap'
     }));
 
     return quandlAdaptor;

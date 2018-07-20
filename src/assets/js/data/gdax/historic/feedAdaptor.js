@@ -26,6 +26,14 @@ export default function() {
         throw new Error('Not implemented.');
     };
 
+    gdaxAdaptor.database = function() {
+        throw new Error('Not implemented.');
+    };
+
+    gdaxAdaptor.columnNameMap = function() {
+        throw new Error('Not implemented.');
+    };
+
     d3.rebind(gdaxAdaptor, historicFeed, 'end', 'granularity', 'product');
 
     return gdaxAdaptor;
