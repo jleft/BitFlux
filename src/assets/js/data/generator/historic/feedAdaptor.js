@@ -61,5 +61,13 @@ export default function() {
         throw new Error('Not implemented.');
     };
 
+    dataGeneratorAdaptor.database = function() {
+        throw new Error('Not implemented.');
+    };
+
+    dataGeneratorAdaptor.columnNameMap = function() {
+        throw new Error('Not implemented.');
+    };
+
     return dataGeneratorAdaptor;
 }
