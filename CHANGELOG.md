@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.8.1] - 21-07-2018
+### Fixed
+- Updated GitHub Releases API key
+
 ## [1.8.0] - 20-07-2018
 ### Added
 - Expose options to change Quandl data source database and column name mapping
