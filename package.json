@@ -1,6 +1,6 @@
 {
   "name": "BitFlux",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "A financial charting application built upon d3fc and designed to showcase how to develop against d3fc.",
   "main": "index.js",
   "scripts": {
