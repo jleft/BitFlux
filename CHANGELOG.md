@@ -1,6 +1,10 @@
 # Change Log
 **All notable changes to the project will be documented in this file.**
 
+## [1.6.2] - 03-11-2018
+### Added
+- Expose options to change Quandl data source database and column name mapping
+
 ## [1.6.1] - 10-5-2016
 ### Changed
 - Updated development dependencies
