@@ -548,7 +548,9 @@ export default function() {
     };
 
     fc.util.rebind(app, model.sources.quandl.historicFeed, {
-        quandlApiKey: 'apiKey'
+        quandlApiKey: 'apiKey',
+        quandlDatabase: 'database',
+        quandlColumnNameMap: 'columnNameMap'
     });
 
     fc.util.rebind(app, _dataInterface, {

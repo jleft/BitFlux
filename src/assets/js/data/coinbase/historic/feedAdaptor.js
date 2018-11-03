@@ -26,6 +26,14 @@ export default function() {
         throw new Error('Not implemented.');
     };
 
+    coinbaseAdaptor.database = function() {
+        throw new Error('Not implemented.');
+    };
+
+    coinbaseAdaptor.columnNameMap = function() {
+        throw new Error('Not implemented.');
+    };
+
     d3.rebind(coinbaseAdaptor, historicFeed, 'end', 'granularity', 'product');
 
     return coinbaseAdaptor;

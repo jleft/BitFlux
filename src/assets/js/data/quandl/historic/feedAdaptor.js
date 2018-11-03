@@ -74,7 +74,9 @@ export default function() {
     fc.util.rebind(quandlAdaptor, historicFeed, {
         end: 'end',
         product: 'dataset',
-        apiKey: 'apiKey'
+        apiKey: 'apiKey',
+        database: 'database',
+        columnNameMap: 'columnNameMap'
     });
 
     return quandlAdaptor;
